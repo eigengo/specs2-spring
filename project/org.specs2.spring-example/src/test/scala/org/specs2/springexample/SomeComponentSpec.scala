@@ -5,12 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.test.context.transaction.TransactionConfiguration
-import org.specs2.execute.Result
-import org.specs2.specification.BeforeAfter
-import org.specs2.spring.{DataSource, Jndi, Specification}
-import org.hsqldb.jdbc.JDBCDriver
-import java.io.Serializable
-
+import org.specs2.spring.{Jndi, Specification}
 /**
  * @author janmachacek
  */
