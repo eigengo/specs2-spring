@@ -1,0 +1,123 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.specs2</groupId>
+	<artifactId>parent</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<roo.version>1.1.0.M3</roo.version>
+		<spring.version>3.0.6.RELEASE</spring.version>
+		<spring-integration.version>2.0.5.RELEASE</spring-integration.version>
+		<aspectj.version>1.6.11</aspectj.version>
+		<slf4j.version>1.6.1</slf4j.version>
+		<hibernate-core.version>3.6.0.CR1</hibernate-core.version>
+		<hibernate-validator.version>4.0.2.GA</hibernate-validator.version>
+		<spring-batch.version>2.1.3.RELEASE</spring-batch.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<scalaVersion>2.9.1</scalaVersion>
+		<spring-amqp.version>1.0.0.RELEASE</spring-amqp.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+			<version>2.9.0</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<module>org.specs2.spring</module>
+
+		<module>org.specs2.spring-example</module>
+	</modules>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.0.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.scala-tools</groupId>
+					<artifactId>maven-scala-plugin</artifactId>
+					<version>2.9.1</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<classesDirectory>target/classes</classesDirectory>
+					<includes>
+						<include>**/*Test.class</include>
+					</includes>
+					<argLine>-Xmx1024M -XX:MaxPermSize=256m</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>
+							src/assemble/sql-scripts.xml
+						</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+<!--
+			<plugin>
+				<groupId>org.scalatest</groupId>
+				<artifactId>maven-scalatest-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<testFailureIgnore>true</testFailureIgnore>
+							<xmlreports>xml</xmlreports>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+-->
+			<plugin>
+				<groupId>org.scala-tools</groupId>
+				<artifactId>maven-scala-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>testCompile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
