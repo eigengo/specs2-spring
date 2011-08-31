@@ -52,7 +52,7 @@ import java.util.Properties;
  *
  * @author janm
  */
-public class JndiEnvironmentSetter {
+class JndiEnvironmentSetter {
 
 	void prepareEnvironment(Jndi jndi) {
 		Assert.notNull(jndi, "The 'jndi' argument cannot be null.");

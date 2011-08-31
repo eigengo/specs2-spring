@@ -53,6 +53,17 @@
 			<artifactId>activemq-core</artifactId>
 			<version>5.4.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.specs2</groupId>
+			<artifactId>specs2-scalaz-core_2.9.0-1</artifactId>
+			<version>6.0.RC2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.specs2</groupId>
+			<artifactId>specs2_2.9.0-1</artifactId>
+			<version>1.5</version>
+		</dependency>
+
 	</dependencies>
 
 </project>
