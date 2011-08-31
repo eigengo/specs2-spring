@@ -5,7 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.test.context.transaction.TransactionConfiguration
-import org.specs2.spring.{Jndi, Specification}
+import org.specs2.spring.{DataSource, Jndi, Specification}
+
 /**
  * @author janmachacek
  */
@@ -20,9 +21,6 @@ import org.specs2.spring.{Jndi, Specification}
 		)
 )
 */
-@Jndi(
-
-)
 @Transactional
 @TransactionConfiguration(defaultRollback = true)
 @ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
