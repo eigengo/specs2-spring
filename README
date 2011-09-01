@@ -1,0 +1,117 @@
+Specs2 Extension to simplify integration testing with Spring.
+
+Most Spring enterprise applications use some DataSources, TransactionManagers and other JEE beasts. In
+addition to having the beans injected into our specs, we would like to use Specs2 to perform the necessary
+integration testing, but we don't really want to create separate application context files for the tests. 
+
+Instead, we would like to set up the JNDI environment for the test code and use the same application context files
+for both testing and production. This is where this project helps: the annotations on our test classes specify
+the JNDI environment we wish to build for the test. 
+
+Verba docent, exempla trahunt, so I'll start you off with a simple sample. Let there be:
+
+@Component
+class SomeComponent @Autowired()(private val hibernateTemplate: HibernateTemplate) {
+
+  @Transactional
+  def generate(count: Int) {
+    for (c <- 0 until count) {
+      val rider = new Rider()
+      rider.setName("Rider #" + c)
+      this.hibernateTemplate.saveOrUpdate(rider)
+    }
+  }
+
+}
+
+
+To get this running, we give the META-INF/spring/module-context.xml configuration file:
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="..."
+	   xsi:schemaLocation="...">
+
+	<context:component-scan base-package="org.spockframework.springintegration"/>
+
+	*<jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/test" expected-type="javax.sql.DataSource"/>*
+	*<tx:jta-transaction-manager />*
+	<tx:annotation-driven />
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="packagesToScan">
+			<list>
+				<value>org.spockframework.springintegration</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+
+</beans>
+
+This context file is the same for both tests and for production. The "variable" items (DataSource and TransactionManager) beans are 
+looked up from JNDI.
+
+To the test, then. We have simply
+
+@TransactionManager(name = "java:comp/TransactionManager")
+@DataSource(name = "java:comp/env/jdbc/test", driverClass = classOf[JDBCDriver], url = "jdbc:hsqldb:mem:test")
+@Transactional
+@TransactionConfiguration(defaultRollback = true)
+@ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
+class SomeComponentSpec extends org.specs2.spring.Specification {
+  @Autowired var someComponent: SomeComponent = _
+  @Autowired var hibernateTemplate: HibernateTemplate = _
+
+  "The rider generation mechanism" in {
+    "generate 100 riders " ! generate(100)
+  }
+
+  def generate(count: Int) = {
+    this.someComponent.generate(count)
+    this.hibernateTemplate.loadAll(classOf[Rider]) must have size (count)
+  }
+
+}
+
+If I wanted to have another integration test (perhaps testing another class), I would write:
+
+@TransactionManager(name = "java:comp/TransactionManager")
+@DataSource(name = "java:comp/env/jdbc/test", driverClass = classOf[JDBCDriver], url = "jdbc:hsqldb:mem:test")
+@Transactional
+@TransactionConfiguration(defaultRollback = true)
+@ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
+class SomeOtherComponentSpec extends org.specs2.spring.Specification {
+  @Autowired var someOtherComponent: SomeOtherComponent = _
+
+  "Another component" in {
+    "do something clever " ! doSomethingClever
+  }
+
+
+  def doSomethingClever = {
+    success
+  }
+
+}
+
+At this point, you may notice the duplication in the annotations. The Specs2 spring extension allows you to "merge" these annotations
+into one annotation that you can use throughout your tests. You can therefore have:
+
+@TransactionManager(name = "java:comp/TransactionManager")
+@DataSource(name = "java:comp/env/jdbc/test", driverClass = classOf[JDBCDriver], url = "jdbc:hsqldb:mem:test")
+@Transactional
+@TransactionConfiguration(defaultRollback = true)
+@ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
+public @interface IntegrationTest {
+}
+
+and modify the specs to just
+
+@IntegrationTest
+class SomeComponentSpec extends Specification { ... }
+
+@IntegrationTest
+class SomeComponentSpec extends Specification { ... }
