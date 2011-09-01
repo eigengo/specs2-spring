@@ -1,4 +1,6 @@
-package org.specs2.spring;
+package org.specs2.spring.annotation;
+
+import org.specs2.spring.JndiBuilder;
 
 import java.util.Map;
 

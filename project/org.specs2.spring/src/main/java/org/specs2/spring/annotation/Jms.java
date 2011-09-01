@@ -1,4 +1,4 @@
-package org.specs2.spring;
+package org.specs2.spring.annotation;
 
 /**
  * Specifies JMS configuration
@@ -19,13 +19,13 @@ public @interface Jms {
 	 *
 	 * @return the queues
 	 */
-	Queue[] queues() default {};
+	JmsQueue[] queues() default {};
 
 	/**
 	 * Specifies any number of JMS topics managed by this connection factory
 	 *
 	 * @return the topics
 	 */
-	Topic[] topics() default {};
+	JmsTopic[] topics() default {};
 
 }

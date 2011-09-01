@@ -7,6 +7,7 @@ import com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.specs2.spring.annotation.*;
 import org.springframework.mock.jndi.SimpleNamingContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -21,32 +22,26 @@ import javax.naming.spi.NamingManager;
 import javax.sql.XADataSource;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Component that processes the {@link Jndi} annotation and sets up the JNDI environment according to the
  * values in the annotation. This will allow you to write Specs2 code that looks like this:
  * <code><pre>
- * 	&#64;Jndi(
- * 		dataSources = &#64;DataSource(...)
- * 	)
+ * 	&#64;DataSource(...)
  * 	&#64;ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
- * 	class FooServiceTest extends Specification with Spring {
- * 		&#64;Autowired var service: FooService = _
- * 		&#64;Autowired var ht: HibernateTemplate = _
+ * 	class FooServiceTest extends <b>org.specs2.spring.</b>Specification {
+ * 	  &#64;Autowired var service: FooService = _
+ * 	  &#64;Autowired var ht: HibernateTemplate = _
  *
- * 	 	def is =
- * 	 		"FooService"                   ^
- * 	 		"   makes many foos"           ! makeFoos
- *		end
+ * 	  "Some such" in {
+ * 	    "makes many foos"           ! makeFoos
+ *	  }
  *
- *		def makeFoos() = {
- *			this.service.makeFoos()
- *			this.ht.loadAll(classOf[Foo]) must have size (100)
- *		}
+ *	  def makeFoos() = {
+ *	    this.service.makeFoos()
+ *	    this.ht.loadAll(classOf[Foo]) must have size (100)
+ *	  }
  *	}
  * </pre></code>
  *
@@ -54,19 +49,19 @@ import java.util.Properties;
  */
 class JndiEnvironmentSetter {
 
-	void prepareEnvironment(Jndi jndi) {
-		Assert.notNull(jndi, "The 'jndi' argument cannot be null.");
+	void prepareEnvironment(Environment environment) {
+		Assert.notNull(environment, "The 'environment' argument cannot be null.");
 
 		try {
 			NamingContextBuilder builder = NamingContextBuilder.emptyActivatedContextBuilder();
 
-			buildDataSources(builder, jndi.dataSources());
-			buildMailSessions(builder, jndi.mailSessions());
-			buildTransactionManagers(builder, jndi.transactionManager());
-			buildBeans(builder, jndi.beans());
-			buildJms(builder, jndi.jms());
+			buildDataSources(builder, environment.getDataSources());
+			//buildMailSessions(builder, jndi.mailSessions());
+			buildTransactionManagers(builder, environment.getTransactionManagers());
+			//buildBeans(builder, jndi.beans());
+			//buildJms(builder, jndi.jms());
 
-			buildCustom(builder, jndi.builder());
+			//buildCustom(builder, environment.getBuilder());
 
 		} catch (NamingException e) {
 			throw new RuntimeException(e);
@@ -77,12 +72,12 @@ class JndiEnvironmentSetter {
 		for (Jms jms : jmses) {
 			ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("vm://localhost");
 			builder.bind(jms.connectionFactoryName(), factory);
-			for (Queue queue : jms.queues()) {
+			for (JmsQueue queue : jms.queues()) {
 				ActiveMQQueue q = new ActiveMQQueue();
 				q.setPhysicalName("queue" + queue.hashCode());
 				builder.bind(queue.name(), q);
 			}
-			for (Topic topic : jms.topics()) {
+			for (JmsTopic topic : jms.topics()) {
 				ActiveMQTopic t = new ActiveMQTopic();
 				t.setPhysicalName("topic" + topic.hashCode());
 				builder.bind(topic.name(), t);
@@ -90,12 +85,12 @@ class JndiEnvironmentSetter {
 		}
 	}
 
-	private void buildTransactionManagers(NamingContextBuilder builder, TransactionManager[] transactionManagers) {
-		if (transactionManagers.length == 0) return;
-		if (transactionManagers.length > 1)
+	private void buildTransactionManagers(NamingContextBuilder builder, List<Environment.TransactionManagerDefinition> transactionManagers) {
+		if (transactionManagers.isEmpty()) return;
+		if (transactionManagers.size() > 1)
 			throw new EnvironmentCreationException("Cannot have more than one TransactionManager");
-		TransactionManager transactionManager = transactionManagers[0];
-		builder.bind(transactionManager.name(), new UserTransactionManager());
+		Environment.TransactionManagerDefinition transactionManager = transactionManagers.get(0);
+		builder.bind(transactionManager.getName(), new UserTransactionManager());
 	}
 
 	private void buildCustom(NamingContextBuilder builder, Class<? extends JndiBuilder> builderClass) {
@@ -150,10 +145,10 @@ class JndiEnvironmentSetter {
 
 	}
 
-	private void buildDataSources(NamingContextBuilder builder, DataSource[] dataSources) {
-		for (DataSource dataSource : dataSources) {
+	private void buildDataSources(NamingContextBuilder builder, List<Environment.DataSourceDefinition> dataSources) {
+		for (Environment.DataSourceDefinition dataSource : dataSources) {
 			boolean xa = false;
-			for (Class<?> intf : ClassUtils.getAllInterfacesForClass(dataSource.driverClass())) {
+			for (Class<?> intf : ClassUtils.getAllInterfacesForClass(dataSource.getDriverClass())) {
 				if (intf == XADataSource.class) {
 					xa = true;
 					break;
@@ -163,27 +158,27 @@ class JndiEnvironmentSetter {
 			javax.sql.DataSource ds;
 			if (xa) {
 				AtomikosDataSourceBean realDs = new AtomikosDataSourceBean();
-				realDs.setXaDataSourceClassName(dataSource.driverClass().getName());
+				realDs.setXaDataSourceClassName(dataSource.getDriverClass().getName());
 				Properties p = new Properties();
-				p.setProperty("user", dataSource.username());
-				p.setProperty("password", dataSource.password());
-				p.setProperty("URL", dataSource.url());
+				p.setProperty("user", dataSource.getUsername());
+				p.setProperty("password", dataSource.getPassword());
+				p.setProperty("URL", dataSource.getUrl());
 				realDs.setXaProperties(p);
-				realDs.setUniqueResourceName(dataSource.driverClass().getName() + System.currentTimeMillis());
+				realDs.setUniqueResourceName(dataSource.getDriverClass().getName() + System.currentTimeMillis());
 				realDs.setPoolSize(5);
 				ds = realDs;
 			} else {
 				AtomikosNonXADataSourceBean realDs = new AtomikosNonXADataSourceBean();
-				realDs.setDriverClassName(dataSource.driverClass().getName());
-				realDs.setUrl(dataSource.url());
-				realDs.setUser(dataSource.username());
-				realDs.setPassword(dataSource.password());
-				realDs.setUniqueResourceName(dataSource.driverClass().getName() + System.currentTimeMillis());
+				realDs.setDriverClassName(dataSource.getDriverClass().getName());
+				realDs.setUrl(dataSource.getUrl());
+				realDs.setUser(dataSource.getUsername());
+				realDs.setPassword(dataSource.getPassword());
+				realDs.setUniqueResourceName(dataSource.getDriverClass().getName() + System.currentTimeMillis());
 				realDs.setPoolSize(5);
 				ds = realDs;
 			}
 
-			builder.bind(dataSource.name(), ds);
+			builder.bind(dataSource.getName(), ds);
 		}
 	}
 

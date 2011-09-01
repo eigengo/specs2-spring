@@ -1,4 +1,6 @@
-package org.specs2.spring;
+package org.specs2.spring.annotation;
+
+import org.specs2.spring.JndiBuilder;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -10,9 +12,9 @@ import java.lang.annotation.RetentionPolicy;
  * <p>You can specify any number of {@link #dataSources()}, {@link #mailSessions()},
  * {@link #beans()}</p>
  * <p>In addition to these fairly standard items, you can specify {@link #builder()},
- * which needs to be an implementation of the {@link JndiBuilder} interface with
+ * which needs to be an implementation of the {@link org.specs2.spring.JndiBuilder} interface with
  * nullary constructor. The runtime will instantiate the given class and call its
- * {@link JndiBuilder#build(java.util.Map)} method.</p>
+ * {@link org.specs2.spring.JndiBuilder#build(java.util.Map)} method.</p>
  *
  *
  * @author janm
@@ -63,7 +65,7 @@ public @interface Jndi {
 
 	/**
 	 * If you require some complex environment setup, you can set this value. The type you specify here
-	 * must be an implementation of the {@link JndiBuilder} with nullary constructor.
+	 * must be an implementation of the {@link org.specs2.spring.JndiBuilder} with nullary constructor.
 	 *
 	 * @return the custom JndiBuilder
 	 */

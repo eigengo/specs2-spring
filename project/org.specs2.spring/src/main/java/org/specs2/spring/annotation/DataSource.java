@@ -1,4 +1,4 @@
-package org.specs2.spring;
+package org.specs2.spring.annotation;
 
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

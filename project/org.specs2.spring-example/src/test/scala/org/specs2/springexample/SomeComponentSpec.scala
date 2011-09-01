@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.test.context.transaction.TransactionConfiguration
-import org.specs2.spring.{DataSource, Jndi, Specification}
+import org.specs2.spring.annotation.{Jndi, DataSource}
+import org.specs2.spring.{Specification}
+import org.hsqldb.jdbc.JDBCDriver
 
 /**
  * @author janmachacek
@@ -21,6 +23,7 @@ import org.specs2.spring.{DataSource, Jndi, Specification}
 		)
 )
 */
+@DataSource(name = "java:comp/env/jdbc/test", driverClass = classOf[JDBCDriver], url = "jdbc:hsqldb:mem:test")
 @Transactional
 @TransactionConfiguration(defaultRollback = true)
 @ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))

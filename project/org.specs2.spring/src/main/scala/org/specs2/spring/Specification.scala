@@ -1,5 +1,6 @@
 package org.specs2.spring
 
+import annotation.Jndi
 import org.springframework.test.context.ContextConfiguration
 
 /**

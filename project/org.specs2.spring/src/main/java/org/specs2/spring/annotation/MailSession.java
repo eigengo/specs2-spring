@@ -1,17 +1,15 @@
-package org.specs2.spring;
+package org.specs2.spring.annotation;
 
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Specifies an arbitrary object to be added to the JNDI environment.
+ * Specifies the JNDI-bound {@link javax.mail.Session}.
  *
  * @author janm
  */
-@Inherited
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Bean {
+public @interface MailSession {
 
 	/**
 	 * The name in the JNDI environment; typically something like <code>java:comp/env/bean/xyz</code>
@@ -21,10 +19,10 @@ public @interface Bean {
 	String name();
 
 	/**
-	 * The type of the object; the type must have an accessible nullary constructor.
+	 * The JavaMail properties for the session; for example <code>mail.smtp.host=localhost</code>
 	 *
-	 * @return the object name
+	 * @return the JavaMail properties
 	 */
-	Class<?> type();
+	String[] properties() default {};
 
 }

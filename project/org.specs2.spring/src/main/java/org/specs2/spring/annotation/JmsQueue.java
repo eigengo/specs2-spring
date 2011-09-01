@@ -1,11 +1,11 @@
-package org.specs2.spring;
+package org.specs2.spring.annotation;
 
 /**
- * Specifies a JMS topic at the given JNDI name
+ * Specifies a JMS queue at the given JNDI name
  *
  * @author janm
  */
-public @interface Topic {
+public @interface JmsQueue {
 	/**
 	 * The name in the JNDI environment; typically something like <code>java:comp/env/jms/xyz</code>
 	 *
