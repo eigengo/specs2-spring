@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.test.context.transaction.TransactionConfiguration
 import org.specs2.spring.{Specification}
 import org.hsqldb.jdbc.JDBCDriver
-import org.specs2.spring.annotation.{TransactionManager, Jndi, DataSource}
+import org.specs2.spring.annotation.{TransactionManager, DataSource}
 
 /**
  * @author janmachacek

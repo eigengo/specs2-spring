@@ -8,14 +8,14 @@ import org.springframework.stereotype.Component
  * @author janmachacek
  */
 @Component
-class SomeComponent @Autowired() (private val hibernateTemplate: HibernateTemplate) {
+class SomeComponent @Autowired()(private val hibernateTemplate: HibernateTemplate) {
 
-	def generate(count: Int) {
-		for (c <- 0 until count) {
-			val rider = new Rider()
-			rider.setName("Rider #" + c)
-			this.hibernateTemplate.saveOrUpdate(rider)
-		}
-	}
+  def generate(count: Int) {
+    for (c <- 0 until count) {
+      val rider = new Rider()
+      rider.setName("Rider #" + c)
+      this.hibernateTemplate.saveOrUpdate(rider)
+    }
+  }
 
 }
