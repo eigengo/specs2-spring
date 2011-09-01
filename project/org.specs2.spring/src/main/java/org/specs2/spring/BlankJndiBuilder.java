@@ -1,6 +1,4 @@
-package org.specs2.spring.annotation;
-
-import org.specs2.spring.JndiBuilder;
+package org.specs2.spring;
 
 import java.util.Map;
 
@@ -9,7 +7,7 @@ import java.util.Map;
  *
  * @author janm
  */
-class BlankJndiBuilder implements JndiBuilder {
+public class BlankJndiBuilder implements JndiBuilder {
 
 	public BlankJndiBuilder() {
 

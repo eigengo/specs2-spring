@@ -1,5 +1,6 @@
 package org.specs2.spring.annotation;
 
+import org.specs2.spring.BlankJndiBuilder;
 import org.specs2.spring.JndiBuilder;
 
 import java.lang.annotation.Inherited;
@@ -48,6 +49,8 @@ public @interface Jndi {
 	 * @return the beans
 	 */
 	Bean[] beans() default {};
+
+	WorkManager[] workManagers() default {};
 
 	/**
 	 * Specify any number of {@link javax.transaction.TransactionManager} as JNDI entries.

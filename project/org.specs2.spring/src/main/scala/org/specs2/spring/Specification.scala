@@ -13,12 +13,8 @@ trait Specification extends org.specs2.mutable.Specification {
     val testContextCreator = new TestContextCreator
 
     jndiEnvironmentSetter.prepareEnvironment(new EnvironmentExtractor().extract(this))
+    testContextCreator.createAndAutowire(this)
 
-    val contextConfiguration = this.getClass.getAnnotation(classOf[ContextConfiguration])
-    if (contextConfiguration != null) {
-      testContextCreator.createAndAutowire(contextConfiguration, this)
-    }
-    
     specFragments
   }
 

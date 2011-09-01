@@ -1,7 +1,6 @@
 package org.specs2.spring;
 
-import org.specs2.spring.annotation.DataSource;
-import org.specs2.spring.annotation.TransactionManager;
+import org.specs2.spring.annotation.*;
 
 import java.sql.Driver;
 import java.util.ArrayList;
@@ -11,8 +10,12 @@ import java.util.List;
  * @author janmachacek
  */
 class Environment {
-	private List<DataSourceDefinition> dataSources = new ArrayList<DataSourceDefinition>();
-	private List<TransactionManagerDefinition> transactionManagers = new ArrayList<TransactionManagerDefinition>();
+	private final List<DataSourceDefinition> dataSources = new ArrayList<DataSourceDefinition>();
+	private final List<TransactionManagerDefinition> transactionManagers = new ArrayList<TransactionManagerDefinition>();
+	private final List<MailSessionDefinition> mailSessions = new ArrayList<MailSessionDefinition>();
+	private final List<JmsDefinition> jmsDefinitions = new ArrayList<JmsDefinition>();
+	private final List<BeanDefinition> beans = new ArrayList<BeanDefinition>();
+	private Class<? extends JndiBuilder> builder = BlankJndiBuilder.class;
 
 	void addDataSource(DataSource dataSource) {
 		if (dataSource == null) return;
@@ -32,12 +35,59 @@ class Environment {
 		for (TransactionManager transactionManager : transactionManagers) addTransactionManager(transactionManager);
 	}
 
+	void addMailSession(MailSession mailSession) {
+		if (mailSession == null) return;
+		this.mailSessions.add(new MailSessionDefinition(mailSession.name(), mailSession.properties()));
+	}
+
+	void addMailSessions(MailSession... mailSessions) {
+		for (MailSession mailSession : mailSessions) addMailSession(mailSession);
+	}
+
+	public void addJmsBrokers(Jms[] jmses) {
+		for (Jms jms : jmses) {
+			final JmsDefinition jmsDefinition = new JmsDefinition(jms.connectionFactoryName());
+			jmsDefinition.addQueues(jms.queues());
+			jmsDefinition.addTopics(jms.topics());
+			this.jmsDefinitions.add(jmsDefinition);
+		}
+	}
+
+	void addBean(Bean bean) {
+		if (bean == null) return;
+		this.beans.add(new BeanDefinition(bean.name(), bean.type()));
+	}
+
+	void addBeans(Bean[] beans) {
+		for (Bean bean : beans) addBean(bean);
+	}
+
+	Class<? extends JndiBuilder> getBuilder() {
+		return builder;
+	}
+
+	void setBuilder(Class<? extends JndiBuilder> builder) {
+		this.builder = builder;
+	}
+
 	List<DataSourceDefinition> getDataSources() {
 		return dataSources;
 	}
 
 	List<TransactionManagerDefinition> getTransactionManagers() {
 		return transactionManagers;
+	}
+
+	List<MailSessionDefinition> getMailSessions() {
+		return mailSessions;
+	}
+
+	List<JmsDefinition> getJmsDefinitions() {
+		return jmsDefinitions;
+	}
+
+	List<BeanDefinition> getBeans() {
+		return beans;
 	}
 
 	static class TransactionManagerDefinition {
@@ -49,6 +99,100 @@ class Environment {
 
 		String getName() {
 			return name;
+		}
+	}
+
+	static class BeanDefinition {
+		private final String name;
+		private final Class<?> type;
+
+		BeanDefinition(String name, Class<?> type) {
+			this.name = name;
+			this.type = type;
+		}
+
+		String getName() {
+			return name;
+		}
+
+		Class<?> getType() {
+			return type;
+		}
+	}
+
+	static class JmsDefinition {
+		private final String connectionFactoryName;
+		private final List<JmsQueueDefinition> jmsQueues = new ArrayList<JmsQueueDefinition>();
+		private final List<JmsTopicDefinition> jmsTopics = new ArrayList<JmsTopicDefinition>();
+
+		JmsDefinition(String connectionFactoryName) {
+			this.connectionFactoryName = connectionFactoryName;
+		}
+
+		void addTopics(JmsTopic... jmsTopics) {
+			for (JmsTopic topic : jmsTopics) {
+				this.jmsTopics.add(new JmsTopicDefinition(topic.name()));
+			}
+		}
+
+		void addQueues(JmsQueue... queues) {
+			for (JmsQueue queue : queues) {
+				this.jmsQueues.add(new JmsQueueDefinition(queue.name()));
+			}
+		}
+
+		String getConnectionFactoryName() {
+			return connectionFactoryName;
+		}
+
+		List<JmsQueueDefinition> getJmsQueues() {
+			return jmsQueues;
+		}
+
+		List<JmsTopicDefinition> getJmsTopics() {
+			return jmsTopics;
+		}
+	}
+
+	static class JmsQueueDefinition {
+		private final String name;
+
+		JmsQueueDefinition(String name) {
+			this.name = name;
+		}
+
+		String getName() {
+			return name;
+		}
+	}
+
+	static class JmsTopicDefinition {
+		private final String name;
+
+		JmsTopicDefinition(String name) {
+			this.name = name;
+		}
+
+		String getName() {
+			return name;
+		}
+	}
+
+	static class MailSessionDefinition {
+		private final String name;
+		private final String[] properties;
+
+		MailSessionDefinition(String name, String[] properties) {
+			this.name = name;
+			this.properties = properties;
+		}
+
+		String getName() {
+			return name;
+		}
+
+		String[] getProperties() {
+			return properties;
 		}
 	}
 

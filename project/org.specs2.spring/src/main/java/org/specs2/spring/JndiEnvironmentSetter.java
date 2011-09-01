@@ -56,31 +56,30 @@ class JndiEnvironmentSetter {
 			NamingContextBuilder builder = NamingContextBuilder.emptyActivatedContextBuilder();
 
 			buildDataSources(builder, environment.getDataSources());
-			//buildMailSessions(builder, jndi.mailSessions());
+			buildMailSessions(builder, environment.getMailSessions());
 			buildTransactionManagers(builder, environment.getTransactionManagers());
-			//buildBeans(builder, jndi.beans());
-			//buildJms(builder, jndi.jms());
-
-			//buildCustom(builder, environment.getBuilder());
+			buildBeans(builder, environment.getBeans());
+			buildJms(builder, environment.getJmsDefinitions());
+			buildCustom(builder, environment.getBuilder());
 
 		} catch (NamingException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private void buildJms(NamingContextBuilder builder, Jms[] jmses) {
-		for (Jms jms : jmses) {
+	private void buildJms(NamingContextBuilder builder, List<Environment.JmsDefinition> jmses) {
+		for (Environment.JmsDefinition jms : jmses) {
 			ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("vm://localhost");
-			builder.bind(jms.connectionFactoryName(), factory);
-			for (JmsQueue queue : jms.queues()) {
+			builder.bind(jms.getConnectionFactoryName(), factory);
+			for (Environment.JmsQueueDefinition queue : jms.getJmsQueues()) {
 				ActiveMQQueue q = new ActiveMQQueue();
 				q.setPhysicalName("queue" + queue.hashCode());
-				builder.bind(queue.name(), q);
+				builder.bind(queue.getName(), q);
 			}
-			for (JmsTopic topic : jms.topics()) {
+			for (Environment.JmsTopicDefinition topic : jms.getJmsTopics()) {
 				ActiveMQTopic t = new ActiveMQTopic();
 				t.setPhysicalName("topic" + topic.hashCode());
-				builder.bind(topic.name(), t);
+				builder.bind(topic.getName(), t);
 			}
 		}
 	}
@@ -106,11 +105,11 @@ class JndiEnvironmentSetter {
 		}
 	}
 
-	private void buildBeans(NamingContextBuilder builder, Bean[] beans) {
-		for (Bean bean : beans) {
-			Object o = instantiate(bean.type());
+	private void buildBeans(NamingContextBuilder builder, List<Environment.BeanDefinition> beans) {
+		for (Environment.BeanDefinition bean : beans) {
+			Object o = instantiate(bean.getType());
 
-			builder.bind(bean.name(), o);
+			builder.bind(bean.getName(), o);
 		}
 	}
 
@@ -130,17 +129,17 @@ class JndiEnvironmentSetter {
 		}
 	}
 
-	private void buildMailSessions(NamingContextBuilder builder, MailSession[] mailSessions) {
-		for (MailSession mailSession : mailSessions) {
+	private void buildMailSessions(NamingContextBuilder builder, List<Environment.MailSessionDefinition> mailSessions) {
+		for (Environment.MailSessionDefinition mailSession : mailSessions) {
 			Properties props = new Properties();
-			for (String property : mailSession.properties()) {
+			for (String property : mailSession.getProperties()) {
 				int i = property.indexOf("=");
 				if (i == -1) continue;
 				props.setProperty(property.substring(0, i), property.substring(i + 1));
 			}
 			Session session = Session.getInstance(props);
 
-			builder.bind(mailSession.name(), session);
+			builder.bind(mailSession.getName(), session);
 		}
 
 	}
