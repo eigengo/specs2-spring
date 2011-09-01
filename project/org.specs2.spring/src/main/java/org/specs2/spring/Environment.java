@@ -15,11 +15,21 @@ class Environment {
 	private List<TransactionManagerDefinition> transactionManagers = new ArrayList<TransactionManagerDefinition>();
 
 	void addDataSource(DataSource dataSource) {
+		if (dataSource == null) return;
 		this.dataSources.add(new DataSourceDefinition(dataSource.name(), dataSource.driverClass(), dataSource.url(), dataSource.username(), dataSource.password()));
 	}
 
+	void addDataSources(DataSource... dataSources) {
+		for (DataSource dataSource : dataSources) addDataSource(dataSource);
+	}
+
 	void addTransactionManager(TransactionManager transactionManager) {
+		if (transactionManager == null) return;
 		this.transactionManagers.add(new TransactionManagerDefinition(transactionManager.name()));
+	}
+
+	void addTransactionManagers(TransactionManager... transactionManagers) {
+		for (TransactionManager transactionManager : transactionManagers) addTransactionManager(transactionManager);
 	}
 
 	List<DataSourceDefinition> getDataSources() {

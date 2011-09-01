@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.test.context.transaction.TransactionConfiguration
-import org.specs2.spring.annotation.{Jndi, DataSource}
 import org.specs2.spring.{Specification}
 import org.hsqldb.jdbc.JDBCDriver
+import org.specs2.spring.annotation.{TransactionManager, Jndi, DataSource}
 
 /**
  * @author janmachacek
@@ -23,6 +23,7 @@ import org.hsqldb.jdbc.JDBCDriver
 		)
 )
 */
+@TransactionManager(name = "java:comp/TransactionManager")
 @DataSource(name = "java:comp/env/jdbc/test", driverClass = classOf[JDBCDriver], url = "jdbc:hsqldb:mem:test")
 @Transactional
 @TransactionConfiguration(defaultRollback = true)
