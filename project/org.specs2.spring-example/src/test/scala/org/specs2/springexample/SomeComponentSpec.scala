@@ -3,6 +3,7 @@ package org.specs2.springexample
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.specs2.spring.Specification
+
 /**
  * @author janmachacek
  */

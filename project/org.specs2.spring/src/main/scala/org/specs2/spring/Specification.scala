@@ -1,9 +1,8 @@
 package org.specs2.spring
 
-import annotation.Jndi
-import org.springframework.test.context.ContextConfiguration
-
 /**
+ * Mutable Specification that sets up the JNDI environment and autowires the fields / setters of its subclasses.
+ *
  * @author janmachacek
  */
 trait Specification extends org.specs2.mutable.Specification {
