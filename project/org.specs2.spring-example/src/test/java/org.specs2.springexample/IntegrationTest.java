@@ -19,7 +19,8 @@ import java.lang.annotation.RetentionPolicy;
 		transactionManager = @TransactionManager(name = "java:comp/TransactionManager"),
 		jms = @Jms(
 				connectionFactoryName = "java:comp/env/jms/connectionFactory",
-				queues = @JmsQueue(name = "java:comp/env/jms/queue")
+				queues = {@JmsQueue(name = "java:comp/env/jms/requests"), @JmsQueue(name = "java:comp/env/jms/responses")},
+				topics = {@JmsTopic(name = "java:comp/env/jms/cacheFlush"), @JmsTopic(name = "java:comp/env/jms/ruleUpdate")}
 		),
 		workManagers = @WorkManager(name = "java:comp/env/work/WorkManager", kind = WorkManager.Kind.CommonJ)
 )

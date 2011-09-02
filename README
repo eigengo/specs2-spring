@@ -30,7 +30,7 @@ To get this running, we give the META-INF/spring/module-context.xml configuratio
 <beans xmlns="..."
 	   xsi:schemaLocation="...">
 
-	<context:component-scan base-package="org.spockframework.springintegration"/>
+	<context:component-scan base-package="org.specs2.springexample"/>
 
 	*<jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/test" expected-type="javax.sql.DataSource"/>*
 	*<tx:jta-transaction-manager />*
@@ -40,7 +40,7 @@ To get this running, we give the META-INF/spring/module-context.xml configuratio
 		<property name="dataSource" ref="dataSource"/>
 		<property name="packagesToScan">
 			<list>
-				<value>org.spockframework.springintegration</value>
+				<value>org.specs2.springexample</value>
 			</list>
 		</property>
 	</bean>
@@ -115,3 +115,24 @@ class SomeComponentSpec extends Specification { ... }
 
 @IntegrationTest
 class SomeComponentSpec extends Specification { ... }
+
+To set up multiple DataSources, MailSessions, ... as well as JMS queues and topics, you can use the Jndi annotation like this:
+
+@Jndi(
+		dataSources = @DataSource(name = "java:comp/env/jdbc/test",
+				driverClass = JDBCDriver.class, url = "jdbc:hsqldb:mem:test"),
+		mailSessions = @MailSession(name = "java:comp/env/mail/foo"),
+		transactionManager = @TransactionManager(name = "java:comp/TransactionManager"),
+		jms = @Jms(
+				connectionFactoryName = "java:comp/env/jms/connectionFactory",
+				queues = {@JmsQueue(name = "java:comp/env/jms/requests"), @JmsQueue(name = "java:comp/env/jms/responses")},
+				topics = {@JmsTopic(name = "java:comp/env/jms/cacheFlush"), @JmsTopic(name = "java:comp/env/jms/ruleUpdate")}
+		),
+		workManagers = @WorkManager(name = "java:comp/env/work/WorkManager", kind = WorkManager.Kind.CommonJ)
+)
+@Transactional
+@TransactionConfiguration(defaultRollback = true)
+@ContextConfiguration("classpath*:/META-INF/spring/module-context.xml")
+@Retention(RetentionPolicy.RUNTIME)
+public @interface IntegrationTest {
+}
