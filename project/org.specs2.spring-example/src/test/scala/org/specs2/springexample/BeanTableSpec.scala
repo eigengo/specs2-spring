@@ -1,8 +1,6 @@
 package org.specs2.springexample
 
 import org.specs2.spring.{BeanTables, HibernateDataAccess, Specification}
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.orm.hibernate3.HibernateTemplate
 import java.util.Date
 
 /**
@@ -25,7 +23,7 @@ class BeanTableSpec extends Specification with HibernateDataAccess with BeanTabl
 
     riders.size must be_==(2)
   }
-
+ 
   "Complex bean setup" in {
     val riders =
      "age" | "name" | "teamName" |
