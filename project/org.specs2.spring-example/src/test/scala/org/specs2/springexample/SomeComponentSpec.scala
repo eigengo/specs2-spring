@@ -34,27 +34,29 @@ class SomeComponentSpec extends Specification with HibernateDataAccess with Bean
   */
 
   "Hibernate insert all" in {
-    val riders =
-     "age" | "name" | "teamName" |
-      32   ! "Jan"  ! "Wheelers" |
-      30   ! "Ani"  ! "Team GB"  |< { r: Rider =>
-      "number" | "time"     |
-       1       ! new Date() |
-       2       ! new Date() |< { e: Entry => r.addEntry(e) }
+    "age" | "name" | "teamName" |
+      32 ! "Jan" ! "Wheelers" |
+      30 ! "Ani" ! "Team GB" |> insert[Rider] {
+      r: Rider =>
+        "number" | "time" |
+          1 ! new Date() |
+          2 ! new Date() |< {
+          e: Entry => r.addEntry(e)
+        }
     }
 
-    this.hibernateTemplate.loadAll(classOf[Rider]) must have size(2)
+    this.hibernateTemplate.loadAll(classOf[Rider]) must have size (2)
   }
 
   "Hibernate insert all" in {
     val riders =
-     "age" | "name" | "teamName" |
-     32   ! "Jan"  ! "Wheelers" |
-     30   ! "Ani"  ! "Team GB"  |<(classOf[Rider])
+      "age" | "name" | "teamName" |
+        32 ! "Jan" ! "Wheelers" |
+        30 ! "Ani" ! "Team GB" |< (classOf[Rider])
 
     print(riders)
 
-    this.hibernateTemplate.loadAll(classOf[Rider]) must have size(2)
+    this.hibernateTemplate.loadAll(classOf[Rider]) must have size (2)
   }
 
   def generate(count: Int) = {
