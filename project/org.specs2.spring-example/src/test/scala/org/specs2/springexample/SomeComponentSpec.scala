@@ -13,9 +13,9 @@ class SomeComponentSpec extends Specification with HibernateDataAccess with Bean
   @Autowired var someComponent: SomeComponent = _
   @Autowired var hibernateTemplate: HibernateTemplate = _
 
-//  "Some such" in {
-//    "generate 10 users " ! generate(10)
-//  }
+  "Some such" in {
+    "generate 10 users " ! generate(10)
+  }
 
   "Hibernate insert all" in {
     "age" | "name" | "teamName" |

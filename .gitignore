@@ -34,5 +34,6 @@ project/.idea/*
 .DS_Store
 project/.DS_Store
 project/*/.DS_Store
-project/uk.co.protomed.biodose.integration/src/main/java/uk/co/protomed/biodose/integration/gen
-project/uk.co.protomed.biodose.integration/src/main/java/META-INF/sun-jaxb.episode
+tm.out
+tmlog*.log
+*.tm*.epoch

@@ -27,7 +27,7 @@ class TestContext {
 		this.context.getAutowireCapableBeanFactory().autowireBean(specification);
 	}
 
-	<T> T getSingleBeanOrNull(Class<T> beanType) {
+	<T> T getBean(Class<T> beanType) {
 		return this.context.getBean(beanType);
 	}
 
