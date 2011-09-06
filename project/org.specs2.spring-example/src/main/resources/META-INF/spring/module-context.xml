@@ -40,7 +40,7 @@
 		</property>
 		<property name="hibernateProperties">
 			<value>
-				hibernate.show_sql=false
+				hibernate.show_sql=true
 				hibernate.dialect=org.hibernate.dialect.HSQLDialect
 				hibernate.query.factory_class=org.hibernate.hql.ast.ASTQueryTranslatorFactory
 				hibernate.cache.use_structured_entries=true

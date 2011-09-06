@@ -12,6 +12,8 @@ import org.springframework.test.context.ContextConfiguration;
  */
 class TestContextCreator {
 
+	private ApplicationContext context;
+
 	/**
 	 * Creates the {@link ApplicationContext} and autowire the fields / setters test object.
 	 *
@@ -20,9 +22,13 @@ class TestContextCreator {
 	void createAndAutowire(Object specification) {
 		final ContextConfiguration contextConfiguration = AnnotationUtils.findAnnotation(specification.getClass(), ContextConfiguration.class);
 		if (contextConfiguration == null) return;
-		
-		ApplicationContext context = new ClassPathXmlApplicationContext(contextConfiguration.value());
-		context.getAutowireCapableBeanFactory().autowireBean(specification);
+
+		this.context = new ClassPathXmlApplicationContext(contextConfiguration.value());
+		this.context.getAutowireCapableBeanFactory().autowireBean(specification);
+	}
+
+	<T> T getSingleBeanOrNull(Class<T> beanType) {
+		return this.context.getBean(beanType);
 	}
 
 }

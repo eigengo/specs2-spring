@@ -1,10 +1,9 @@
 package org.specs2.springexample;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author janmachacek
@@ -20,6 +19,13 @@ public class Rider {
 	private String name;
 	private String teamName;
 	private int age;
+	@OneToMany
+	private Set<Entry> entries = new HashSet<Entry>();
+
+	public void addEntry(Entry entry) {
+		entry.setRider(this);
+		this.entries.add(entry);
+	}
 
 	public Long getId() {
 		return id;
@@ -59,5 +65,27 @@ public class Rider {
 
 	public void setAge(int age) {
 		this.age = age;
+	}
+
+	public Set<Entry> getEntries() {
+		return entries;
+	}
+
+	public void setEntries(Set<Entry> entries) {
+		this.entries = entries;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("Rider");
+		sb.append("{id=").append(id);
+		sb.append(", version=").append(version);
+		sb.append(", name='").append(name).append('\'');
+		sb.append(", teamName='").append(teamName).append('\'');
+		sb.append(", age=").append(age);
+		sb.append(", entries=").append(entries);
+		sb.append('}');
+		return sb.toString();
 	}
 }
