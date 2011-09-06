@@ -10,7 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
  *
  * @author janmachacek
  */
-class TestContextCreator {
+class TestContext {
 
 	private ApplicationContext context;
 

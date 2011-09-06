@@ -9,11 +9,11 @@ import org.springframework.orm.hibernate3.HibernateTemplate
  * @author janmachacek
  */
 trait Specification extends org.specs2.mutable.Specification {
-  private val testContextCreator = new TestContextCreator
+  private val testContextCreator = new TestContext
   private val jndiEnvironmentSetter = new JndiEnvironmentSetter
 
   private[spring] def getJdbcTemplate: JdbcTemplate = {
-    null
+    this.testContextCreator.getSingleBeanOrNull(classOf[JdbcTemplate])
   }
 
   private[spring] def getHibernateTemplate: HibernateTemplate = {

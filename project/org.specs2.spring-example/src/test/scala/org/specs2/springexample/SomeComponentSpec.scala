@@ -13,55 +13,35 @@ class SomeComponentSpec extends Specification with HibernateDataAccess with Bean
   @Autowired var someComponent: SomeComponent = _
   @Autowired var hibernateTemplate: HibernateTemplate = _
 
-  /*
-  "Some such" in {
-    "generate 10 users " ! generate(10)
-  }
-  */
-
-  /*
-  "Another test" in {
-    "name" | "teamName" | "age" |
-    "Jan" !! "Wheelers" ! 32    |
-    "Ani" !! "Team GB"  ! 30    |> { rider: Rider =>
-      "rider" | "time" |
-      rider   ! new Date() |> insert[Entry]
-    }
-
-    // do stuff with the inserted objects
-    this.hibernateTemplate.loadAll(classOf[Entry]) must have size(2)
-  }
-  */
+//  "Some such" in {
+//    "generate 10 users " ! generate(10)
+//  }
 
   "Hibernate insert all" in {
     "age" | "name" | "teamName" |
       32 ! "Jan" ! "Wheelers" |
-      30 ! "Ani" ! "Team GB" |> insert[Rider] {
-      r: Rider =>
+      30 ! "Ani" ! "Team GB" |> insert[Rider] { r: Rider =>
         "number" | "time" |
           1 ! new Date() |
-          2 ! new Date() |< {
-          e: Entry => r.addEntry(e)
-        }
+          2 ! new Date() |< { e: Entry => r.addEntry(e) }
     }
 
-    this.hibernateTemplate.loadAll(classOf[Rider]) must have size (2)
+    this.hibernateTemplate.find("from Rider").size() must be_==(2)
   }
 
-  "Hibernate insert all" in {
+  "Plain generate list" in {
     val riders =
       "age" | "name" | "teamName" |
         32 ! "Jan" ! "Wheelers" |
         30 ! "Ani" ! "Team GB" |< (classOf[Rider])
 
-    print(riders)
-
-    this.hibernateTemplate.loadAll(classOf[Rider]) must have size (2)
+    riders(0).getAge must be_==(32)
+    riders(1).getAge must be_==(30)
   }
 
   def generate(count: Int) = {
     this.someComponent.generate(count)
-    this.hibernateTemplate.loadAll(classOf[Rider]) must have size (count)
+    this.hibernateTemplate.find("from Rider").size() must be_==(count)
   }
 
 }

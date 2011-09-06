@@ -3,7 +3,6 @@ package org.specs2.spring
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.orm.hibernate3.{HibernateCallback, HibernateTemplate}
 import org.hibernate.Session
-import org.specs2.execute.Result
 
 /**
  * @author janmachacek
@@ -12,22 +11,19 @@ import org.specs2.execute.Result
 trait SqlDataAccess {
   private[spring] def getJdbcTemplate: JdbcTemplate
 
-  def setup = {
-
-  }
 
 }
 
 trait HibernateDataAccess {
   private[spring] def getHibernateTemplate: HibernateTemplate
 
-  def deleteAll(entity: Class[_]) {
-//    getHibernateTemplate.execute(new HibernateCallback[Void] {
-//      def doInHibernate(session: Session) = {
-//
-//        null
-//      }
-//    })
+  def deleteAll[T](implicit entity: ClassManifest[T]) {
+    getHibernateTemplate.execute(new HibernateCallback[Void] {
+      def doInHibernate(session: Session) = {
+        session.createQuery("delete from " + entity.erasure.getName).executeUpdate()
+        null
+      }
+    })
   }
 
   import org.specs2.execute._

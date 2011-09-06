@@ -19,7 +19,7 @@ public class Rider {
 	private String name;
 	private String teamName;
 	private int age;
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	private Set<Entry> entries = new HashSet<Entry>();
 
 	public void addEntry(Entry entry) {
