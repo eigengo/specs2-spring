@@ -3,7 +3,7 @@ package org.specs2.spring.annotation;
 /**
  * Specifies a JMS topic at the given JNDI name
  *
- * @author janm
+ * @author janmmachacek
  */
 public @interface JmsTopic {
 	/**

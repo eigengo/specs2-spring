@@ -8,7 +8,6 @@ import java.util.{HashSet, ArrayList}
 /**
  * @author janmachacek
  */
-
 trait BeanTables {
 
   implicit def toTableHeader(a: String) = new TableHeader(List(a))

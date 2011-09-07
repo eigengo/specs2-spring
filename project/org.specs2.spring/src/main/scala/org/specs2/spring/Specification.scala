@@ -4,8 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.specs2.specification.Example
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.support.DefaultTransactionDefinition
-import org.specs2.execute.Success
 import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefinition
 
 /**
@@ -16,10 +14,22 @@ import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefin
 trait Specification extends org.specs2.mutable.Specification {
   private val testContext = new TestContext
 
+  /**
+   * Obtains a single bean of type JdbcTemplate; throws exception if the test context does not define
+   * exactly one such bean.
+   *
+   * @return the JdbcTemplate bean; never {@code null}.
+   */
   private[spring] def getJdbcTemplate: JdbcTemplate = {
     this.testContext.getBean(classOf[JdbcTemplate])
   }
 
+  /**
+   * Obtains a single bean of type HibernateTemplate; throws exception if the test context does not define
+   * exactly one such bean.
+   *
+   * @return the HibernateTemplate bean; never {@code null}.
+   */
   private[spring] def getHibernateTemplate: HibernateTemplate = {
     this.testContext.getBean(classOf[HibernateTemplate])
   }

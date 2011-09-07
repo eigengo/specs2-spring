@@ -18,7 +18,7 @@ import java.lang.annotation.RetentionPolicy;
  * {@link org.specs2.spring.JndiBuilder#build(java.util.Map)} method.</p>
  *
  *
- * @author janm
+ * @author janmmachacek
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

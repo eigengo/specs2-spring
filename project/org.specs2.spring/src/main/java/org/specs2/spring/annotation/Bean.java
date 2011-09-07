@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Specifies an arbitrary object to be added to the JNDI environment.
  *
- * @author janm
+ * @author janmachacek
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)

@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Specifies the {@link javax.transaction.TransactionManager} to be added to the JNDI environment
  *
- * @author janm
+ * @author janmmachacek
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

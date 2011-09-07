@@ -3,7 +3,7 @@ package org.specs2.spring.annotation;
 /**
  * Specifies a JMS queue at the given JNDI name
  *
- * @author janm
+ * @author janmmachacek
  */
 public @interface JmsQueue {
 	/**

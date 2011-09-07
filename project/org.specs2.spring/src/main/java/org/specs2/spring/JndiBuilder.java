@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Performs custom processing to contribute items to the JNDI environment.
  *
- * @author janm
+ * @author janmachacek
  */
 public interface JndiBuilder {
 

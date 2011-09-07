@@ -3,7 +3,7 @@ package org.specs2.spring.annotation;
 /**
  * Specifies JMS configuration
  *
- * @author janm
+ * @author janmmachacek
  */
 public @interface Jms {
 

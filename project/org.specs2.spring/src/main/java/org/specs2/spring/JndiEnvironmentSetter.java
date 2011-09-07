@@ -45,7 +45,7 @@ import java.util.*;
  *	}
  * </pre></code>
  *
- * @author janm
+ * @author janmachacek
  */
 class JndiEnvironmentSetter {
 

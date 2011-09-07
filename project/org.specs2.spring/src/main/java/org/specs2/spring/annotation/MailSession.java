@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Specifies the JNDI-bound {@link javax.mail.Session}.
  *
- * @author janm
+ * @author janmmachacek
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MailSession {

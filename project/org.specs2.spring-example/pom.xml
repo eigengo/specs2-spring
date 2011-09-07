@@ -144,6 +144,12 @@
 			<artifactId>specs2_2.9.0-1</artifactId>
 			<version>1.5</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>scala-library</artifactId>
+					<groupId>org.scala-lang</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 	</dependencies>

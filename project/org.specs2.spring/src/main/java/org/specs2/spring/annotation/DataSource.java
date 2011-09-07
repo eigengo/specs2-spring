@@ -8,7 +8,7 @@ import java.sql.Driver;
 /**
  * Specifies the {@link javax.activation.DataSource} to be added to the JNDI environment
  *
- * @author janm
+ * @author janmmachacek
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
