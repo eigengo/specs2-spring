@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.specs2.spring.{BeanTables, HibernateDataAccess, Specification}
 import java.util.Date
+import org.springframework.transaction.annotation.Transactional
 
 /**
  * @author janmachacek
