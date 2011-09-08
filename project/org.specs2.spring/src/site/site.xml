@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Specs2 - Spring &amp; Friends">
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-stylus-skin</artifactId>
+		<version>1.2</version>
+	</skin>
+	<bannerLeft>
+		<name>Specs2 - Spring</name>
+		<src>http://maven.apache.org/images/apache-maven-project.png</src>
+		<href>http://static.cakesolutions.org/specs2-spring/</href>
+	</bannerLeft>
+	<bannerRight>
+		<src>http://maven.apache.org/images/maven-small.gif</src>
+	</bannerRight>
+	<body>
+		<links>
+			<item name="Cake Solutions" href="http://www.cakesolutions.net/"/>
+		</links>
+
+		<menu name="Maven 2.0">
+			<item name="Introduction" href="index.html"/>
+			<item name="Sources" href="https://github.com/janm399/specs2-spring/"/>
+			<item name="Download" href="download.html"/>
+			<item name="Release Notes" href="release-notes.html"/>
+			<item name="General Information" href="about.html"/>
+			<item name="Road Map" href="roadmap.html"/>
+		</menu>
+
+		<menu ref="reports"/>
+
+
+	</body>
+</project>
