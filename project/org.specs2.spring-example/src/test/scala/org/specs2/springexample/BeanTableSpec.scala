@@ -45,7 +45,7 @@ class BeanTableSpec extends Specification with BeanTables {
    */
   def clusterBy[A, B](l: List[A])(f: A => B) = {
     val identity = (x: Any) => x
-    groupByFirst(l ∘ { e => (f(e), e)})
+    groupByFirst(l ∘ { e => (f(e), e)}) 
 
     //    val identity = (x: A) => x
     //    identity.first apply(7, "abc")
