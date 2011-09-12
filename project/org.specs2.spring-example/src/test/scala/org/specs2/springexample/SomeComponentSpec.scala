@@ -41,8 +41,6 @@ class SomeComponentSpec extends Specification with HibernateDataAccess with Bean
           2 ! new Date() |< { e: Entry => r.addEntry(e) }
     }
     
-   
-
     this.hibernateTemplate.find("from Rider").size() must be_==(2)
   }
 
