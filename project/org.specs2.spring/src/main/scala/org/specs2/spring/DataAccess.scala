@@ -15,8 +15,8 @@ trait SqlDataAccess {
 }
 
 /**
- * Convenience mixin for using Hibernate in your Spring integration tests; includes the {@link #insert} method overloads
- * that work well with {@link BeanTables}.
+ * Convenience mixin for using Hibernate in your Spring integration tests; includes the [[insert]] method overloads
+ * that work well with [[BeanTables]].
  */
 trait HibernateDataAccess {
   private[spring] def getHibernateTemplate: HibernateTemplate

@@ -45,7 +45,7 @@
 				<exclusion>
 					<artifactId>slf4j-api</artifactId>
 					<groupId>org.slf4j</groupId>
-				</exclusion>
+				</exclusion> 
 			</exclusions>
 		</dependency>
 		<dependency>

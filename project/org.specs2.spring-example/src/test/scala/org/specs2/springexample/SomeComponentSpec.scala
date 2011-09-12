@@ -34,12 +34,14 @@ class SomeComponentSpec extends Specification with HibernateDataAccess with Bean
    */
   "Hibernate insert all" in {
     "age" | "name" | "teamName" |
-      32 ! "Jan" ! "Wheelers" |
-      30 ! "Ani" ! "Team GB" |> insert[Rider] { r: Rider =>
+       32 ! "Jan"  ! "Wheelers" |
+       30 ! "Ani"  ! "Team GB"  |> insert[Rider] { r: Rider =>
         "number" | "time" |
           1 ! new Date() |
           2 ! new Date() |< { e: Entry => r.addEntry(e) }
     }
+    
+   
 
     this.hibernateTemplate.find("from Rider").size() must be_==(2)
   }

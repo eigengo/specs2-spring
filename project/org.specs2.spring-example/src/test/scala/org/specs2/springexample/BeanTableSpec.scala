@@ -15,11 +15,6 @@ class BeanTableSpec extends Specification with BeanTables {
    * Trivial demonstration of BeanTables |> method
    */
   "Simple test" in {
-    val a = (4 * (_: Int))
-    val b = (1 + (_: Int))
-    var x = a ∙ b
-    println(x(2))
-
     "age" | "name" | "teamName" |
      32   ! "Jan"  ! "Wheelers" |
      30   ! "Ani"  ! "Team GB"  |> { r: Rider => r.getAge must be_>(29) }
@@ -34,7 +29,7 @@ class BeanTableSpec extends Specification with BeanTables {
       32   ! "Jan"  ! "Wheelers" |
       30   ! "Ani"  ! "Team GB"  |<(classOf[Rider])
 
-    riders.size must be_==(2)
+    riders.size must be_==(2) 
   }
 
   /**

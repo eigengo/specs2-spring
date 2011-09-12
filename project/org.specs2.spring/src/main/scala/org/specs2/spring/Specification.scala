@@ -2,9 +2,9 @@ package org.specs2.spring
 
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.orm.hibernate3.HibernateTemplate
-import org.specs2.specification.Example
 import org.springframework.transaction.PlatformTransactionManager
 import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefinition
+import org.specs2.specification.{Fragment, Example}
 
 /**
  * Mutable Specification that sets up the JNDI environment and autowires the fields / setters of its subclasses.
@@ -52,7 +52,7 @@ trait Specification extends org.specs2.mutable.Specification {
         f =>
           f match {
             case Example(desc, body) =>
-              Example.apply(desc, {
+              Example(desc, {
                 val transactionStatus = transactionManager.getTransaction(ttd.getTransactionDefinition)
                 try {
                   val result = body()

@@ -4,7 +4,9 @@ import org.springframework.orm.hibernate3.HibernateTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import scalaz._
+import effects.IO
 import Scalaz._
+import java.io.{FileReader, Reader, File, BufferedReader}
 
 /**
  * @author janmachacek
@@ -19,5 +21,25 @@ class SomeComponent @Autowired()(private val hibernateTemplate: HibernateTemplat
       this.hibernateTemplate.saveOrUpdate(rider)
     }
   }
+
+//  def bufferFile(f: File) = IO {
+//    new BufferedReader(new FileReader(f))
+//  }
+//
+//  def closeReader(r: Reader) = IO {
+//    r.close
+//  }
+//
+//  def bracket[A, B, C](init: IO[A], fin: A => IO[B], body: A => IO[C]): IO[C] =
+//    for {a <- init
+//         c <- body(a)
+//         _ <- fin(a)}
+//    yield c
+//
+//  def enumFile[A](f: File, i: IterV[String, A]): IO[IterV[String, A]] =
+//    bracket(bufferFile(f),
+//      closeReader(_: BufferedReader),
+//      enumReader(_: BufferedReader, i))
+//
 
 }
