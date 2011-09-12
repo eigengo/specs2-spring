@@ -4,7 +4,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import scalaz._
-import effects.IO
 import Scalaz._
 import java.io.{FileReader, Reader, File, BufferedReader}
 
@@ -21,6 +20,8 @@ class SomeComponent @Autowired()(private val hibernateTemplate: HibernateTemplat
       this.hibernateTemplate.saveOrUpdate(rider)
     }
   }
+
+    //(listArr(f &&& identity) >>> arr(groupByFirst) >>> arr(second) >>> arr(reverse))(l)
 
 //  def bufferFile(f: File) = IO {
 //    new BufferedReader(new FileReader(f))
