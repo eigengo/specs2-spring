@@ -35,28 +35,16 @@ class BeanTableSpec extends Specification with BeanTables {
     riders.size must be_==(2)
   }
 
-  /*
-  clusterBy :: Ord b => (a -> b) -> [a] -> [[a]]
-  clusterBy f = M.elems . M.map reverse . M.fromListWith (++) . map (f &&& return)
+  def clusterBy[A, B](l: Iterable[A])(f: A => B) =
+    l.map(e => (f(e), e))./:(new HashMap[B, List[A]])((res, cur) => res + ((cur._1, cur._2 :: res.getOrElse(cur._1, Nil)))).values
 
-   i.e. clusterBy(List("a", "bb", "cc"))(_.length) == List(List("a"), List("bb", "cc"))
-
-   http://etorreborre.blogspot.com/2009/02/exercise-with-arrows-in-scala.html
-   */
-  def clusterBy[A, B](l: List[A])(f: A => B) = {
-    val identity = (x: Any) => x
-    groupByFirst(l ∘ { e => (f(e), e)}) 
-
-    //    val identity = (x: A) => x
-    //    identity.first apply(7, "abc")
+  def clusterBy2[A, B](l: List[A])(f: A => B) = {
+    val lx = (l ∘ (e => (f(e), e))) // I now have pairs (3, "one"), (3, "two"), (5, "three")
+    // I actually need Map[B, List[A]] = Map(3 -> List("one", "two"), 5 -> List("three"))
   }
 
-  def groupByFirst[A, B](l: List[(A, B)]) =
-    l.foldLeft[Map[A, List[B]]](new HashMap[A, List[B]])(
-      (res, cur) => res + ((cur._1, cur._2 :: res.getOrElse(cur._1, Nil)))).toList
-
   "foo" in {
-    val cluster = clusterBy(List("one", "two", "three"))(_.length)
+    val cluster = clusterBy(List("one", "two", "three", "eleven", "twelve"))(_.length)
     println(cluster)
     success
   }
