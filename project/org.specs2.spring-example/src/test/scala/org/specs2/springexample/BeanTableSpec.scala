@@ -35,13 +35,8 @@ class BeanTableSpec extends Specification with BeanTables {
     riders.size must be_==(2)
   }
 
-  def clusterBy[A, B](l: Iterable[A])(f: A => B) =
-    l.map(e => (f(e), e))./:(new HashMap[B, List[A]])((res, cur) => res + ((cur._1, cur._2 :: res.getOrElse(cur._1, Nil)))).values
-
-  def clusterBy2[A, B](l: List[A])(f: A => B) = {
-    val lx = (l ∘ (e => (f(e), e))) // I now have pairs (3, "one"), (3, "two"), (5, "three")
-    // I actually need Map[B, List[A]] = Map(3 -> List("one", "two"), 5 -> List("three"))
-  }
+  def clusterBy[A, B](l: List[A])(f: A => B) =
+    (l∘(e => (f(e), e)))./:(new HashMap[B, List[A]])((r, c) => r + ((c._1, c._2 :: r.getOrElse(c._1, Nil)))).values
 
   "foo" in {
     val cluster = clusterBy(List("one", "two", "three", "eleven", "twelve"))(_.length)
