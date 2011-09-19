@@ -8,15 +8,15 @@ import java.io.File
 object Tester {
 
   def main(args: Array[String]) {
-    val files: String => List[File] = (dir) => new File(dir).listFiles().toList
+    val files: Kleisli[List, String, File] = ☆((dir: String) => new File(dir).listFiles().toList )
     def lengths: Kleisli[List, File, Int] = ☆((f: File) => {
       if (f.isDirectory) lengths =<< f.listFiles().toList
       else Source.fromFile(f).getLines().toList ∘ (l => l.length())
     })
 
-    val lineLengths = ☆(files) >=> lengths
-    val homeLineLengths = ☆(files) >=> lengths <=< ((home: String) => List("/Users/" + home))
-    val myLineLengths = (☆(files) >=> lengths) =<< (List("/Users/janmachacek/Tmp/foo"))
+    val lineLengths = files >=> lengths
+    val homeLineLengths = files >=> lengths <=< ((home: String) => List("/Users/" + home))
+    val myLineLengths = (files >=> lengths) =<< (List("/Users/janmachacek/Tmp/foo"))
 
     println(lineLengths("/Users/janmachacek/Tmp/foo"))
     println(homeLineLengths("janmachacek/Tmp/foo"))
