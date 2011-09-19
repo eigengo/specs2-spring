@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.specs2.spring.{BeanTables, HibernateDataAccess, Specification}
 import java.util.Date
+import org.springframework.test.context.ContextConfiguration
+import org.specs2.spring.annotation.DataSource
+import org.hsqldb.jdbc.JDBCDriver
 
 /**
  * Specification that creates the Spring ApplicationContext; the configuration for the context relies on some
@@ -17,6 +20,9 @@ import java.util.Date
  * @author janmachacek
  */
 @IntegrationTest
+@DataSource(name = "java:comp/env/jdbc/test",
+  driverClass = classOf[JDBCDriver], url = "jdbc:hsqldb:mem:test")
+@ContextConfiguration(Array("cpass"))
 class SomeComponentSpec extends Specification with HibernateDataAccess with BeanTables {
   @Autowired var someComponent: SomeComponent = _
   @Autowired var hibernateTemplate: HibernateTemplate = _
@@ -34,13 +40,16 @@ class SomeComponentSpec extends Specification with HibernateDataAccess with Bean
    */
   "Hibernate insert all" in {
     "age" | "name" | "teamName" |
-       32 ! "Jan"  ! "Wheelers" |
-       30 ! "Ani"  ! "Team GB"  |> insert[Rider] { r: Rider =>
+      32 ! "Jan" ! "Wheelers" |
+      30 ! "Ani" ! "Team GB" |> insert[Rider] {
+      r: Rider =>
         "number" | "time" |
           1 ! new Date() |
-          2 ! new Date() |< { e: Entry => r.addEntry(e) }
+          2 ! new Date() |< {
+          e: Entry => r.addEntry(e)
+        }
     }
-    
+
     this.hibernateTemplate.find("from Rider").size() must be_==(2)
   }
 
