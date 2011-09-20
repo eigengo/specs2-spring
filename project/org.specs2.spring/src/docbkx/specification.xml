@@ -232,7 +232,232 @@ class SomeTest extends Specification {
 			<code>Autowired</code> annotation on the variables that you want to have autowired.) Once
 			the Spring <interfacename>ApplicationContext</interfacename> is ready and the variables
 			autowired, you can use them in the bodies of the examples.</para>
+			
+		<para>In addition to setting up properly configured Spring <interfacename>ApplicationContext</interfacename>,
+			Specs2 Spring sets up the JNDI environment for the test. This allows you to have the same Spring
+			context configuration files, regardless of whether you are running tests, trying out the application
+			on your own machine, deploying the application to pre-production servers or even running 
+			your application live.</para>
+			
+		<para>In this section, you will find out how to configure your Spring <interfacename>ApplicationContext</interfacename>
+			and how to configure the JNDI environment for your tests. Finally, we will discuss using running the
+			examples in your specifications in their own transactions and controlling the behaviour of those
+			transactions</para>
+			
+		<section>
+			<title>Configuring the Spring ApplicationContext</title>
+			
+			<para>To create the Spring <interfacename>ApplicationContext</interfacename> for the test,
+			it looks for the <interfacename>ContextConfiguration</interfacename> annotation on the test.
+			<remark>Or the <interfacename>ContextConfiguration</interfacename> annotation on any annotation
+			that the test is annotated with. See <xref linkend="annotated-annotation"/></remark>
+			</para>
 
+		</section>
+
+		<section>
+			<title>Understanding the Specs2 annotations</title>
+
+			<para>The annotations on a Specs2 Spring test control &amp; define how the Spring <interfacename>ApplicationContext</interfacename>
+			is constructed, define the elements of the JNDI environment required for the test and control the transactional
+			behaviour of the examples. The annotations are:
+			<table>
+				<title>Specs2 Spring annotations</title>
+				<tgroup cols="2">
+					<colspec colwidth="6cm"/>
+					<thead>
+						<row>
+							<entry>Annotation</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><code>ContextConfiguration</code></entry>
+							<entry>Drives the way in which the Specs2 Spring extension will create the
+							<classname>ClassPathXmlApplicationContext</classname></entry>
+						</row>
+						<row>
+							<entry><code>Transactional</code></entry>
+							<entry>Indicates that every example should run in its own transaction, the <code>TransactionConfiguration</code> annotation
+							refines the transactional behaviour further</entry>
+						</row>
+						<row>
+							<entry><code>TransactionConfiguration</code></entry>
+							<entry>Tunes the transactional semantics that is applied to the transactional examples</entry>
+						</row>
+						<row>
+							<entry><code>DataSource</code></entry>
+							<entry>Adds the <code>javax.sql.DataSource</code> to the environment</entry>
+						</row>
+						<row>
+							<entry><code>MailSession</code></entry>
+							<entry>Adds the <code>javax.mail.Session</code> to the environment</entry>
+						</row>
+						<row>
+							<entry><code>TransactionManager</code></entry>
+							<entry>Adds the <code>javax.transaction.UserTransaction</code> to the environment</entry>
+						</row>
+						<row>
+							<entry><code>Jms</code></entry>
+							<entry>Adds the <code>javax.jms.ConnectionFactory</code> to the environment</entry>
+						</row>
+						<row>
+							<entry><code>JmsTopic</code></entry>
+							<entry>Adds the <code>javax.jms.Topic</code> to the environment</entry>
+						</row>
+						<row>
+							<entry><code>JmsQueue</code></entry>
+							<entry>Adds the <code>javax.jms.Queue</code> to the environment</entry>
+						</row>
+						<row>
+							<entry><code>WorkManager</code></entry>
+							<entry>Adds the <code>commonj.work.WorkManager</code> or <code>javax.spi.resource.work.WorkManager</code> to the environment</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+			</para>
+
+			<para>But there is one more annotation, <code>Jndi</code>, which aggregates all other annotations; moreover,
+			it lets you specify <emphasis>multiple</emphasis> <code>DataSource</code>s, <code>Queue</code>s, <code>Topic</code>s, ....
+			(Suppose you needed two <code>DataSource</code>s, you must use the <code>Jndi</code> annotation, you cannot annotate
+			your specification with two <code>DataSource</code> annotations.) Its usage is straight-forward:
+			<programlisting lang="java"><![CDATA[
+@Jndi(
+	dataSources = {
+		@DataSource(name = "java:comp/env/jdbc/test",
+			driverClass = JDBCDriver.class, url = "jdbc:hsqldb:mem:test"),
+		@DataSource(name = "java:comp/env/jdbc/external",
+			driverClass = JDBCDriver.class, url = "jdbc:hsqldb:mem:external")
+	},
+	mailSessions = @MailSession(name = "java:comp/env/mail/foo"),
+	transactionManager =
+		@TransactionManager(name = "java:comp/TransactionManager"),
+	jms = @Jms(
+		connectionFactoryName = "java:comp/env/jms/connectionFactory",
+		queues = {
+		  @JmsQueue(name = "java:comp/env/jms/requests"),
+		  @JmsQueue(name = "java:comp/env/jms/responses")},
+		topics = {
+		  @JmsTopic(name = "java:comp/env/jms/cacheFlush"),
+		  @JmsTopic(name = "java:comp/env/jms/ruleUpdate")}
+	),
+	workManagers = @WorkManager(name = "java:comp/env/work/WorkManager",
+								kind = WorkManager.Kind.CommonJ)
+)
+@Transactional
+@TransactionConfiguration(defaultRollback = true)
+@ContextConfiguration("classpath*:/META-INF/spring/module-context.xml")
+public class SomeTest ... {
+}
+			]]>
+			</programlisting>
+			</para>
+
+			<para id="annotated-annotation">In Java, we can use (for example) the <code>DataSource</code> annotation as the element of the
+			<code>dataSources</code> property of the <code>Jndi</code> annotation. Unfortunately,
+			we have used the annotation on a Java class. You cannot use annotations as elements of the properties
+			of an annotation in Scala. If you want to use the <code>Jndi</code> annotation in your Scala code, you have to
+			create an annotation and <emphasis>annotate the custom annotation with the <code>Jndi</code> annotation</emphasis>.
+			Typically, you will also include the <code>ContextConfiguration</code>, <code>Transactional</code> and
+			<code>TransactionDefinition</code> on the custom annotation and use the custom annotation throughout
+			your Specs2 code.
+			<programlisting lang="java"><![CDATA[
+@Jndi(
+	dataSources = {
+		@DataSource(name = "java:comp/env/jdbc/test",
+			driverClass = JDBCDriver.class, url = "jdbc:hsqldb:mem:test"),
+		@DataSource(name = "java:comp/env/jdbc/external",
+			driverClass = JDBCDriver.class, url = "jdbc:hsqldb:mem:external")
+	},
+	mailSessions = @MailSession(name = "java:comp/env/mail/foo"),
+	transactionManager =
+		@TransactionManager(name = "java:comp/TransactionManager"),
+	jms = @Jms(
+		connectionFactoryName = "java:comp/env/jms/connectionFactory",
+		queues = {
+		  @JmsQueue(name = "java:comp/env/jms/requests"),
+		  @JmsQueue(name = "java:comp/env/jms/responses")},
+		topics = {
+		  @JmsTopic(name = "java:comp/env/jms/cacheFlush"),
+		  @JmsTopic(name = "java:comp/env/jms/ruleUpdate")}
+	),
+	workManagers = @WorkManager(name = "java:comp/env/work/WorkManager",
+								kind = WorkManager.Kind.CommonJ)
+)
+@Transactional
+@TransactionConfiguration(defaultRollback = true)
+@ContextConfiguration("classpath*:/META-INF/spring/module-context.xml")
+@Retention(RetentionPolicy.RUNTIME)
+public @interface IntegrationTest {
+}]]>
+				</programlisting>
+			You now have the <code>IntegrationTest</code> annotation (in Java), which you can use on your Scala
+			specifications:
+				<programlisting lang="scala"><![CDATA[
+import org.specs2.spring.Specification
+...
+
+@IntegrationTest
+class SomeComponentSpec extends Specification {
+  ...
+}]]>
+				</programlisting>
+			</para>
+
+			<section>
+				<title>The ContextConfiguration annotation</title>
+				<para>The <code>ContextConfiguration</code> annotation is the core of the Specs2 Spring extension. This
+				annotation configures how Specs2 Spring is going to construct the Spring <interfacename>ApplicationContext</interfacename>.
+				Version 1.0 of Specs2 Scala examines only the <code>value</code> property; it ignores the <code>locations</code>,
+				<code>inheritLocations</code> and <code>loader</code> properties that you may be used to in your
+				Spring testing using the <code>spring-test</code> artifact.</para>
+
+				<para>The <code>String[] value</code> property defines the array of locations the context files for the
+				<classname>ClassPathXmlApplicationContext</classname> to use. For example, writing
+				<code>@ContextConfiguration(Array("classpath*:/a.xml", "classpath*:/b.xml"))</code> will instruct
+				the Specs2 Spring extension to create the Spring <interfacename>ApplicationContext</interfacename> by (in effect)
+				calling <code>new ClassPathXmlApplicationContext(new String[]{"classpath*:/a.xml", "classpath*:/b.xml"})</code>.</para>
+
+				<para>Once the <interfacename>ApplicationContext</interfacename> is constructed, the Specs2 Scala extension
+				will inject the configured dependencies into the specification. Just like ordinary Java Spring code, you
+				need to instruct the Specs2 Spring to perform the DI--in other words, use the <code>Autowired</code> annotation
+				on fields (<code>var</code>s in Scala) or on the setters. <remark>For completeness, you may not use
+				constructor injection.</remark>. A complete example of Specs2 Spring specification class that uses
+				the <code>ContextConfiguration</code> annotation could be:
+					<programlisting lang="scala"><![CDATA[
+import org.specs2.spring.Specification
+...
+
+@ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
+class SomeComponentSpec extends Specification {
+  @Autowired var someComponent: SomeComponent = _
+  @Autowired var hibernateTemplate: HibernateTemplate = _
+
+  "specification" in {
+    ...
+    success
+  }
+}]]>
+					</programlisting>
+				Notice in particular the <code>import org.specs2.spring.Specification</code>, application of the
+				<code>@ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))</code> and the
+				two variables marked with the <code>Autowired</code> annotation. When you run the test, by the time
+				the code of your examples (the <code>"specification" in { ... }</code>) runs, the variables will have
+				been injected.
+				</para>
+			</section>
+
+		</section>
+
+	</section>
+
+	<section id="best-practices">
+		<title>Best Practices</title>
+
+		<para>... One of the best practices for writing specifications that are split accross multiple
+		classes is to aggregate all the annotations into a single annotation.</para>
 	</section>
 
 </chapter>

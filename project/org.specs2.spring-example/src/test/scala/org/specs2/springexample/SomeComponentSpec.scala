@@ -20,9 +20,6 @@ import org.hsqldb.jdbc.JDBCDriver
  * @author janmachacek
  */
 @IntegrationTest
-@DataSource(name = "java:comp/env/jdbc/test",
-  driverClass = classOf[JDBCDriver], url = "jdbc:hsqldb:mem:test")
-@ContextConfiguration(Array("cpass"))
 class SomeComponentSpec extends Specification with HibernateDataAccess with BeanTables {
   @Autowired var someComponent: SomeComponent = _
   @Autowired var hibernateTemplate: HibernateTemplate = _
