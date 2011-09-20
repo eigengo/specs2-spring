@@ -430,7 +430,8 @@ class SomeComponentSpec extends Specification {
 import org.specs2.spring.Specification
 ...
 
-@ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
+@ContextConfiguration(
+  Array("classpath*:/META-INF/spring/module-context.xml"))
 class SomeComponentSpec extends Specification {
   @Autowired var someComponent: SomeComponent = _
   @Autowired var hibernateTemplate: HibernateTemplate = _
@@ -449,6 +450,350 @@ class SomeComponentSpec extends Specification {
 				</para>
 			</section>
 
+			<section>
+				<title>The DataSource annotation</title>
+				<para>While the <code>ContextConfiguration</code> annotation drives the setup of the Spring
+				<interfacename>ApplicationContext</interfacename>, the JNDI annotations inject the appropriate
+				values to the environment for the test. The first JNDI annotation is <code>DataSource</code>.</para>
+
+				<para>The <code>DataSource</code> annotations adds the <interfacename>javax.sql.DataSource</interfacename>
+				object to JNDI; the properties of the annotations specify what JDBC driver to use, set the RDBMS connection
+				parameters and finally define the name for the <interfacename>javax.sql.DataSource</interfacename> in the
+				environment. If you include the <code>TransactionManager</code>, the <interfacename>DataSource</interfacename>
+				will be an XA (two-phase commit) one; otherwise, it will be the ordinary one.</para>
+
+				<para>The following code snippet shows typical configuration of the <code>DataSource</code> annotaiton:
+					<programlisting lang="java"><![CDATA[
+@DataSource(
+	name = "java:comp/env/jdbc/test",
+	driverClass = JDBCDriver.class,
+	url = "jdbc:hsqldb:mem:test",
+	username = "sa",
+	password = "")]]>
+					</programlisting>
+				The code listing shows all properties of the <code>DataSource</code> annotation.
+				</para>
+				<table>
+					<title>Properties of the DataSource annotation</title>
+					<tgroup cols="2">
+						<colspec colwidth="4cm"/>
+						<thead>
+							<row>
+								<entry>Property</entry>
+								<entry>Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><code>name</code></entry>
+								<entry>The name in JNDI environment that the created <interfacename>javax.sql.DataSource</interfacename>
+								should be registered under. This name must match the <code>jndi-name</code> of the <code>jee:jndi-lookup</code>
+								element of the Spring configuration file.</entry>
+							</row>
+							<row>
+								<entry><code>driverClass</code></entry>
+								<entry>The class of the JDBC driver (must be subtype of <interfacename>java.sql.Driver</interfacename></entry>
+							</row>
+							<row>
+								<entry><code>url</code></entry>
+								<entry>The JDBC connection URL; this string will vary according to the used JDBC driver.</entry>
+							</row>
+							<row>
+								<entry><code>username</code></entry>
+								<entry>The username to be used to create the connection to the RDBMS.</entry>
+							</row>
+							<row>
+								<entry><code>password</code></entry>
+								<entry>The password to be used to create the connection to the RDBMS.</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+				<para>The complete example that ties the <code>DataSource</code> annotation and the Spring
+				configuration file is simply:
+					<programlisting lang="java"><![CDATA[
+import org.specs2.spring.Specification
+import org.hsqldb.jdbc.JDBCDriver
+...
+
+@DataSource(
+	name = "java:comp/env/jdbc/test",
+	driverClass = classOf[JDBCDriver],
+	url = "jdbc:hsqldb:mem:test",
+	username = "sa",
+	password = "")
+@ContextConfiguration(
+	Array("classpath*:/META-INF/spring/module-context.xml"))
+class SomeSpecification extends Specification {
+	...
+}]]>
+					</programlisting>
+					The annotation on the specification class instructs the Specs2 Spring to add the <interfacename>javax.sql.DataSource</interfacename>
+					(that connects to HSQL DB using the <code>org.hsqldb.jdbc.JDBCDriver</code>, URL <code>jdbc:hsqldb:mem:test</code> and
+					credentials <code>sa/</code>) <emphasis>before</emphasis> constructing the Spring <interfacename>ApplicationContext</interfacename>
+					using the configuration files located at <code>/META-INF/spring/module-context.xml</code>. To consume
+					the registered JNDI entry in one of the context files, simply use the <code>jee:jndi-lookup</code> element.
+					<programlisting lang="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jee
+		http://www.springframework.org/schema/jee/spring-jee.xsd">
+
+	<context:component-scan base-package="org.specs2.springexample"/>
+	<jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/test"
+		expected-type="javax.sql.DataSource"/>
+
+</beans>]]>
+					</programlisting>
+					In the body of the specification, you can now request autowiring of the <code>dataSource</code> bean
+					(in addition to any beans that may be discovered by the <code>context:component-scan</code>).
+				</para>
+			</section>
+			
+			<section>
+				<title>The TransactionManager annotation</title>
+				<para>It is typical to use some kind of transactional semantics in Spring applications. Spring Framework
+				abstracts out the details of how it is going to achieve this transactional behaviour by defining the
+				<interfacename>PlatformTransactionManager</interfacename> interface and providing several implementations
+				of the interface. There are, to name a few, <classname>DataSourceTransactionManager</classname>,
+				<classname>JpaTransactionManager</classname>, <classname>HibernateTransactionManager</classname> and many
+				other <emphasis>local</emphasis> transaction managers.</para>
+				<para>Imagine now that you would like the transaction to span across multiple transactional resources,
+				for example two RDBMSs, JMS queues and topics. In that scenario, these local transaction managers will not
+				work: being <emphasis>local</emphasis>, they can only manage the transactional semantics on a single
+				resource. The only transaction manager that can apply transactional semantics to <emphasis>multiple</emphasis>
+				resources is the <classname>JtaTransactionManager</classname>. As the name suggests, the
+				<classname>JtaTransactionManager</classname> is the implementation of the <interfacename>PlatformTransactionManager</interfacename>
+				that uses the Java transaction API-compliant manager. The manager is the implementation of the
+				<interfacename>javax.transaction.TransactionManager</interfacename> or <interfacename>javax.transaction.UserTransaction</interfacename>.
+				The Specs2 Spring includes support for the global transaction manager; if you use the
+				<code>TransactionManager</code> annotation, Specs2 Spring will also create all <code>DataSource</code>s
+				that are aware of the global transaction manager.
+				</para>
+				<para>The <code>TransactionManager</code> annotation includes only one property, <code>name</code>.
+					<table>
+						<title>Properties of the TransactionManager annotation</title>
+						<tgroup cols="2">
+							<colspec colwidth="4cm"/>
+							<thead>
+								<row>
+									<entry>Property</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><code>name</code></entry>
+									<entry>The name in JNDI environment that the created <interfacename>javax.transaction.UserTransaction</interfacename>
+									should be registered under. Typically, the value of this property is <code>java:comp/TransactionManager</code></entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>Spring's <code>&lt;tx:jta-transaction-manager /&gt;</code> automatically scans the JNDI environment
+				for the JTA elements under <code>java:comp/TransactionManager</code> name. This makes typical usage
+				of this annotation very simple:
+					<programlisting lang="java"><![CDATA[
+import org.specs2.spring.Specification
+import org.hsqldb.jdbc.JDBCDriver
+...
+
+@DataSource(
+	name = "java:comp/env/jdbc/test",
+	driverClass = classOf[JDBCDriver],
+	url = "jdbc:hsqldb:mem:test",
+	username = "sa",
+	password = "")
+@TransactionManager(name = "java:comp/TransactionManager")
+@ContextConfiguration(
+	Array("classpath*:/META-INF/spring/module-context.xml"))
+class SomeSpecification extends Specification {
+	...
+}]]>
+					</programlisting>
+					The annotation on the specification class instructs the Specs2 Spring to add the <interfacename>javax.transaction.UserTransaction</interfacename>
+					to the environment. To consume the registered JNDI entry in one of the context files, simply use the
+					<code>tx:jta-transaction-manager</code> element.
+					<programlisting lang="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jee
+		http://www.springframework.org/schema/jee/spring-jee.xsd">
+
+	<context:component-scan base-package="org.specs2.springexample"/>
+	<jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/test"
+		expected-type="javax.sql.DataSource"/>
+	<tx:jta-transaction-manager />
+	<tx:annotation-driven />
+
+</beans>]]>
+					</programlisting>
+					In the body of the specification, you now have the <code>transactionManager</code> bean that has been
+					obtained by looking up the <code>java:comp/TransactionManager</code> name. Typically, you will
+					also need to include the <code>tx:annotation-driven</code> element to weave in the transactional
+					advices, allowing you to use the <code>Transactional</code> annotation on types and methods.
+					(And, ideally, you will use load- or compile-time weaving; tuning the <code>tx:annotation-driven</code>
+					element by specifying the mode attribute: <code>&lt;tx:annotation-driven mode="aspectj"/&gt;</code>.)
+				</para>
+			</section>
+			<section>
+				<title>JMS annotations</title>
+				<para>The JMS infrastructure combines multiple queues and topics under a connection factory. The
+				<interfacename>javax.jms.ConnectionFactory</interfacename> is the main "access point" to the
+				JMS infrastructure. Spring applications make use of the connection factory to register code
+				to be called whenever a message appears on a queue; the code of JMS-based Spring applications
+				typically also needs to have access to the queues and topics.</para>
+				<para>The <interfacename>javax.jms.ConnectionFactory</interfacename>, <interfacename>javax.jms.Queue</interfacename>
+				and <interfacename>javax.jms.Topic</interfacename> objects are usually looked up from JNDI.</para>
+				<para>The basic setup of the JMS infrastructure therefore requires that you use the <code>Jms</code> annotation,
+				specifying the name for the connection factory and either a <code>JmsTopic</code> and/or <code>JmsQueue</code> that
+				define the JMS topic and queue, respectively. All three annotations only require you to set the the name in the
+				environment (and which must match the <code>jndi-name</code> attribute of the <code>jee:jndi-lookup</code> element).</para>
+				<para>The following code snippet shows typical configuration of the JMS annotaitons:
+					<programlisting lang="java"><![CDATA[
+@Jms(connectionFactoryName = "java:comp/env/jms/connectionFactory")
+@JmsQueue(name = "java:comp/env/jms/requests")
+@JmsTopic(name = "java:comp/env/jms/cacheFlush")
+class SomeSpecification extends Specification {
+  ...
+}]]>
+					</programlisting>
+				Exploring the properties of each annotation further, we have:
+					<table>
+						<title>Properties of the JMS annotation</title>
+						<tgroup cols="2">
+							<colspec colwidth="6cm"/>
+							<thead>
+								<row>
+									<entry>Property</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><code>connectionFactoryName</code></entry>
+									<entry>The name in JNDI environment that the created <interfacename>javax.jms.ConnectionFactory</interfacename>
+									should be registered under.</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+					<table>
+						<title>Properties of the JMS queue</title>
+						<tgroup cols="2">
+							<colspec colwidth="4cm"/>
+							<thead>
+								<row>
+									<entry>Property</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><code>name</code></entry>
+									<entry>The name in JNDI environment that the created <interfacename>javax.jms.Queue</interfacename>
+									should be registered under.</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+					<table>
+						<title>Properties of the JmsTopic annotation</title>
+						<tgroup cols="2">
+							<colspec colwidth="4cm"/>
+							<thead>
+								<row>
+									<entry>Property</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><code>name</code></entry>
+									<entry>The name in JNDI environment that the created <interfacename>javax.jms.Topic</interfacename>
+									should be registered under.</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>Expanding the previous examples with the JMS annotations, we now have:
+					<programlisting lang="java"><![CDATA[
+import org.specs2.spring.Specification
+import org.hsqldb.jdbc.JDBCDriver
+...
+
+@DataSource(
+	name = "java:comp/env/jdbc/test",
+	driverClass = classOf[JDBCDriver],
+	url = "jdbc:hsqldb:mem:test",
+	username = "sa",
+	password = "")
+@Jms(connectionFactoryName = "java:comp/env/jms/connectionFactory")
+@JmsQueue(name = "java:comp/env/jms/requests")
+@JmsTopic(name = "java:comp/env/jms/cacheFlush")
+@ContextConfiguration(
+	Array("classpath*:/META-INF/spring/module-context.xml"))
+class SomeSpecification extends Specification {
+	...
+}]]>
+				</programlisting>
+				In addition to the RDBMS and the global transaction manager, we define a JMS infrastructure and one
+				queue and one topic. We consume the newly defined elements in the Spring configuration file
+				using the <code>jee:jndi-lookup</code> element.
+					<programlisting lang="xml"><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jee
+		http://www.springframework.org/schema/jee/spring-jee.xsd">
+
+	<context:component-scan base-package="org.specs2.springexample"/>
+	<jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/test"
+		expected-type="javax.sql.DataSource"/>
+	<tx:jta-transaction-manager />
+	<tx:annotation-driven />
+	<jee:jndi-lookup id="connectionFactory"
+		jndi-name="java:comp/env/jms/connectionFactory"
+		expected-type="javax.jms.ConnectionFactory"/>
+	<jee:jndi-lookup id="requests"
+		jndi-name="java:comp/env/jms/requests"
+		expected-type="javax.jms.Queue"/>
+	<jee:jndi-lookup id="cacheFlush"
+		jndi-name="java:comp/env/jms/cacheFlush"
+		expected-type="javax.jms.Topic"/>
+
+</beans>]]>
+					</programlisting>
+					Note that in the sample code, the global transaction manager (registered using the
+					<code>TransactionManager</code> annotation) can manage transactions over all transactional resources;
+					in this case, the RDBMS <emphasis>and</emphasis> the JMS queue or topic.
+				</para>
+				<para>Most applications require more than one queue or topic; some applications even require
+				more than one connection factory. In that situation, you must use the <emphasis>annotated annotation</emphasis>
+				approach we already demonstrated (see <xref linkend="annotated-annotation"/> or **advanced-xref**).</para>
+			</section>
 		</section>
 
 	</section>
