@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="large-systems">
+	<title>Testing large systems using Specs2 Spring</title>
+
+	<section>
+		<title>What are large systems?</title>
+		<para>Before we explore the intricacies of the code involved in testing large systems, we need to explore
+			what we mean by <emphasis>large system</emphasis>.
+		</para>
+	</section>
+
+</chapter>

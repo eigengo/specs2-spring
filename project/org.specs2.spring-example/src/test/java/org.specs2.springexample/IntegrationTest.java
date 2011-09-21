@@ -28,7 +28,8 @@ import java.lang.annotation.RetentionPolicy;
 				topics = {@JmsTopic(name = "java:comp/env/jms/cacheFlush"),
 						  @JmsTopic(name = "java:comp/env/jms/ruleUpdate")}
 		),
-		workManagers = @WorkManager(name = "java:comp/env/work/WorkManager", kind = WorkManager.Kind.CommonJ)
+		workManagers = @WorkManager(name = "java:comp/env/work/WorkManager", kind = WorkManager.Kind.CommonJ,
+			maximumThreads = 5, minimumThreads = 3)
 )
 @Transactional
 @TransactionConfiguration(defaultRollback = true)

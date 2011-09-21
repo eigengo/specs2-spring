@@ -49,7 +49,7 @@
 	<toc/>
 
 	<part>
-		<title>Overview of Specs2 Scala</title>
+		<title>Overview of Specs2 Spring</title>
 		<xi:include href="introduction.xml"
 					xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
@@ -57,6 +57,8 @@
 	<part>
 		<title>Using Specs2 Spring</title>
 		<xi:include href="using.xml"
+					xmlns:xi="http://www.w3.org/2001/XInclude" />
+		<xi:include href="large-systems.xml"
 					xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 

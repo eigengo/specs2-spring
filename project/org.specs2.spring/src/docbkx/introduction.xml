@@ -54,7 +54,7 @@ class SomeComponentSpec extends Specification
 		There are several things at play here: the custom <code>IntegrationTest</code> annotation defines the environment for the
 		Spring components under test, the <code>Autowired</code> annotation on the <code>someComponent</code> variable
 		tells Specs2 Spring to inject the constructed bean. Finally, the example sets up some test data using <code>BeanTables</code>,
-		bulk-inserts them using the Hibernate ORM (method <code>insert[T]: (T => Result)</code> in <code>HibernateDataAccess</code>. Once
+		bulk-inserts them using the Hibernate ORM (method <code>insert[T]: (T => Result)</code> in <code>HibernateDataAccess</code>). Once
 		the set-up work is done, we proceed to verify the correct behaviour of the <code>getByUsername</code> method in <code>SomeComponent</code>.
 		Notably, the <code>"getByUsename finds existing Rider"</code> example runs in its own transaction. When the example
 		completes (whether successfully or unsuccessfully), the transaction is rolled back!
@@ -149,11 +149,18 @@ class SomeComponentSpec extends Specification
 
 			<programlisting language="java"><![CDATA[
 class SomeTest extends Specification {
-	// set-up JNDI environment
 
-	"specification" in {
-		success
-	}
+  "specification" in {
+    // set-up JNDI environment
+    // code that depends (consumes) the entries from JNDI
+    success
+  }
+
+  "another specification" in {
+    // set-up JNDI environment
+    // code that depends (consumes) the entries from JNDI
+    success
+  }
 }
 			]]></programlisting>
 		</section>
@@ -169,15 +176,25 @@ class SomeTest extends Specification {
 
 			<programlisting language="java"><![CDATA[
 class SomeTest extends Specification {
-	// set-up JNDI environment
-	ApplicationContext ac = new ClassPathXmlApplicationContext("...");
-	val someService = ac.getBean(SomeService.class);
+  // set-up JNDI environment
 
-	"specification" in {
-		success
-	}
-}
-			]]></programlisting>
+  "specification" in {
+    // set-up JNDI environment
+    // the Spring application that consumes the JNDI entries
+    val someService = new ClassPathXmlApplicationContext("...").
+      getBean(classOf[SomeService])
+    success
+  }
+
+  "another specification" in {
+    // set-up JNDI environment
+    // the Spring application that consumes the JNDI entries
+    val someService = new ClassPathXmlApplicationContext("...").
+      getBean(classOf[SomeService])
+    success
+  }
+}]]>
+			</programlisting>
 
 			<para>Additionally, we would like to examine whether the specifications hold
 			(in the examples) in a way that isolates each example; when the example

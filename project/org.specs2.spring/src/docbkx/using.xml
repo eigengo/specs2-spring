@@ -44,11 +44,11 @@
 		</section>
 		-->
 		<section>
-			<title>Understanding the Specs2 annotations</title>
+			<title>Understanding the Specs2 setup annotations</title>
 
-			<para>The annotations on a Specs2 Spring test control &amp; define how the Spring <interfacename>ApplicationContext</interfacename>
-			is constructed, define the elements of the JNDI environment required for the test and control the transactional
-			behaviour of the examples. The annotations are:
+			<para id="setup-annotations">The annotations on a Specs2 Spring test control &amp; define how the Spring <interfacename>ApplicationContext</interfacename>
+			is constructed, define the elements of the JNDI environment required for the test. (See <xref linkend="behavioural-annotations"/>).
+			The set-up annotations are:
 			<table>
 				<title>Specs2 Spring annotations</title>
 				<tgroup cols="2">
@@ -66,21 +66,8 @@
 							<classname>ClassPathXmlApplicationContext</classname></entry>
 						</row>
 						<row>
-							<entry><code>Transactional</code></entry>
-							<entry>Indicates that every example should run in its own transaction, the <code>TransactionConfiguration</code> annotation
-							refines the transactional behaviour further</entry>
-						</row>
-						<row>
-							<entry><code>TransactionConfiguration</code></entry>
-							<entry>Tunes the transactional semantics that is applied to the transactional examples</entry>
-						</row>
-						<row>
 							<entry><code>DataSource</code></entry>
 							<entry>Adds the <code>javax.sql.DataSource</code> to the environment</entry>
-						</row>
-						<row>
-							<entry><code>MailSession</code></entry>
-							<entry>Adds the <code>javax.mail.Session</code> to the environment</entry>
 						</row>
 						<row>
 							<entry><code>TransactionManager</code></entry>
@@ -99,8 +86,21 @@
 							<entry>Adds the <code>javax.jms.Queue</code> to the environment</entry>
 						</row>
 						<row>
+							<entry><code>MailSession</code></entry>
+							<entry>Adds the <code>javax.mail.Session</code> to the environment</entry>
+						</row>
+						<row>
 							<entry><code>WorkManager</code></entry>
 							<entry>Adds the <code>commonj.work.WorkManager</code> or <code>javax.spi.resource.work.WorkManager</code> to the environment</entry>
+						</row>
+						<row>
+							<entry><code>Transactional</code></entry>
+							<entry>Indicates that every example should run in its own transaction, the <code>TransactionConfiguration</code> annotation
+							refines the transactional behaviour further</entry>
+						</row>
+						<row>
+							<entry><code>TransactionConfiguration</code></entry>
+							<entry>Tunes the transactional semantics that is applied to the transactional examples</entry>
 						</row>
 					</tbody>
 				</tgroup>
@@ -582,15 +582,158 @@ class SomeSpecification extends Specification {
 				more than one connection factory. In that situation, you must use the <emphasis>annotated annotation</emphasis>
 				approach we already demonstrated (see <xref linkend="annotated-annotation"/> or **advanced-xref**).</para>
 			</section>
+			<section>
+				<title>The MailSession annotation</title>
+				<para>If you are sending e-mails from your application, you will need the <classname>javax.mail.Session</classname>, which
+					allows you to construct <classname>javax.mail.Message</classname> (including the complex multipart messages,
+					deal with attachments and many other e-mail tasks). Just like all other JNDI annotations, you need to
+					specify the name for the entry in JNDI and configure the remaining properties of the Javamail session.
+				</para>
+				<para>The following code snippet shows typical configuration of the <code>MailSession</code> annotaiton:
+					<programlisting language="java"><![CDATA[
+@MailSession(
+	name = "java:comp/env/mail/foo",
+	properties = Array("mail.smtp.host=localhost", "mail.mime.charset=UTF-8"))
+]]>
+					</programlisting>
+					Exploring the properties of the annotation further, we have:
+					<table>
+						<title>Properties of the MailSession annotation</title>
+						<tgroup cols="2">
+							<colspec colwidth="4cm"/>
+							<thead>
+								<row>
+									<entry>Property</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><code>name</code></entry>
+									<entry>The name in JNDI environment that the created <classname>javax.mail.Session</classname>
+									should be registered under.</entry>
+								</row>
+								<row>
+									<entry><code>properties</code></entry>
+									<entry>The array of <code>String</code>s that represent the Javamail properties, in form of
+									<emphasis>property-key</emphasis>=<emphasis>property-value</emphasis>. For example, if you wish
+									to specify the <code>mail.smtp.host</code> to <code>localhost</code> and <code>mail.mime.charset</code>
+									to <code>UTF-8</code>, you write <code>properties = Array("mail.smtp.host=localhost", "mail.mime.charset=UTF-8")</code></entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>To consume the <classname>javax.mail.Session</classname> in your Spring application, use the
+				familiar <code>jee:jndi-lookup</code> element and make sure that the value of the <code>jndi-name</code>
+				attribute matches the value of the <code>name</code> property of the <code>MailSession</code> annotation.</para>
+			</section>
+			<section>
+				<title>The WorkManager annotation</title>
+				<para>Finally, some applications use one of the two common <interfacename>WorkManager</interfacename> implementations
+					to submit work to [a pool of] threads. Typically, the application server maintains and monitors the <interfacename>WorkManager</interfacename>
+					instance. The application servers allow the administrators to configure the threads that should become
+					parts of the <interfacename>WorkManager</interfacename> instances. Finally, the application servers usually
+					then report on the load of the <interfacename>WorkManager</interfacename>. All that is left to us is
+					to consume the <interfacename>WorkManager</interfacename> and use it in our application.
+					<remark>Having the application server maintain the <interfacename>WorkManager</interfacename> instances
+					is far better approach than creating your own thread pools within your application.</remark>
+				</para>
+				<para>To configure the <interfacename>WorkManager</interfacename>, all you need to specify is the JNDI name and
+					set the remaining properties:
+					<programlisting language="java"><![CDATA[
+@WorkManager(name = "java:comp/env/work/WorkManager",
+	kind = WorkManager.Kind.CommonJ,
+	maximumThreads = 5,
+	minimumThreads = 3)
+]]>
+					</programlisting>
+					Exploring the properties of the annotation further, we have:
+					<table>
+						<title>Properties of the WorkManager annotation</title>
+						<tgroup cols="2">
+							<colspec colwidth="4cm"/>
+							<thead>
+								<row>
+									<entry>Property</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><code>name</code></entry>
+									<entry>The name in JNDI environment that the created <classname>javax.mail.Session</classname>
+									should be registered under.</entry>
+								</row>
+								<row>
+									<entry><code>kind</code></entry>
+									<entry>Defines the kind of the created <interfacename>WorkManager</interfacename> instance.
+										If the value is <code>WorkManager.Kind.CommonJ</code>, then the instance will implement the
+										the <interfacename>commonj.work.WorkManager</interfacename>.
+										If the value is <code>WorkManager.Kind.Javax</code>, then the instance will implement the
+										<interfacename>javax.spi.resource.work.WorkManager</interfacename>.</entry>
+								</row>
+								<row>
+									<entry><code>maximumThreads</code></entry>
+									<entry>The maximum number of threads the created work manager should allow to be created.
+									Must be greater than 1 and greater than <code>minimumThreads</code>.</entry>
+								</row>
+								<row>
+									<entry><code>minimumThreads</code></entry>
+									<entry>The minimum number of threads the created work manager should create.
+									Must be greater than 0 and smaller than <code>minimumThreads</code>.</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+				</para>
+				<para>To consume the work manager in your Spring application, use the familiar <code>jee:jndi-lookup</code>
+				element and make sure that the value of the <code>jndi-name</code> attribute matches the value of the
+				<code>name</code> property of the <code>WorkManager</code> annotation.</para>
+			</section>
 		</section>
+		<section>
+			<title>Understanding the Specs2 behavioural annotations</title>
 
-	</section>
-
-	<section id="best-practices">
-		<title>Best Practices</title>
-
-		<para>... One of the best practices for writing specifications that are split accross multiple
-		classes is to aggregate all the annotations into a single annotation.</para>
+			<para id="behavioural-annotations">The annotations on a Specs2 Spring behavioural annotations control the runtime of the examples. The behaviour
+				defines the transactional semantics that will be applied to the examples. The transactional example
+				behavioural support needs to have access to the <interfacename>PlatformTransactionManager</interfacename> bean.
+				This <interfacename>PlatformTransactionManager</interfacename> can be any of its implementations,
+				even the local one, if it is appropriate for your code. Typically, though, you will use the <code>TransactionManager</code>
+				annotation together with the <code>tx:jta-transaction-manager</code> element, which exposes the
+				transaction manager that the Specs2 Spring will use to apply the transactional behaviour to the examples.
+				(See <xref linkend="setup-annotations"/>).
+			<table>
+				<title>Specs2 Spring behavioural annotations</title>
+				<tgroup cols="2">
+					<colspec colwidth="6cm"/>
+					<thead>
+						<row>
+							<entry>Annotation</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><code>Transactional</code></entry>
+							<entry>Indicates that every example should run in its own transaction, the <code>TransactionConfiguration</code> annotation
+							refines the transactional behaviour further</entry>
+						</row>
+						<row>
+							<entry><code>TransactionConfiguration</code></entry>
+							<entry>Tunes the transactional semantics that is applied to the transactional examples</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+			When you annotate your test class with the <code>Transactional</code> annotation, every example will run
+			in its own transaction and the transaction will be rolled back automatically when the example finishes. You
+			can tune whether the transaction rolls back or commits by using the <code>defaultRollback</code> property
+			of the <code>TransactionConfiguration</code> annotation. If <code>defaultRollback</code> is <code>false</code>,
+			the transaction will <emphasis>commit</emphasis> when the example finishes; if the value is <code>false</code>
+			(the default), the transaction will roll back.
+			</para>
+		</section>
 	</section>
 
 </chapter>
