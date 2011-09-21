@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.springframework.transaction.PlatformTransactionManager
 import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefinition
-import org.specs2.specification.{Fragment, Example}
+import org.specs2.specification.Example
 
 /**
  * Mutable Specification that sets up the JNDI environment and autowires the fields / setters of its subclasses.

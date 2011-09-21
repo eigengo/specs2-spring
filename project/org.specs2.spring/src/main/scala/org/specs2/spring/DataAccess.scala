@@ -77,7 +77,7 @@ trait HibernateDataAccess {
    * @param f function that operates on the instance {@code T}; this function will run before the Hibernate save.
    * @return function that inserts the object and returns Success when the insert succeeds.
    */
-  def insert[T](f: T => Any): (T => Result) = {
+  def insert[T, R](f: T => R): (T => Result) = {
     {t =>
       f(t)
       getHibernateTemplate.saveOrUpdate(t)

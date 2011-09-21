@@ -32,6 +32,8 @@
 
 	<modules>
 		<module>org.specs2.spring</module>
+		<module>org.specs2.spring.web</module>
+		<module>org.specs2.spring.documentation</module>
 
 		<module>org.specs2.spring-example</module>
 	</modules>
