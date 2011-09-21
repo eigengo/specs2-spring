@@ -11,7 +11,7 @@ object Tester {
     val files: Kleisli[List, String, File] = ☆((dir: String) => new File(dir).listFiles().toList )
     def lengths: Kleisli[List, File, Int] = ☆((f: File) => {
       if (f.isDirectory) lengths =<< f.listFiles().toList
-      else Source.fromFile(f).getLines().toList ∘ (l => l.length())
+      else Source.fromFile(f).getLines().toList ∘ (_.length)
     })
 
     val lineLengths = files >=> lengths

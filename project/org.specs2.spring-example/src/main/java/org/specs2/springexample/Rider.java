@@ -2,6 +2,7 @@ package org.specs2.springexample;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,6 +19,9 @@ public class Rider {
 	@NotNull
 	private String name;
 	private String teamName;
+	@NotNull
+	@Size(min = 2, max = 100)
+	private String username;
 	private int age;
 	@OneToMany(cascade = CascadeType.ALL)
 	private Set<Entry> entries = new HashSet<Entry>();
@@ -75,12 +79,21 @@ public class Rider {
 		this.entries = entries;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("Rider");
 		sb.append("{id=").append(id);
 		sb.append(", version=").append(version);
+		sb.append(", username='").append(username).append('\'');
 		sb.append(", name='").append(name).append('\'');
 		sb.append(", teamName='").append(teamName).append('\'');
 		sb.append(", age=").append(age);

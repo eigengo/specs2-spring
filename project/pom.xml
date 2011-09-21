@@ -122,6 +122,58 @@
 			<plugin>
 				<groupId>com.agilejava.docbkx</groupId>
 				<artifactId>docbkx-maven-plugin</artifactId>
+				<version>2.0.13</version>
+				<configuration>
+					<xincludeSupported>true</xincludeSupported>
+					<highlightSource>1</highlightSource>
+					<foCustomization>${project.basedir}/src/docbkx/styles/pdf/custom.xsl</foCustomization>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.docbook</groupId>
+						<artifactId>docbook-xml</artifactId>
+						<version>4.4</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
+						<groupId>net.sf.xslthl</groupId>
+						<artifactId>xslthl</artifactId>
+						<version>2.0.1</version>
+						<scope>runtime</scope>
+					</dependency>
+					<dependency>
+						<groupId>net.sf.offo</groupId>
+						<artifactId>fop-hyph</artifactId>
+						<version>1.2</version>
+						<scope>runtime</scope>
+					</dependency>
+					<!--
+					<dependency>
+						<groupId>net.sf.docbook</groupId>
+						<artifactId>docbook-xml</artifactId>
+						<version>5.0-all</version>
+						<classifier>resources</classifier>
+						<type>zip</type>
+						<scope>runtime</scope>
+					</dependency>
+					-->
+				</dependencies>
+
+				<executions>
+					<execution>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>generate-html</goal>
+							<goal>generate-pdf</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!--
+			<plugin>
+				<groupId>com.agilejava.docbkx</groupId>
+				<artifactId>docbkx-maven-plugin</artifactId>
+				<version>2.0.13</version>
 				<dependencies>
 					<dependency>
 						<groupId>org.docbook</groupId>
@@ -141,7 +193,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			-->
 		</plugins>
 	</build>
 
