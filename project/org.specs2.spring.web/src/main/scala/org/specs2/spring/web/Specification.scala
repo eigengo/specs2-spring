@@ -84,3 +84,59 @@ trait Specification extends org.specs2.spring.Specification {
 	*/
 
 }
+
+/*
+import org.specs2.spring.web.Specification
+
+@WebTest
+class UserControllerTest extends Specification {
+	@Autowired var UserService userService
+
+	"create, view and edit"() in {
+		val username = "janm"
+		post("/users.html", Map("username" -> username, "fullName" -> "Jan Machacek"))
+		val wo = get("/users/1.html")
+		wo << ("#fullName", "Jan")
+		post(wo)
+
+		val user = this.userService.getByUsername(username)
+		user.getFullName must_==("Jan")
+	}
+
+	"posting with validation"() in {
+		val username = "janm"
+		val fullName = "Jan Machacek"
+
+		val wp = post("/users.html", Map("username" -> "x", "fullName" -> "")
+		wp.hasFieldErrorFor("fullName") must_== (true)
+		wp.hasFieldErrorFor("username") must_== (true)
+
+		// correct the errors, submit again
+		wp << ("#fullName", fullName)
+		wp << ("#username", username)
+		post(wp)
+
+		// because of the second valid post, we should now have the user in the DB
+		val user = this.userService.getByUsername(username)
+		user.getFullName must_== (fullName)
+	}
+
+}
+
+@Transactional
+@TransactionConfiguration(defaultRollback = true)
+@WebContextConfiguration(
+	value = "/WEB-INF/sw-servlet.xml",
+	contextConfiguration = @ContextConfiguration("classpath*:/META-INF/spring/module-context.xml")
+)
+@Jndi(
+		dataSources = @DataSource(name = "java:comp/env/jdbc/test",
+				driverClass = JDBCDriver.class, url = "jdbc:hsqldb:mem:test"),
+		beans = @Bean(name = "java:comp/env/bean/hibernateProperties", type = HibernateProperties.class)
+)
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface WebTest {
+}
+
+*/

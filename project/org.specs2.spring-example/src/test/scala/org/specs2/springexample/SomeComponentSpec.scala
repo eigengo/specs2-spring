@@ -36,7 +36,6 @@ class SomeComponentSpec extends Specification with HibernateDataAccess with Bean
       30  ! "anic"      ! "Ani"  ! "Team GB"  |> insert[Rider]
 
     this.someComponent.getByUsername("janm").getName must_== ("Jan")
-
   }
 
   /**

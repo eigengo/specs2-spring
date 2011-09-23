@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author janm
  */
 class TracingDispatcherServlet extends DispatcherServlet {
+	private static final long serialVersionUID = 6724861164448416351L;
 	static final String MODEL_AND_VIEW_KEY = "__**MAV**__";
 	private ModelAndViewRecordingInterceptor interceptor = new ModelAndViewRecordingInterceptor();
 
