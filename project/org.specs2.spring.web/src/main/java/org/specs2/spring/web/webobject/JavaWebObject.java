@@ -21,13 +21,13 @@ import java.util.Map;
 /**
  * @author janm
  */
-public class WebObject {
+public class JavaWebObject {
 	private final byte[] content;
 	private final Map<String, Object> model;
 	private List<HtmlForm> forms;
 
-	public WebObject(HttpServletRequest request, HttpServletResponse response,
-					 byte[] content, ModelAndView modelAndView) {
+	public JavaWebObject(HttpServletRequest request, HttpServletResponse response,
+						 byte[] content, ModelAndView modelAndView) {
 		if (modelAndView != null) {
 			this.model = modelAndView.getModel();
 		} else {

@@ -8,6 +8,19 @@ trait Specification extends org.specs2.spring.Specification {
   override def is: org.specs2.specification.Fragments = {
     super.is
   }
+
+  def post(wo: WebObject) = {
+    new WebObject
+  }
+  
+  def post(url: String, params: Map[String, Any]) = {
+    new WebObject
+  }
+
+  def get(url: String) = {
+    new WebObject
+  }
+
   /*
 	public void visitSpec(SpecInfo spec) {
 		final WebContextConfiguration webContextConfiguration = AnnotationUtils.findAnnotation(spec.getReflection(), WebContextConfiguration.class);
