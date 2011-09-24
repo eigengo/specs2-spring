@@ -5,6 +5,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author janm
@@ -26,5 +27,10 @@ public class HibernateManagementService implements ManagementService {
 	@Override
 	public <T> T get(Class<T> type, Serializable id) {
 		return this.hibernateTemplate.get(type, id);
+	}
+
+	@Override
+	public <T> List<T> findAll(Class<T> type) {
+		return this.hibernateTemplate.loadAll(type);
 	}
 }

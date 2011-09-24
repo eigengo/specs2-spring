@@ -12,7 +12,7 @@ import java.io.File;
 /**
  * @author janm
  */
-public class SpringWebExtension {
+class SpringWebExtension {
 
 	public void setup(Object specification) {
 		final WebContextConfiguration webContextConfiguration = AnnotationUtils.findAnnotation(specification.getClass(), WebContextConfiguration.class);
@@ -33,7 +33,7 @@ public class SpringWebExtension {
 			MockServletContext servletContext = new MockServletContext(webapp.getAbsolutePath(), new AbsoluteFilesystemResourceLoader());
 			MockServletConfig servletConfig = new MockServletConfig(servletContext);
 			servletContext.addInitParameter("contextConfigLocation",
-					StringUtils.arrayToDelimitedString(webContextConfiguration.contextConfiguration().value(), "\n"));
+					StringUtils.arrayToDelimitedString(webContextConfiguration.value(), "\n"));
 			if (webContextConfigurationResources.length == 0) {
 				throw new WebTestContextCreationException("You must specify servletContextConfiguration at this moment.");
 			}
@@ -42,7 +42,6 @@ public class SpringWebExtension {
 
 			ContextLoaderListener listener = new ContextLoaderListener();
 			listener.initWebApplicationContext(servletContext);
-
 
 			final DispatcherServlet dispatcherServlet = new TracingDispatcherServlet();
 			dispatcherServlet.init(servletConfig);
