@@ -18,6 +18,8 @@ class IndexControllerTest extends Specification {
   var managementService: ManagementService = _
 
   "web roundtrip test" in {
+    this.managementService.findAll(classOf[User]).isEmpty must beTrue
+
     post("/users.html", Map("username" -> "aaaa", "fullName" -> "Jan"))
 
     val wo = get("/users/1.html")
