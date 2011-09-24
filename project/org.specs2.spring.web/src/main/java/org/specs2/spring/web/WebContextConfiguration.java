@@ -13,7 +13,9 @@ public @interface WebContextConfiguration {
 
 	String webXml() default "/WEB-INF/web.xml";
 
-	String[] value() default {};
+	String[] webContextLocations() default {};
+
+	String[] contextLocations() default {};
 
 	boolean useSpringSecurity() default false;
 

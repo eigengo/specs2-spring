@@ -4,25 +4,25 @@ import org.specs2.spring.web.{WebContextConfiguration, Specification}
 import org.specs2.spring.webexample.services.ManagementService
 import org.springframework.beans.factory.annotation.Autowired
 import org.specs2.spring.webexample.domain.User
-import org.springframework.test.context.ContextConfiguration
+import org.springframework.transaction.annotation.Transactional
 
 /**
  * @author janmachacek
  */
-@WebContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
-//@ContextConfiguration()
+@WebContextConfiguration(
+  webContextLocations = Array("/WEB-INF/sw-servlet.xml"),
+  contextLocations = Array("classpath*:/META-INF/spring/module-context.xml"))
+@Transactional
 class IndexControllerTest extends Specification {
   @Autowired
   var managementService: ManagementService = _
 
   "web roundtrip test" in {
-    this.managementService.findAll(classOf[User]) must beEmpty
-
     post("/users.html", Map("username" -> "aaaa", "fullName" -> "Jan"))
-    val wo = get("/users/1.html")
-    post(wo << ("#fullName", "Jan Machacek"))
 
-    success
+    val wo = get("/users/1.html")
+    wo.model(classOf[User]).getFullName must_== ("Jan")
+    wo.model(classOf[User]).getUsername must_== ("aaaa")
   }
 
 }

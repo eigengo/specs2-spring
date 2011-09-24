@@ -47,9 +47,9 @@ import java.util.*;
  *
  * @author janmachacek
  */
-class JndiEnvironmentSetter {
+public class JndiEnvironmentSetter {
 
-	void prepareEnvironment(Environment environment) {
+	public void prepareEnvironment(Environment environment) {
 		Assert.notNull(environment, "The 'environment' argument cannot be null.");
 
 		try {

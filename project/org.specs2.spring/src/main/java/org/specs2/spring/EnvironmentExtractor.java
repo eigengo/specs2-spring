@@ -10,7 +10,7 @@ import org.springframework.util.Assert;
  *
  * @author janmachacek
  */
-class EnvironmentExtractor {
+public class EnvironmentExtractor {
 
 	/**
 	 * Extracts the environment from the test object.
@@ -18,7 +18,7 @@ class EnvironmentExtractor {
 	 * @param specification the test object; never {@code null}.
 	 * @return the extracted Environment object.
 	 */
-	Environment extract(Object specification) {
+	public Environment extract(Object specification) {
 		Assert.notNull(specification, "The 'specification' argument cannot be null.");
 
 		final Environment environment = new Environment();

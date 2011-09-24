@@ -1,5 +1,6 @@
 package org.specs2.spring.web;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
@@ -12,13 +13,14 @@ import java.io.File;
 /**
  * @author janm
  */
-class SpringWebExtension {
+class TestContext {
+	private DispatcherServlet dispatcherServlet;
 
 	public void setup(Object specification) {
 		final WebContextConfiguration webContextConfiguration = AnnotationUtils.findAnnotation(specification.getClass(), WebContextConfiguration.class);
 		if (webContextConfiguration == null) return;
 
-		final String[] webContextConfigurationResources = webContextConfiguration.value();
+		final String[] webContextConfigurationResources = webContextConfiguration.webContextLocations();
 		String[] filesToFind = new String[webContextConfigurationResources.length + 1];
 		for (int i = 0; i < webContextConfigurationResources.length; i++) {
 			filesToFind[i + 1] = webContextConfigurationResources[i];
@@ -33,8 +35,9 @@ class SpringWebExtension {
 			MockServletContext servletContext = new MockServletContext(webapp.getAbsolutePath(), new AbsoluteFilesystemResourceLoader());
 			MockServletConfig servletConfig = new MockServletConfig(servletContext);
 			servletContext.addInitParameter("contextConfigLocation",
-					StringUtils.arrayToDelimitedString(webContextConfiguration.value(), "\n"));
+					StringUtils.arrayToDelimitedString(webContextConfiguration.contextLocations(), "\n"));
 			if (webContextConfigurationResources.length == 0) {
+				// in the future, I would like to detect the settings from web.xml
 				throw new WebTestContextCreationException("You must specify servletContextConfiguration at this moment.");
 			}
 			servletConfig.addInitParameter("contextConfigLocation",
@@ -43,13 +46,28 @@ class SpringWebExtension {
 			ContextLoaderListener listener = new ContextLoaderListener();
 			listener.initWebApplicationContext(servletContext);
 
-			final DispatcherServlet dispatcherServlet = new TracingDispatcherServlet();
-			dispatcherServlet.init(servletConfig);
-			DispatcherServletHolder.set(dispatcherServlet);
+			this.dispatcherServlet = new TracingDispatcherServlet();
+			this.dispatcherServlet.init(servletConfig);
+
+			autowire(this.dispatcherServlet.getWebApplicationContext(), specification);
 		} catch (Exception e) {
 			throw new WebTestContextCreationException(e);
 		}
 
+	}
+
+	private void autowire(ApplicationContext applicationContext, Object specification) {
+		if (applicationContext == null) return;
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(specification);
+		autowire(applicationContext.getParent(), specification);
+	}
+
+	DispatcherServlet getDispatcherServlet() {
+		return this.dispatcherServlet;
+	}
+
+	<T> T getBean(Class<T> type) {
+		return this.dispatcherServlet.getWebApplicationContext().getBean(type);
 	}
 
 	private File findWebSource(File root, String[] path, String[] filesToFind) {

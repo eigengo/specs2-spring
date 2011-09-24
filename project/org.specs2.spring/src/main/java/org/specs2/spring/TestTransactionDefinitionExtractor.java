@@ -12,7 +12,7 @@ import org.springframework.util.Assert;
  *
  * @author janmachacek
  */
-class TestTransactionDefinitionExtractor {
+public class TestTransactionDefinitionExtractor {
 
 	/**
 	 * Examines the {@code specification}'s annotations to prepare the {@code TestTransactionDefinition} object
@@ -21,7 +21,7 @@ class TestTransactionDefinitionExtractor {
 	 * @param specification the specification to examine, never {@code null}.
 	 * @return the {@code TestTransactionDefinition} for the specification, never {@code null}.
 	 */
-	TestTransactionDefinition extract(Object specification) {
+	public TestTransactionDefinition extract(Object specification) {
 		Assert.notNull(specification, "The 'specification' argument cannot be null.");
 
 		final Transactional transactional = AnnotationUtils.findAnnotation(specification.getClass(), Transactional.class);
@@ -40,21 +40,21 @@ class TestTransactionDefinitionExtractor {
 	 * definition that the {@code PlatformTransactionManager} will use to obtain the transaction; the {@link #defaultRollback}
 	 * indicates whether the transaction should be rolled back at the end of the example execution.
 	 */
-	static class TestTransactionDefinition {
+	public static class TestTransactionDefinition {
 		private final TransactionDefinition transactionDefinition;
 		private final boolean defaultRollback;
-		final static TestTransactionDefinition NOT_TRANSACTIONAL = new TestTransactionDefinition(null, false);
+		public final static TestTransactionDefinition NOT_TRANSACTIONAL = new TestTransactionDefinition(null, false);
 
 		TestTransactionDefinition(TransactionDefinition transactionDefinition, boolean defaultRollback) {
 			this.transactionDefinition = transactionDefinition;
 			this.defaultRollback = defaultRollback;
 		}
 
-		TransactionDefinition getTransactionDefinition() {
+		public TransactionDefinition getTransactionDefinition() {
 			return transactionDefinition;
 		}
 
-		boolean isDefaultRollback() {
+		public boolean isDefaultRollback() {
 			return defaultRollback;
 		}
 	}
