@@ -1,7 +1,5 @@
 package org.specs2.spring.web;
 
-import org.springframework.test.context.ContextConfiguration;
-
 import java.lang.annotation.*;
 
 /**
@@ -16,8 +14,6 @@ public @interface WebContextConfiguration {
 	String webXml() default "/WEB-INF/web.xml";
 
 	String[] value() default {};
-
-	ContextConfiguration contextConfiguration();
 
 	boolean useSpringSecurity() default false;
 
