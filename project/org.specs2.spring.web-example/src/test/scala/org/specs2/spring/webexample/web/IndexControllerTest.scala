@@ -26,6 +26,8 @@ class IndexControllerTest extends Specification with XhtmlPayload with JavaScrip
     val wo = get("/users/1.html")
     wo.model(classOf[User]).getFullName must_== ("Jan")
     wo.model(classOf[User]).getUsername must_== ("aaaa")
+
+    wo >> "/a/b/c"
   }
 
 }

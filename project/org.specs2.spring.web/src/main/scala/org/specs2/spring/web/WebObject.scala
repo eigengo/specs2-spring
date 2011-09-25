@@ -17,6 +17,10 @@ class WebObject(val request: MockHttpServletRequest,
     new WebObject(request, response, modelAndView)
   }
 
+  def >> (selector: String) = {
+    ""
+  }
+
   class Model(modelMap: java.util.Map[String, AnyRef]) {
 
     def apply[T](attributeName: String) = {
