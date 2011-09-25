@@ -13,8 +13,7 @@ import org.specs2.spring.web.{JavaScriptPayload, XhtmlPayload, WebContextConfigu
   webContextLocations = Array("/WEB-INF/sw-servlet.xml"),
   contextLocations = Array("classpath*:/META-INF/spring/module-context.xml"))
 @Transactional
-class IndexControllerTest extends Specification
-  with XhtmlPayload with JavaScriptPayload {
+class IndexControllerTest extends Specification with XhtmlPayload with JavaScriptPayload {
   
   @Autowired
   var managementService: ManagementService = _

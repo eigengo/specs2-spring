@@ -5,22 +5,21 @@ import collection.mutable.MutableList
 /**
  * @author janmachacek
  */
-object Payloads {
+private[web] object Payloads {
   type PayloadFunction = (String, Array[Byte]) => Option[String]
+}
+
+trait PayloadRegistry extends PayloadRegistryAccess {
+  import Payloads.PayloadFunction
   val payloadFunctions = new MutableList[PayloadFunction]
 
   def x(f: PayloadFunction) {
     this.payloadFunctions += f
   }
 
-  def g(contentType: String, body: Array[Byte]): String = {
-    for (f <- this.payloadFunctions) {
-      val s = f(contentType, body)
-      if (s.isDefined) return s.get
-    }
+}
 
-    "unknown"
-    // throw new RuntimeException("Did not understand " + contentType + ". Include the appropriate trait.")
-  }
-
+trait PayloadRegistryAccess {
+  import Payloads.PayloadFunction
+  def x(f: PayloadFunction)
 }
