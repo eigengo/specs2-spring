@@ -1,10 +1,10 @@
 package org.specs2.spring.webexample.web
 
-import org.specs2.spring.web.{WebContextConfiguration, Specification}
 import org.specs2.spring.webexample.services.ManagementService
 import org.springframework.beans.factory.annotation.Autowired
 import org.specs2.spring.webexample.domain.User
 import org.springframework.transaction.annotation.Transactional
+import org.specs2.spring.web.{JavaScriptPayload, XhtmlPayload, WebContextConfiguration, Specification}
 
 /**
  * @author janmachacek
@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional
   webContextLocations = Array("/WEB-INF/sw-servlet.xml"),
   contextLocations = Array("classpath*:/META-INF/spring/module-context.xml"))
 @Transactional
-class IndexControllerTest extends Specification {
+class IndexControllerTest extends Specification
+  with XhtmlPayload with JavaScriptPayload {
+  
   @Autowired
   var managementService: ManagementService = _
 

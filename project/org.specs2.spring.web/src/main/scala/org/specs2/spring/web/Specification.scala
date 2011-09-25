@@ -76,8 +76,9 @@ trait Specification extends org.specs2.mutable.Specification {
       requestThread.start()
       requestThread.join()
 
-      val modelAndView = request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).
-        asInstanceOf[ModelAndView]
+      val modelAndView = request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).asInstanceOf[ModelAndView]
+      val s = Payloads.g(response.getContentType, response.getContentAsByteArray)
+      println(s)
 
       new WebObject(request, response, modelAndView)
     } catch {

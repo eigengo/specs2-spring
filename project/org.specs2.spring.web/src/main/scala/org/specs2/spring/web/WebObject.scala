@@ -6,7 +6,6 @@ import org.springframework.web.servlet.ModelAndView
 /**
  * @author janmachacek
  */
-
 class WebObject(val request: MockHttpServletRequest,
                  val response: MockHttpServletResponse,
                  val modelAndView: ModelAndView) {
@@ -24,17 +23,16 @@ class WebObject(val request: MockHttpServletRequest,
       modelMap.get(attributeName).asInstanceOf[T]
     }
 
-    def apply[T <: AnyRef](attributeType: Class[T]) = {
+    def apply[T <: AnyRef](attributeType: Class[T]): T = {
       val i = modelMap.entrySet().iterator()
-      var result: AnyRef = null
       while (i.hasNext) {
         val e = i.next
         if (e.getValue != null && e.getValue.getClass == attributeType) {
-          result = e.getValue
+          return e.getValue.asInstanceOf[T]
         }
       }
       
-      result.asInstanceOf[T]
+      throw new RuntimeException("No element type " + attributeType + " found in the model.")
     }
   }
 
