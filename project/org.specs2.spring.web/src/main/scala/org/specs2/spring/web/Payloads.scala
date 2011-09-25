@@ -6,7 +6,7 @@ import collection.mutable.MutableList
  * @author janmachacek
  */
 private[web] object Payloads {
-  type PayloadFunction = (String, Array[Byte]) => Option[String]
+  private[web] type PayloadFunction = (String, Array[Byte]) => Option[String]
 }
 
 trait PayloadRegistry extends PayloadRegistryAccess {
