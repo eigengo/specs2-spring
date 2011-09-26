@@ -8,6 +8,13 @@ import org.springframework.mock.web.MockHttpServletResponse
  */
 object Raw {
 
+  /**
+   * Processes the input to return the {{Raw}} instance that will deal with
+   * the request.
+   *
+   * @param r the RR object representing the request
+   * @return the {{Raw}} instance that will deal with the request
+   */
   def apply(r: RR) = new Raw(r)
 
 }
@@ -28,6 +35,11 @@ class Raw(r: RR) extends AbstractRR[RawWebObjectBody](r) {
  */
 class RawWebObjectBody(val body: Array[Byte]) extends WebObjectBody {
 
+  /**
+   * Returns the response as String in the encoding of the VM
+   *
+   * @return the String representation of the content
+   */
   def bodyString = new String(body)
 
   override def toString = bodyString

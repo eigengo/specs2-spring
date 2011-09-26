@@ -82,6 +82,4 @@ class WebObject[B <: WebObjectBody](val request: MockHttpServletRequest,
 /**
  * Models the body of the WebObject--it is the chewed-over response bytes
  */
-abstract class WebObjectBody {
-
-}
+abstract class WebObjectBody

@@ -23,7 +23,7 @@ class IndexControllerTest extends Specification {
 
     Xhtml(post)("/users.html", Map("username" -> "aaaa", "fullName" -> "Jan"))
 
-    val wo = Xhtml(get)("/users/1.html", Map())
+    val wo = Xhtml(get)("/users/1.html")
     wo.model(classOf[User]).getFullName must_== ("Jan")
     wo.model(classOf[User]).getUsername must_== ("aaaa")
 

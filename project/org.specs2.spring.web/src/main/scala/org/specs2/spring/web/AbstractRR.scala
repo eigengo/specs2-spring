@@ -6,6 +6,8 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.mock.web.{MockHttpServletResponse, MockHttpServletRequest}
 
 /**
+ * Abstract class that simplifies "standard" HTTP request processing
+ *
  * @author janmachacek
  */
 abstract class AbstractRR[B <: WebObjectBody](r: RR) {
