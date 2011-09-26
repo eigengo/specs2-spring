@@ -9,13 +9,28 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletResponse
 
 /**
+ * The Spring-based web application testing trait. It works just like the plain
+ * {{org.specs2.spring.Specification}}, but allows you to test the user interface
+ * (read the servlet side) of your Spring application as well.
+ * Typically, you will include one of the <i>payloads</i> traits, which are capable
+ * of analysing the responses, allowing you to further analyse the returned values.
+ * <pre>
+ * @WebContextConfiguration(
+ *   webContextLocations = Array("/WEB-INF/sw-servlet.xml"),
+ *   contextLocations = Array("classpath*:/META-INF/spring/module-context.xml"))
+ * @Transactional
+ * class IndexControllerTest extends Specification with XhtmlPayload with JavaScriptPayload {
+ *   // the post, get, put, delete methods now understand XHTML and JavaScript payloads
+ * }
+ * </pre>
+ *
  * @author janmachacek
  */
 trait Specification extends org.specs2.mutable.Specification with PayloadRegistry {
   private val testContext = new TestContext()
   private val httpResponsesPayload = new HttpResponsesPayload
 
-  def getWebObjectBody(response: MockHttpServletResponse): WebObjectBody[_, _] = {
+  private def getWebObjectBody(response: MockHttpServletResponse): WebObjectBody[_, _] = {
     if (response.getStatus != HttpServletResponse.SC_OK)
       return this.httpResponsesPayload.parseHttpResponses(response).get
 
@@ -60,6 +75,14 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
     }
   }
 
+  /**
+   * Perform the HTTP POST method on the URL with parameters passed as the request
+   * parameters of the post.
+   *
+   * @param url the URL to post to; for example {{/users.html}}
+   * @param params the post parameters; for example {{Map("username" -> "janm")}}
+   * @return the {{WebObject}} representing the response
+   */
   def post(url: String, params: Map[String, Any]) = {
     val request = new JspCapableMockHttpServletRequest("POST", url,
       this.testContext.getDispatcherServlet.getServletConfig)
@@ -70,12 +93,40 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
     doService(request)
   }
 
-  def get(url: String, params: Any*) = {
-    val request = new JspCapableMockHttpServletRequest("GET", String.format(url, params),
+  /**
+   * Perform the HTTP POST method on the URL.
+   *
+   * @param url the URL to get; for example {{/users/update.html}}
+   * @return the {{WebObject}} representing the response
+   */
+  def post(url: String) = get(url, Map())
+
+  /**
+   * Perform the HTTP GET method on the URL with the request parameters passed
+   * as the request parameters of the GET.
+   *
+   * @param url the URL to get; for example {{/users/view.html}}
+   * @param params the GET parameters; for example {{Map("id" -> 5)}}
+   * @return the {{WebObject}} representing the response
+   */
+  def get(url: String, params: Map[String, Any]) = {
+    val request = new JspCapableMockHttpServletRequest("GET", url,
       this.testContext.getDispatcherServlet.getServletConfig)
+    params.foreach {
+      e => request.setParameter(e._1, e._2.toString)
+    }
     // request.setSession(this.httpSession)
     doService(request)
   }
+
+  /*
+   * Perform the HTTP GET method on the URL.
+   *
+   * @param url the URL to get; for example {{/users/1.html}}
+   * @return the {{WebObject}} representing the response
+   *
+  def get(url: String) = get(url, Map())
+  */
 
   private def doService(request: JspCapableMockHttpServletRequest) = {
     try {
@@ -96,10 +147,11 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY)
       }
 
-      val modelAndView = request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).asInstanceOf[ModelAndView]
+      val unsafeMav = request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).asInstanceOf[ModelAndView]
+      val mav = if (unsafeMav != null) Some(unsafeMav) else None
       val webObjectBody = getWebObjectBody(response)
 
-      new WebObject(request, response, modelAndView, webObjectBody)
+      new WebObject(request, response, mav, webObjectBody)
     } catch {
       case e: Exception => e.printStackTrace(); throw new RuntimeException(e);
     }

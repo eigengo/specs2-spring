@@ -4,14 +4,36 @@ import org.springframework.mock.web.{MockHttpServletResponse, MockHttpServletReq
 import org.springframework.web.servlet.ModelAndView
 
 /**
+ * Represents processed and pre-chewed HttpServletResponse so that you can write meaningful
+ * code in your examples.
+ * The instances of {{WebObject}} carry the originating {{request}}, the matching {{response}},
+ * together with extracted {{modelAndView}} and a pre-processed {{body}}.
+ * The methods {{&lt;&lt;}}, {{&gt;&gt;}} and {{&gt;&gt;!}} manipulate the {{body}}, allowing you to
+ * get or set the value of some HTML element, execute arbitrary JavaScript, examine the PDF, ... (depending
+ * on what payload processing traits you mixin to your test).
+ * Finally, the {{model}} and {{modelOption}} give you access to the model elements of the {{ModelAndView}}
+ * returned from the controller processing.
+ *
  * @author janmachacek
  */
 class WebObject[B, E](val request: MockHttpServletRequest,
                  val response: MockHttpServletResponse,
-                 val modelAndView: ModelAndView,
+                 val modelAndView: Option[ModelAndView],
                  val body: WebObjectBody[B, E]) {
 
-  def model = new Model(modelAndView.getModel)
+  /**
+   * Gets the convenient wrapper around the Spring model portion of the {{ModelAndView}}
+   *
+   * @return the model of the {{ModelAndView}}, if available
+   */
+  def modelOption = if (modelAndView == None) None else Some(model)
+
+  /**
+   * Gets the convenient wrapper around the Spring model portion of the {{ModelAndView}}
+   *
+   * @return the model
+   */
+  def model = new Model(modelAndView.get.getModel)
 
   def <<(selector: String, value: String) =
     new WebObject(request, response, modelAndView, body << (selector, value))
