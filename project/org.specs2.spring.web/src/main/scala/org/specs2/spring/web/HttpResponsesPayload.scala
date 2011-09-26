@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse
 /**
  * @author janmachacek
  */
-
 class HttpResponsesPayload {
 
   def parseHttpResponses(response: MockHttpServletResponse) = {

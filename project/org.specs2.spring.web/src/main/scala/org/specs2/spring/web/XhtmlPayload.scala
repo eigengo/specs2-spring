@@ -1,7 +1,6 @@
 package org.specs2.spring.web
 
 import org.springframework.mock.web.MockHttpServletResponse
-import javax.servlet.http.HttpServletResponse
 import xml.{Node, XML}
 
 /**

@@ -4,9 +4,9 @@ import org.specs2.spring.{TestTransactionDefinitionExtractor, EnvironmentExtract
 import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefinition
 import org.springframework.transaction.PlatformTransactionManager
 import org.specs2.specification.Example
-import org.springframework.mock.web.{MockHttpSession, MockHttpServletResponse}
+import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.web.servlet.ModelAndView
-import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
+import javax.servlet.http.HttpServletResponse
 
 /**
  * @author janmachacek
