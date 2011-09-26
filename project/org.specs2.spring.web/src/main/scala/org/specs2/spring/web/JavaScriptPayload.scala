@@ -21,9 +21,7 @@ trait JavaScriptPayload extends PayloadRegistryAccess {
 
 class JavaScriptWebObjectBody(payload: String) extends WebObjectBody[String, String](payload) {
 
-  def <<[BB >: String, EE >: String](selector: String, value: String) = this
+  def <<[BB >: String, EE >: String](selector: String, value: Any) = this
 
   def >>[R](selector: String) = throw new RuntimeException("No JS evaluation yet")
-
-  def >>![R](selector: String) = throw new RuntimeException("No JS evaluation yet")
 }

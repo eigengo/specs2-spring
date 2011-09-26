@@ -15,9 +15,7 @@ trait AnyPayload extends PayloadRegistryAccess {
 
     def >>[R](selector: String) = throw new RuntimeException("Unknown body")
 
-    def >>![R](selector: String) = throw new RuntimeException("Unknown body")
-
-    def <<[BB >: Null, EE >: Null](selector: String, value: String) = throw new RuntimeException("Unknown body")
+    def <<[BB >: Null, EE >: Null](selector: String, value: Any) = throw new RuntimeException("Unknown body")
   }
 
   /**

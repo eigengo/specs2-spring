@@ -4,9 +4,10 @@ import org.springframework.mock.web.MockHttpServletResponse
 import xml.{Node, XML}
 
 /**
+ * Parses the XHTML responses
+ *
  * @author janmachacek
  */
-
 trait XhtmlPayload extends PayloadRegistryAccess {
   register(parseXhtml _)
 
@@ -19,10 +20,15 @@ trait XhtmlPayload extends PayloadRegistryAccess {
 
 }
 
+/**
+ * Response body that assumes that the body is the XHTML of the returned page
+ *
+ * @param payload the XHTML string
+ */
 class XhtmlWebObjectBody(payload: String) extends WebObjectBody[String, String](payload) {
   private val body = XML.loadString(payload)
 
-  def <<[BB >: String, EE >: String](selector: String, value: String) = this
+  def <<[BB >: String, EE >: String](selector: String, value: Any) = this
 
   def >>[R >: String](selector: String) = {
     require(selector != null)
@@ -58,5 +64,4 @@ class XhtmlWebObjectBody(payload: String) extends WebObjectBody[String, String](
 
   }
 
-  def >>![R >: String](selector: String) = >>(selector).get
 }

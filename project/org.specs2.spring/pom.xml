@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>org.specs2</groupId>
 		<artifactId>parent</artifactId>
-		<version>1.0.0</version>
+		<version>${specs2-spring.version}</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.specs2</groupId>
 	<artifactId>spring</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>${specs2-spring.version}</version>
 
 	<dependencies>
 		<dependency>

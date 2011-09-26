@@ -38,18 +38,51 @@ class WebObject[B, E](val request: MockHttpServletRequest,
   def <<(selector: String, value: String) =
     new WebObject(request, response, modelAndView, body << (selector, value))
 
+  /**
+   * Selects content from the underlying body.
+   *
+   * @param selector the expression that will be used to select the data from the body
+   * @return the optional result of evaluating the expression
+   */
   def >>(selector: String) = body >> selector
 
+  /**
+   * Selects content from the underlying body.
+   *
+   * @param selector the expression that will be used to select the data from the body
+   * @return the result of evaluating the expression
+   */
   def >>!(selector: String) = body >>! selector
 
+  /**
+   * Returns the payload of the web object's body
+   *
+   * @return the body of the response
+   */
   def payload = body.payload
 
+  /**
+   * Convenient wrapper around the model portion of the {{ModelAndView}}
+   */
   class Model(modelMap: java.util.Map[String, AnyRef]) {
 
+    /**
+     * Selects the value by its name in the model
+     *
+     * @param attributeName the name of the attribute to find in the model
+     * @return the value in the model
+     */
     def apply[T](attributeName: String) = {
       modelMap.get(attributeName).asInstanceOf[T]
     }
 
+    /**
+     * Selects the value by its type in the model; if there is exactly one value
+     * of the given type
+     *
+     * @param attributeType the type of the attribute in the model
+     * @return the value in the model
+     */
     def apply[T <: AnyRef](attributeType: Class[T]): T = {
       val i = modelMap.entrySet().iterator()
       while (i.hasNext) {
@@ -65,12 +98,37 @@ class WebObject[B, E](val request: MockHttpServletRequest,
 
 }
 
+/**
+ * Models the body of the WebObject--it is the chewed-over response bytes
+ *
+ * @param B the type of the entire body
+ * @param E the result of evaluating the selectors
+ */
 abstract class WebObjectBody[+B, +E](val payload: B) {
 
-  def <<[BB >: B, EE >: E](selector: String, value: String): WebObjectBody[BB, EE]
+  /**
+   * Sets the value of the selector {{selector}} to value {{value}}
+   *
+   * @param selector the selector expression.
+   * @param value the new value for the entity identified by {{selector}}
+   * @return the updated WebObjectBody
+   */
+  def <<[BB >: B, EE >: E](selector: String, value: Any): WebObjectBody[BB, EE]
 
+  /**
+   * Gets the value of the selector {{selector}}
+   *
+   * @param selector the expression that identifies the element in the body
+   * @return optionally the result of the expression
+   */
   def >>[R >: E](selector: String): Option[R]
 
-  def >>![R >: E](selector: String): R
+  /**
+   * Gets the value of the selector {{selector}}
+   *
+   * @param selector the expression that identifies the element in the body
+   * @return the result of the expression
+   */
+  def >>![R >: E](selector: String): R = >>(selector).get
 
 }

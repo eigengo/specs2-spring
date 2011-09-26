@@ -31,7 +31,5 @@ class MovedWebObjectBody(private val to: String) extends WebObjectBody[String, S
 
   def >>[R >: String](selector: String) = throw new RuntimeException("No attributes of moved.")
 
-  def >>![R >: String](selector: String) = throw new RuntimeException("No attributes of moved.")
-
-  def <<[BB >: Null, EE >: Null](selector: String, value: String) = throw new RuntimeException("No attributes of moved.")
+  def <<[BB >: Null, EE >: Null](selector: String, value: Any) = throw new RuntimeException("No attributes of moved.")
 }

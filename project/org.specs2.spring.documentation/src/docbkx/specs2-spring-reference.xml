@@ -62,4 +62,10 @@
 					xmlns:xi="http://www.w3.org/2001/XInclude" />
 	</part>
 
+	<part id="spring-appendices">
+	  <title>What's next?</title>
+
+	  <xi:include href="whats-next.xml"
+				  xmlns:xi="http://www.w3.org/2001/XInclude" />
+	</part>
 </book>
