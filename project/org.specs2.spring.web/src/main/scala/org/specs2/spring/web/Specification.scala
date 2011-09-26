@@ -6,9 +6,12 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.specs2.specification.Example
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 
+/**
+ * Specification object defining the {{RR}} case class, which carries the
+ * {{request}} and an operation that turns the {{request}} into a {{response}}
+ */
 object Specification {
-  case class RR(request: MockHttpServletRequest, response: MockHttpServletResponse)
-  case class R(request: MockHttpServletRequest, op: (MockHttpServletRequest) => MockHttpServletResponse)
+  case class RR(request: MockHttpServletRequest, op: (MockHttpServletRequest) => MockHttpServletResponse)
 }
 
 /**
@@ -67,65 +70,32 @@ trait Specification extends org.specs2.mutable.Specification {
     }
   }
 
-  def post = {
-    R(new JspCapableMockHttpServletRequest("POST", this.testContext.getDispatcherServlet.getServletConfig), { request: MockHttpServletRequest => doService(request)})
-  }
-
-  /*
-   * Perform the HTTP POST method on the URL with parameters passed as the request
-   * parameters of the post.
-   *
-   * @param url the URL to post to; for example {{/users.html}}
-   * @param params the post parameters; for example {{Map("username" -> "janm")}}
-   * @return the {{WebObject}} representing the response
-   *
-  def post(url: String, params: Map[String, Any]) = {
-    val request = new JspCapableMockHttpServletRequest("POST", url,
-      this.testContext.getDispatcherServlet.getServletConfig)
-    params.foreach {
-      e => request.setParameter(e._1, e._2.toString)
-    }
-
-    RR(request, doService(request))
-  }
-
-   * Perform the HTTP POST method on the URL.
-   *
-   * @param url the URL to get; for example {{/users/update.html}}
-   * @return the {{WebObject}} representing the response
-   *
-  def post(url: String) = get(url, Map())
-  */
+  private def service(method: String) =
+    RR(new JspCapableMockHttpServletRequest(method, this.testContext.getDispatcherServlet.getServletConfig), { request: MockHttpServletRequest => doService(request)})
 
   /**
-   * Perform the HTTP GET method on the URL with the request parameters passed
-   * as the request parameters of the GET.
-   *
-   * @param url the URL to get; for example {{/users/view.html}}
-   * @param params the GET parameters; for example {{Map("id" -> 5)}}
-   * @return the {{WebObject}} representing the response
+   * Returns the {{RR}} instance that can be passed to the companion objects that
+   * perform the HTTP POST operation
    */
-  def get = {
-    R(new JspCapableMockHttpServletRequest("GET", this.testContext.getDispatcherServlet.getServletConfig), { request: MockHttpServletRequest => doService(request)})
-    /*
-    val request = new JspCapableMockHttpServletRequest("GET", url,
-      this.testContext.getDispatcherServlet.getServletConfig)
-    params.foreach {
-      e => request.setParameter(e._1, e._2.toString)
-    }
-    // request.setSession(this.httpSession)
+  def post = service("POST")
 
-    RR(request, doService(request))*/
-  }
+  /**
+   * Returns the {{RR}} instance that can be passed to the companion objects that
+   * perform the HTTP GET operation
+   */
+  def get = service("GET")
 
-  /*
-   * Perform the HTTP GET method on the URL.
-   *
-   * @param url the URL to get; for example {{/users/1.html}}
-   * @return the {{WebObject}} representing the response
-   *
-  def get(url: String) = get(url, Map())
-  */
+  /**
+   * Returns the {{RR}} instance that can be passed to the companion objects that
+   * perform the HTTP PUT operation
+   */
+  def put = service("PUT")
+
+  /**
+   * Returns the {{RR}} instance that can be passed to the companion objects that
+   * perform the HTTP DELETE operation
+   */
+  def delete = service("DELETE")
 
   private def doService(request: MockHttpServletRequest) = {
     try {

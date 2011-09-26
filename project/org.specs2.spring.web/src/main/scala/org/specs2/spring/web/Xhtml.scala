@@ -1,53 +1,26 @@
 package org.specs2.spring.web
 
 import xml.{Node, XML}
-import javax.servlet.http.HttpServletResponse
-import org.springframework.web.servlet.ModelAndView
-import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 import Specification._
+import org.springframework.mock.web.MockHttpServletResponse
 
 /**
- * Parses the XHTML responses
- *
- * @author janmachacek
+ * XHTML response companion object
  */
 object Xhtml {
 
-  def apply(r: R) = new Xhtml(r)
+  def apply(r: RR) = new Xhtml(r)
 
 }
 
-class Xhtml(val r: R) {
+/**
+ * XHTML response object that
+ *
+ */
+class Xhtml(r: RR) extends AbstractRR[XhtmlWebObjectBody](r) {
 
-  private def service(setup: MockHttpServletRequest => Unit) = {
-    val request = r.request
-
-    setup(request)
-
-    val response = r.op(request)
-    if (response.getRedirectedUrl != null) {
-      response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY)
-    }
-    val unsafeMav = request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).asInstanceOf[ModelAndView]
-    val mav = if (unsafeMav != null) Some(unsafeMav) else None
-
-    val body = if (response.getStatus != HttpServletResponse.SC_OK) None else Some(new XhtmlWebObjectBody(response.getContentAsString))
-    new WebObject(request, response, mav, body)
-  }
-
-  def apply(url: String, params: Map[String, AnyRef]) = {
-    service { request =>
-      request.setRequestURI(url)
-      params.foreach {
-        e => request.setParameter(e._1, e._2.toString)
-      }
-    }
-  }
-
-  def apply(url: String) = {
-    service { _ => }
-  }
-
+  def makeBody(response: MockHttpServletResponse) = 
+    Some(new XhtmlWebObjectBody(response.getContentAsString))
 }
 
 /**

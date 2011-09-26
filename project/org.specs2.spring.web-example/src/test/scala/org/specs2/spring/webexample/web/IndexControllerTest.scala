@@ -27,6 +27,9 @@ class IndexControllerTest extends Specification {
     wo.model(classOf[User]).getFullName must_== ("Jan")
     wo.model(classOf[User]).getUsername must_== ("aaaa")
 
+    val raw = Raw(get)("/users/1.html")
+    println(raw!)
+
     val x = (wo!) >> ("#username")
     println(x)
 
