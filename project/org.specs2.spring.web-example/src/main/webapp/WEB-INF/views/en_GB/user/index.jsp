@@ -2,8 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-	<link rel="stylesheet" href="/css/jquery-ui-1.8.5.custom.css" type="text/css">
-	<link rel="stylesheet" href="/css/main.css" type="text/css">
+	<link rel="stylesheet" href="/css/jquery-ui-1.8.5.custom.css" type="text/css"/>
+	<link rel="stylesheet" href="/css/main.css" type="text/css"/>
 	<title>All users</title>
 </head>
 <body>

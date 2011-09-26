@@ -1,6 +1,7 @@
 package org.specs2.spring.web
 
 import org.springframework.mock.web.MockHttpServletResponse
+import javax.servlet.http.HttpServletResponse
 
 /**
  * @author janmachacek
@@ -10,7 +11,7 @@ trait JavaScriptPayload extends PayloadRegistryAccess {
   register(parseJavascript _)
 
   def parseJavascript(response: MockHttpServletResponse) = {
-    if (response.getContentType == "text/javascript")
+    if (response.getStatus == HttpServletResponse.SC_OK && response.getContentType.startsWith("text/javascript"))
       None
     else
       Some(new JavaScriptWebObjectBody(response.getContentAsString))
@@ -18,9 +19,9 @@ trait JavaScriptPayload extends PayloadRegistryAccess {
 
 }
 
-class JavaScriptWebObjectBody(payload: String) extends WebObjectBody(payload) {
+class JavaScriptWebObjectBody(payload: String) extends WebObjectBody[String, String](payload) {
 
-  def <<[R >: String](selector: String, value: String) = this
+  def <<[BB >: String, EE >: String](selector: String, value: String) = this
 
   def >>[R](selector: String) = throw new RuntimeException("No JS evaluation yet")
 

@@ -7,7 +7,7 @@ import org.springframework.mock.web.MockHttpServletResponse
  * @author janmachacek
  */
 private[web] object Payloads {
-  private[web] type PayloadFunction = (MockHttpServletResponse) => Option[WebObjectBody[_]]
+  private[web] type PayloadFunction = (MockHttpServletResponse) => Option[WebObjectBody[_, _]]
 }
 
 trait PayloadRegistry extends PayloadRegistryAccess {

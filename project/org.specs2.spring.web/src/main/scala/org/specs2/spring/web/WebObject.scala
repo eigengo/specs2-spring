@@ -6,20 +6,21 @@ import org.springframework.web.servlet.ModelAndView
 /**
  * @author janmachacek
  */
-class WebObject[B](val request: MockHttpServletRequest,
+class WebObject[B, E](val request: MockHttpServletRequest,
                  val response: MockHttpServletResponse,
                  val modelAndView: ModelAndView,
-                 val body: WebObjectBody[B]) {
+                 val body: WebObjectBody[B, E]) {
 
   def model = new Model(modelAndView.getModel)
 
-  def << (selector: String, value: String) = {
-    new WebObject(request, response, modelAndView, body)
-  }
+  def <<(selector: String, value: String) =
+    new WebObject(request, response, modelAndView, body << (selector, value))
 
-  def >> (selector: String) = {
-    ""
-  }
+  def >>(selector: String) = body >> selector
+
+  def >>!(selector: String) = body >>! selector
+
+  def payload = body.payload
 
   class Model(modelMap: java.util.Map[String, AnyRef]) {
 
@@ -42,12 +43,12 @@ class WebObject[B](val request: MockHttpServletRequest,
 
 }
 
-abstract class WebObjectBody[+B](val payload: B) {
+abstract class WebObjectBody[+B, +E](val payload: B) {
 
-  def <<[R >: B](selector: String, value: String): WebObjectBody[R]
+  def <<[BB >: B, EE >: E](selector: String, value: String): WebObjectBody[BB, EE]
 
-  def >>[R](selector: String): Option[R]
+  def >>[R >: E](selector: String): Option[R]
 
-  def >>![R](selector: String): R
+  def >>![R >: E](selector: String): R
 
 }

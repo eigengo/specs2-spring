@@ -6,27 +6,25 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.specs2.specification.Example
 import org.springframework.mock.web.{MockHttpSession, MockHttpServletResponse}
 import org.springframework.web.servlet.ModelAndView
+import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
 
 /**
  * @author janmachacek
  */
 trait Specification extends org.specs2.mutable.Specification with PayloadRegistry {
   private val testContext = new TestContext()
+  private val httpResponsesPayload = new HttpResponsesPayload
 
-  def getWebObjectBody(response: MockHttpServletResponse): WebObjectBody[_] = {
+  def getWebObjectBody(response: MockHttpServletResponse): WebObjectBody[_, _] = {
+    if (response.getStatus != HttpServletResponse.SC_OK)
+      return this.httpResponsesPayload.parseHttpResponses(response).get
+
     for (f <- this.payloadFunctions) {
       val s = f(response)
       if (s.isDefined) return s.get
     }
 
-    new WebObjectBody[Null](null) {
-
-      def <<[R >: Nothing](selector: String, value: String) = throw new RuntimeException("Unknown body")
-
-      def >>[R](selector: String) = throw new RuntimeException("Unknown body")
-
-      def >>![R](selector: String) = throw new RuntimeException("Unknown body")
-    }
+    throw new RuntimeException("No body for " + response)
   }
 
   override def is: org.specs2.specification.Fragments = {
@@ -36,7 +34,7 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
 
     val ttd = new TestTransactionDefinitionExtractor().extract(this)
     if (ttd == TestTransactionDefinition.NOT_TRANSACTIONAL)
-      // no transactions required
+    // no transactions required
       this.specFragments
     else {
       // transactions required, run each example body in a [separate] transaction
@@ -65,7 +63,9 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
   def post(url: String, params: Map[String, Any]) = {
     val request = new JspCapableMockHttpServletRequest("POST", url,
       this.testContext.getDispatcherServlet.getServletConfig)
-    params.foreach {e => request.setParameter(e._1, e._2.toString)}
+    params.foreach {
+      e => request.setParameter(e._1, e._2.toString)
+    }
 
     doService(request)
   }
@@ -92,12 +92,16 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
       requestThread.start()
       requestThread.join()
 
-      val modelAndView = request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).asInstanceOf[ModelAndView]
-      val s = getWebObjectBody(response)
+      if (response.getRedirectedUrl != null) {
+        response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY)
+      }
 
-      new WebObject(request, response, modelAndView, s)
+      val modelAndView = request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).asInstanceOf[ModelAndView]
+      val webObjectBody = getWebObjectBody(response)
+
+      new WebObject(request, response, modelAndView, webObjectBody)
     } catch {
-      case e: Exception => throw new RuntimeException(e);
+      case e: Exception => e.printStackTrace(); throw new RuntimeException(e);
     }
   }
 

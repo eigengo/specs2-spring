@@ -4,7 +4,7 @@ import org.specs2.spring.webexample.services.ManagementService
 import org.springframework.beans.factory.annotation.Autowired
 import org.specs2.spring.webexample.domain.User
 import org.springframework.transaction.annotation.Transactional
-import org.specs2.spring.web.{JavaScriptPayload, XhtmlPayload, WebContextConfiguration, Specification}
+import org.specs2.spring.web._
 
 /**
  * @author janmachacek
@@ -27,7 +27,7 @@ class IndexControllerTest extends Specification with XhtmlPayload with JavaScrip
     wo.model(classOf[User]).getFullName must_== ("Jan")
     wo.model(classOf[User]).getUsername must_== ("aaaa")
 
-    wo >> "/a/b/c"
+    (wo >> "#username").get must_== ("aaaa")
 
     success
   }
