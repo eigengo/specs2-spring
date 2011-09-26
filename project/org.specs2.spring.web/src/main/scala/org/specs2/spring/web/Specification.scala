@@ -38,7 +38,7 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
       val s = f(response)
       if (s.isDefined) return s.get
     }
-
+ 
     throw new RuntimeException("No body for " + response)
   }
 

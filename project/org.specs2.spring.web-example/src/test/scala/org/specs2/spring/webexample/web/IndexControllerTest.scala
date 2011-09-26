@@ -28,6 +28,10 @@ class IndexControllerTest extends Specification with XhtmlPayload with JavaScrip
     wo.model(classOf[User]).getUsername must_== ("aaaa")
 
     (wo >>! "#username") must_== ("aaaa")
+
+    //wo << ("#username", "ffff")
+    
+    //post(wo)
   }
 
 }
