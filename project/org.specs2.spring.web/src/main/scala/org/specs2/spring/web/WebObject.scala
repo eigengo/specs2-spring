@@ -6,15 +6,15 @@ import org.springframework.web.servlet.ModelAndView
 /**
  * @author janmachacek
  */
-class WebObject(val request: MockHttpServletRequest,
+class WebObject[B](val request: MockHttpServletRequest,
                  val response: MockHttpServletResponse,
-                 val modelAndView: ModelAndView) {
+                 val modelAndView: ModelAndView,
+                 val body: WebObjectBody[B]) {
 
-  def responseBytes = response.getContentAsByteArray
   def model = new Model(modelAndView.getModel)
 
   def << (selector: String, value: String) = {
-    new WebObject(request, response, modelAndView)
+    new WebObject(request, response, modelAndView, body)
   }
 
   def >> (selector: String) = {
@@ -39,5 +39,15 @@ class WebObject(val request: MockHttpServletRequest,
       throw new RuntimeException("No element type " + attributeType + " found in the model.")
     }
   }
+
+}
+
+abstract class WebObjectBody[+B](val payload: B) {
+
+  def <<[R >: B](selector: String, value: String): WebObjectBody[R]
+
+  def >>[R](selector: String): Option[R]
+
+  def >>![R](selector: String): R
 
 }

@@ -13,18 +13,20 @@ import org.springframework.web.servlet.ModelAndView
 trait Specification extends org.specs2.mutable.Specification with PayloadRegistry {
   private val testContext = new TestContext()
 
-  def x(x: AnyRef) {
-    println("registered " + x)
-  }
-
-  def g(contentType: String, body: Array[Byte]): String = {
+  def getWebObjectBody(response: MockHttpServletResponse): WebObjectBody[_] = {
     for (f <- this.payloadFunctions) {
-      val s = f(contentType, body)
+      val s = f(response)
       if (s.isDefined) return s.get
     }
 
-    "unknown"
-    // throw new RuntimeException("Did not understand " + contentType + ". Include the appropriate trait.")
+    new WebObjectBody[Null](null) {
+
+      def <<[R >: Nothing](selector: String, value: String) = throw new RuntimeException("Unknown body")
+
+      def >>[R](selector: String) = throw new RuntimeException("Unknown body")
+
+      def >>![R](selector: String) = throw new RuntimeException("Unknown body")
+    }
   }
 
   override def is: org.specs2.specification.Fragments = {
@@ -91,10 +93,9 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
       requestThread.join()
 
       val modelAndView = request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).asInstanceOf[ModelAndView]
-      val s = g(response.getContentType, response.getContentAsByteArray)
-      println(s)
+      val s = getWebObjectBody(response)
 
-      new WebObject(request, response, modelAndView)
+      new WebObject(request, response, modelAndView, s)
     } catch {
       case e: Exception => throw new RuntimeException(e);
     }
