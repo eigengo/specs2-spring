@@ -21,9 +21,9 @@ class IndexControllerTest extends Specification {
   "web roundtrip test" in {
     this.managementService.findAll(classOf[User]).isEmpty must beTrue
 
-    post("/users.html", Map("username" -> "aaaa", "fullName" -> "Jan"))
+    Xhtml(post)("/users.html", Map("username" -> "aaaa", "fullName" -> "Jan"))
 
-    val wo = Xhtml(get("/users/1.html", Map()))
+    val wo = Xhtml(get)("/users/1.html", Map())
     wo.model(classOf[User]).getFullName must_== ("Jan")
     wo.model(classOf[User]).getUsername must_== ("aaaa")
 

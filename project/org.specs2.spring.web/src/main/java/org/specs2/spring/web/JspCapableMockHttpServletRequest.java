@@ -25,13 +25,17 @@ public class JspCapableMockHttpServletRequest extends MockHttpServletRequest {
 
 	private final ServletConfig servletConfig;
 
-	public JspCapableMockHttpServletRequest(String method, String requestURI,
-											ServletConfig servletConfig) {
-		super(method, requestURI);
+	public JspCapableMockHttpServletRequest(String method, ServletConfig servletConfig) {
+		super(method, "/");
 		this.servletConfig = servletConfig;
 		setRequestedSessionId("x");
 		setRequestedSessionIdValid(true);
 		setRequestedSessionIdFromCookie(true);
+	}
+
+	@Override
+	public void setRequestURI(String requestURI) {
+		super.setRequestURI(requestURI);
 	}
 
 	@Override

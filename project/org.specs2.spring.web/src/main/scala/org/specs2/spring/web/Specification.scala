@@ -8,6 +8,7 @@ import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResp
 
 object Specification {
   case class RR(request: MockHttpServletRequest, response: MockHttpServletResponse)
+  case class R(request: MockHttpServletRequest, op: (MockHttpServletRequest) => MockHttpServletResponse)
 }
 
 /**
@@ -66,22 +67,18 @@ trait Specification extends org.specs2.mutable.Specification {
     }
   }
 
-  def x(url: String, params: Map[String, Any]) = {
-    val request = new JspCapableMockHttpServletRequest("POST", url,
-      this.testContext.getDispatcherServlet.getServletConfig)
-    params.foreach {
-      e => request.setParameter(e._1, e._2.toString)
-    }
+  def post = {
+    R(new JspCapableMockHttpServletRequest("POST", this.testContext.getDispatcherServlet.getServletConfig), { request: MockHttpServletRequest => doService(request)})
   }
 
-  /**
+  /*
    * Perform the HTTP POST method on the URL with parameters passed as the request
    * parameters of the post.
    *
    * @param url the URL to post to; for example {{/users.html}}
    * @param params the post parameters; for example {{Map("username" -> "janm")}}
    * @return the {{WebObject}} representing the response
-   */
+   *
   def post(url: String, params: Map[String, Any]) = {
     val request = new JspCapableMockHttpServletRequest("POST", url,
       this.testContext.getDispatcherServlet.getServletConfig)
@@ -92,13 +89,13 @@ trait Specification extends org.specs2.mutable.Specification {
     RR(request, doService(request))
   }
 
-  /**
    * Perform the HTTP POST method on the URL.
    *
    * @param url the URL to get; for example {{/users/update.html}}
    * @return the {{WebObject}} representing the response
-   */
+   *
   def post(url: String) = get(url, Map())
+  */
 
   /**
    * Perform the HTTP GET method on the URL with the request parameters passed
@@ -108,7 +105,9 @@ trait Specification extends org.specs2.mutable.Specification {
    * @param params the GET parameters; for example {{Map("id" -> 5)}}
    * @return the {{WebObject}} representing the response
    */
-  def get(url: String, params: Map[String, Any]) = {
+  def get = {
+    R(new JspCapableMockHttpServletRequest("GET", this.testContext.getDispatcherServlet.getServletConfig), { request: MockHttpServletRequest => doService(request)})
+    /*
     val request = new JspCapableMockHttpServletRequest("GET", url,
       this.testContext.getDispatcherServlet.getServletConfig)
     params.foreach {
@@ -116,7 +115,7 @@ trait Specification extends org.specs2.mutable.Specification {
     }
     // request.setSession(this.httpSession)
 
-    RR(request, doService(request))
+    RR(request, doService(request))*/
   }
 
   /*
@@ -128,7 +127,7 @@ trait Specification extends org.specs2.mutable.Specification {
   def get(url: String) = get(url, Map())
   */
 
-  private def doService(request: JspCapableMockHttpServletRequest) = {
+  private def doService(request: MockHttpServletRequest) = {
     try {
       val response = new MockHttpServletResponse()
       val dispatcherServlet = this.testContext.getDispatcherServlet
