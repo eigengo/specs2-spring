@@ -16,10 +16,10 @@ import org.springframework.web.servlet.ModelAndView
  *
  * @author janmachacek
  */
-class WebObject[B, E](val request: MockHttpServletRequest,
+class WebObject[B <: WebObjectBody](val request: MockHttpServletRequest,
                  val response: MockHttpServletResponse,
                  val modelAndView: Option[ModelAndView],
-                 val body: WebObjectBody[B, E]) {
+                 val body: Option[B]) {
 
   /**
    * Gets the convenient wrapper around the Spring model portion of the {{ModelAndView}}
@@ -35,31 +35,12 @@ class WebObject[B, E](val request: MockHttpServletRequest,
    */
   def model = new Model(modelAndView.get.getModel)
 
-  def <<(selector: String, value: String) =
-    new WebObject(request, response, modelAndView, body << (selector, value))
-
-  /**
-   * Selects content from the underlying body.
-   *
-   * @param selector the expression that will be used to select the data from the body
-   * @return the optional result of evaluating the expression
-   */
-  def >>(selector: String) = body >> selector
-
-  /**
-   * Selects content from the underlying body.
-   *
-   * @param selector the expression that will be used to select the data from the body
-   * @return the result of evaluating the expression
-   */
-  def >>!(selector: String) = body >>! selector
-
   /**
    * Returns the payload of the web object's body
    *
    * @return the body of the response
    */
-  def payload = body.payload
+  def ! = body.get
 
   /**
    * Convenient wrapper around the model portion of the {{ModelAndView}}
@@ -100,35 +81,7 @@ class WebObject[B, E](val request: MockHttpServletRequest,
 
 /**
  * Models the body of the WebObject--it is the chewed-over response bytes
- *
- * @param B the type of the entire body
- * @param E the result of evaluating the selectors
  */
-abstract class WebObjectBody[+B, +E](val payload: B) {
-
-  /**
-   * Sets the value of the selector {{selector}} to value {{value}}
-   *
-   * @param selector the selector expression.
-   * @param value the new value for the entity identified by {{selector}}
-   * @return the updated WebObjectBody
-   */
-  def <<[BB >: B, EE >: E](selector: String, value: Any): WebObjectBody[BB, EE]
-
-  /**
-   * Gets the value of the selector {{selector}}
-   *
-   * @param selector the expression that identifies the element in the body
-   * @return optionally the result of the expression
-   */
-  def >>[R >: E](selector: String): Option[R]
-
-  /**
-   * Gets the value of the selector {{selector}}
-   *
-   * @param selector the expression that identifies the element in the body
-   * @return the result of the expression
-   */
-  def >>![R >: E](selector: String): R = >>(selector).get
+abstract class WebObjectBody {
 
 }

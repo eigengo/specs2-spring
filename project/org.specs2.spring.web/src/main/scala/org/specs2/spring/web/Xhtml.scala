@@ -2,20 +2,26 @@ package org.specs2.spring.web
 
 import org.springframework.mock.web.MockHttpServletResponse
 import xml.{Node, XML}
+import javax.servlet.http.HttpServletResponse
+import org.springframework.web.servlet.ModelAndView
 
 /**
  * Parses the XHTML responses
  *
  * @author janmachacek
  */
-trait XhtmlPayload extends PayloadRegistryAccess {
-  register(parseXhtml _)
+object Xhtml {
+  import Specification._
 
-  def parseXhtml(response: MockHttpServletResponse) = {
-    if (response.getContentType.startsWith("text/html"))
-      Some(new XhtmlWebObjectBody(response.getContentAsString))
-    else
-      None
+  def apply(rr: RR) = {
+      if (rr.response.getRedirectedUrl != null) {
+        rr.response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY)
+      }
+
+      val unsafeMav = rr.request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).asInstanceOf[ModelAndView]
+      val mav = if (unsafeMav != null) Some(unsafeMav) else None
+
+      new WebObject(rr.request, rr.response, mav, Some(new XhtmlWebObjectBody(rr.response.getContentAsString)))
   }
 
 }
@@ -25,8 +31,8 @@ trait XhtmlPayload extends PayloadRegistryAccess {
  *
  * @param payload the XHTML string
  */
-class XhtmlWebObjectBody(payload: String) extends WebObjectBody[String, String](payload) {
-  private val body = XML.loadString(payload)
+class XhtmlWebObjectBody(val body: String) extends WebObjectBody {
+  private val dom = XML.loadString(body)
 
   def <<[BB >: String, EE >: String](selector: String, value: Any) = this
 
@@ -35,7 +41,7 @@ class XhtmlWebObjectBody(payload: String) extends WebObjectBody[String, String](
     require("" != selector)
 
     def findElementBy(attribute: String, value: String) = {
-      val input = body \\ "_" find { n =>
+      val input = dom \\ "_" find { n =>
         val attrs = n.attribute(attribute)
         if (attrs == None) false
         else attrs.get exists {_.text == value}
@@ -53,7 +59,7 @@ class XhtmlWebObjectBody(payload: String) extends WebObjectBody[String, String](
     }
 
     selector.charAt(0) match {
-      case '/' => Some((body \\ selector).text)
+      case '/' => Some((dom \\ selector).text)
       case '#' =>
         findElementValue(findElementBy("id", selector.substring(1)))
       case '.' =>

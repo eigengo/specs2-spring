@@ -13,8 +13,8 @@ import org.specs2.spring.web._
   webContextLocations = Array("/WEB-INF/sw-servlet.xml"),
   contextLocations = Array("classpath*:/META-INF/spring/module-context.xml"))
 @Transactional
-class IndexControllerTest extends Specification with XhtmlPayload with JavaScriptPayload {
-  
+class IndexControllerTest extends Specification {
+
   @Autowired
   var managementService: ManagementService = _
 
@@ -23,15 +23,14 @@ class IndexControllerTest extends Specification with XhtmlPayload with JavaScrip
 
     post("/users.html", Map("username" -> "aaaa", "fullName" -> "Jan"))
 
-    val wo = get("/users/1.html", Map())
+    val wo = Xhtml(get("/users/1.html", Map()))
     wo.model(classOf[User]).getFullName must_== ("Jan")
     wo.model(classOf[User]).getUsername must_== ("aaaa")
 
-    (wo >>! "#username") must_== ("aaaa")
+    val x = (wo!) >> ("#username")
+    println(x)
 
-    //wo << ("#username", "ffff")
-    
-    //post(wo)
+    success
   }
 
 }

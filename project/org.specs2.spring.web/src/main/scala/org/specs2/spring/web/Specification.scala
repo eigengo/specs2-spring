@@ -4,9 +4,11 @@ import org.specs2.spring.{TestTransactionDefinitionExtractor, EnvironmentExtract
 import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefinition
 import org.springframework.transaction.PlatformTransactionManager
 import org.specs2.specification.Example
-import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.web.servlet.ModelAndView
-import javax.servlet.http.HttpServletResponse
+import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
+
+object Specification {
+  case class RR(request: MockHttpServletRequest, response: MockHttpServletResponse)
+}
 
 /**
  * The Spring-based web application testing trait. It works just like the plain
@@ -26,21 +28,10 @@ import javax.servlet.http.HttpServletResponse
  *
  * @author janmachacek
  */
-trait Specification extends org.specs2.mutable.Specification with PayloadRegistry {
+trait Specification extends org.specs2.mutable.Specification {
+  import Specification._
+
   private val testContext = new TestContext()
-  private val httpResponsesPayload = new HttpResponsesPayload
-
-  private def getWebObjectBody(response: MockHttpServletResponse): WebObjectBody[_, _] = {
-    if (response.getStatus != HttpServletResponse.SC_OK)
-      return this.httpResponsesPayload.parseHttpResponses(response).get
-
-    for (f <- this.payloadFunctions) {
-      val s = f(response)
-      if (s.isDefined) return s.get
-    }
- 
-    throw new RuntimeException("No body for " + response)
-  }
 
   override def is: org.specs2.specification.Fragments = {
     // setup the specification's environment
@@ -75,6 +66,14 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
     }
   }
 
+  def x(url: String, params: Map[String, Any]) = {
+    val request = new JspCapableMockHttpServletRequest("POST", url,
+      this.testContext.getDispatcherServlet.getServletConfig)
+    params.foreach {
+      e => request.setParameter(e._1, e._2.toString)
+    }
+  }
+
   /**
    * Perform the HTTP POST method on the URL with parameters passed as the request
    * parameters of the post.
@@ -90,7 +89,7 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
       e => request.setParameter(e._1, e._2.toString)
     }
 
-    doService(request)
+    RR(request, doService(request))
   }
 
   /**
@@ -116,7 +115,8 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
       e => request.setParameter(e._1, e._2.toString)
     }
     // request.setSession(this.httpSession)
-    doService(request)
+
+    RR(request, doService(request))
   }
 
   /*
@@ -143,15 +143,7 @@ trait Specification extends org.specs2.mutable.Specification with PayloadRegistr
       requestThread.start()
       requestThread.join()
 
-      if (response.getRedirectedUrl != null) {
-        response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY)
-      }
-
-      val unsafeMav = request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).asInstanceOf[ModelAndView]
-      val mav = if (unsafeMav != null) Some(unsafeMav) else None
-      val webObjectBody = getWebObjectBody(response)
-
-      new WebObject(request, response, mav, webObjectBody)
+      response
     } catch {
       case e: Exception => e.printStackTrace(); throw new RuntimeException(e);
     }
