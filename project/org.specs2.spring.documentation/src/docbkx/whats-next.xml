@@ -31,7 +31,7 @@
   webContextLocations = Array("/WEB-INF/sw-servlet.xml"),
   contextLocations = Array("classpath*:/META-INF/spring/module-context.xml"))
 @Transactional
-class IndexControllerTest extends Specification with XhtmlPayload with JavaScriptPayload {
+class IndexControllerTest extends Specification {
 
   @Autowired
   var managementService: ManagementService = _
@@ -39,13 +39,13 @@ class IndexControllerTest extends Specification with XhtmlPayload with JavaScrip
   "web roundtrip test" in {
     this.managementService.findAll(classOf[User]).isEmpty must beTrue
 
-    post("/users.html", Map("username" -> "aaaa", "fullName" -> "Jan"))
+    Xhtml(post)("/users.html", Map("username" -> "aaaa", "fullName" -> "Jan")
 
-    val wo = get("/users/1.html", Map())
+    val wo = Xhtml(get)("/users/1.html")
     wo.model(classOf[User]).getFullName must_== ("Jan")
     wo.model(classOf[User]).getUsername must_== ("aaaa")
 
-    (wo >>! "#username") must_== ("aaaa")
+    (wo!) >>! ("#username") must_== ("aaaa")
   }
 
 }]]>
