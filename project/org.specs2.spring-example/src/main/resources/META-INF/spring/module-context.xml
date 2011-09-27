@@ -2,33 +2,18 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:context="http://www.springframework.org/schema/context"
 	   xmlns:jee="http://www.springframework.org/schema/jee"
-	   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	   xmlns:tx="http://www.springframework.org/schema/tx"
-	   xmlns:integration="http://www.springframework.org/schema/integration"
-	   xmlns:jms="http://www.springframework.org/schema/integration/jms"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
-			http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
-			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-			http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
-			http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
 	<context:component-scan base-package="org.specs2.springexample"/>
 
-	<!--
-	<jee:jndi-lookup id="connectionFactory" jndi-name="java:comp/env/jms/connectionFactory" expected-type="javax.jms.ConnectionFactory"/>
-	<jee:jndi-lookup id="queue" jndi-name="java:comp/env/jms/queue" expected-type="javax.jms.Queue"/>
-
-	-->
-
-	<!--
-	<integration:annotation-config/>
-	<integration:channel id="in"/>
-	<jms:message-driven-channel-adapter destination="queue" channel="in" connection-factory="connectionFactory"/>
-	-->
 	<tx:jta-transaction-manager />
+
 	<tx:annotation-driven />
+
 	<jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/test" expected-type="javax.sql.DataSource"/>
 
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
@@ -52,6 +37,5 @@
 	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
 		<property name="sessionFactory" ref="sessionFactory"/>
 	</bean>
-
 
 </beans>

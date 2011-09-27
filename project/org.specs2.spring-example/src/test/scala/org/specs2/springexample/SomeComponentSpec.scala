@@ -3,6 +3,7 @@ package org.specs2.springexample
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.specs2.spring.{BeanTables, HibernateDataAccess, Specification}
+
 /**
  * Specification that creates the Spring ApplicationContext; the configuration for the context relies on some
  * entries in the JNDI tree, which the {@code org.specs2.spring.Specification} inserts according to the "instructions"
@@ -22,29 +23,24 @@ class SomeComponentSpec extends Specification with HibernateDataAccess with Bean
   /**
    * Demonstrates usage of specification with example
    */
-  "Some such" in {
-    "generate 10 users " ! generate(10)
+  "Generate 10 riders" in {
+    val count = 10
+
+    this.someComponent.generate(count)
+    this.someComponent.findAll(classOf[Rider]).size() must be_==(count)
   }
 
   /**
    * Shows the usage of BeanTables and HibernateDataAccess to set up and insert test objects
    * using the convenient tabular notation.
    */
-  "Hibernate insert all" in {
-    "age" | "username"  | "name" | "teamName" |
-      32  ! "janm"      ! "Jan"  ! "Wheelers" |
-      30  ! "anic"      ! "Ani"  ! "Team GB"  |> insert[Rider]
+  "Setup data & getByUsername" in {
+    "age" | "username" | "name" | "teamName" |
+      32 ! "janm" ! "Jan" ! "Wheelers" |
+      30 ! "anic" ! "Ani" ! "Team GB" |> insert[Rider]
 
     this.someComponent.getByUsername("janm").getName must_== ("Jan")
-  }
-
-  /**
-   * Example that calls the {@code generate} method and verifies that it generated the expected
-   * number of users.
-   */
-  def generate(count: Int) = {
-    this.someComponent.generate(count)
-    this.hibernateTemplate.find("from Rider").size() must be_==(count)
+    this.someComponent.getByUsername("anic").getName must_== ("Ani")
   }
 
 }
