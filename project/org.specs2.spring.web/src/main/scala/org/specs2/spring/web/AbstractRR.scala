@@ -30,6 +30,10 @@ abstract class AbstractRR[B <: WebObjectBody](r: RR) {
 
   def makeBody(response: MockHttpServletResponse): Option[B]
 
+  def apply(r: Requestable) = {
+    service { request => r.request(request) }
+  }
+
   def apply(url: String, params: Map[String, AnyRef]) = {
     service { request =>
       request.setRequestURI(url)

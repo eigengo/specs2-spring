@@ -19,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView
 class WebObject[B <: WebObjectBody](val request: MockHttpServletRequest,
                  val response: MockHttpServletResponse,
                  val modelAndView: Option[ModelAndView],
-                 val body: Option[B]) {
+                 val bodyOption: Option[B]) {
 
   /**
    * Gets the convenient wrapper around the Spring model portion of the {{ModelAndView}}
@@ -40,7 +40,9 @@ class WebObject[B <: WebObjectBody](val request: MockHttpServletRequest,
    *
    * @return the body of the response
    */
-  def ! = body.get
+  def ! = body
+  
+  def body = bodyOption.get
 
   /**
    * Convenient wrapper around the model portion of the {{ModelAndView}}
@@ -64,8 +66,9 @@ class WebObject[B <: WebObjectBody](val request: MockHttpServletRequest,
      * @param attributeType the type of the attribute in the model
      * @return the value in the model
      */
-    def apply[T <: AnyRef](attributeType: Class[T]): T = {
+    def apply[T <: AnyRef](implicit evidence: ClassManifest[T]): T = {
       val i = modelMap.entrySet().iterator()
+      val attributeType = evidence.erasure
       while (i.hasNext) {
         val e = i.next
         if (e.getValue != null && e.getValue.getClass == attributeType) {
@@ -83,3 +86,16 @@ class WebObject[B <: WebObjectBody](val request: MockHttpServletRequest,
  * Models the body of the WebObject--it is the chewed-over response bytes
  */
 abstract class WebObjectBody
+
+/**
+ * Identifies objects that can modify the {{MockHttpServletRequest}}
+ */
+trait Requestable {
+
+  /**
+   * Implementations must provide a way to apply their bodies to the given {{MockHttpServletRequest}}
+   *
+   * @param request the HTTP request to be modified
+   */
+  def request(request: MockHttpServletRequest): MockHttpServletRequest
+}

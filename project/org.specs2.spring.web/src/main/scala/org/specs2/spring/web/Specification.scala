@@ -2,9 +2,11 @@ package org.specs2.spring.web
 
 import org.specs2.spring.{TestTransactionDefinitionExtractor, EnvironmentExtractor, JndiEnvironmentSetter}
 import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefinition
-import org.springframework.transaction.PlatformTransactionManager
 import org.specs2.specification.Example
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
+import java.lang.ThreadLocal
+import org.springframework.transaction.support.{DefaultTransactionStatus, AbstractPlatformTransactionManager}
+import org.springframework.transaction.{TransactionDefinition, TransactionStatus, PlatformTransactionManager}
 
 /**
  * Specification object defining the {{RR}} case class, which carries the
@@ -34,44 +36,51 @@ object Specification {
  */
 trait Specification extends org.specs2.mutable.Specification {
   import Specification._
-
   private val testContext = new TestContext()
 
   override def is: org.specs2.specification.Fragments = {
     // setup the specification's environment
     new JndiEnvironmentSetter().prepareEnvironment(new EnvironmentExtractor().extract(this))
-    this.testContext.setup(this)
+    testContext.setup(this)
 
     val ttd = new TestTransactionDefinitionExtractor().extract(this)
-    if (ttd == TestTransactionDefinition.NOT_TRANSACTIONAL)
-    // no transactions required
-      this.specFragments
-    else {
+    testContext.setTestTransactionDefinition(ttd)
+    if (ttd == TestTransactionDefinition.NOT_TRANSACTIONAL) {
+      // no transactions required 
+      specFragments
+    } else {
       // transactions required, run each example body in a [separate] transaction
-      val transactionManager = this.testContext.getBean(classOf[PlatformTransactionManager])
+      val transactionManager = testContext.getBean(classOf[PlatformTransactionManager])
+      testContext.setPlatformTransactionManager(transactionManager)
 
-      this.specFragments.map {
+      specFragments.map {
         f =>
           f match {
             case Example(desc, body) =>
-              Example(desc, {
-                val transactionStatus = transactionManager.getTransaction(ttd.getTransactionDefinition)
-                try {
-                  val result = body()
-                  if (!ttd.isDefaultRollback) transactionManager.commit(transactionStatus)
-                  result
-                } finally {
-                  if (ttd.isDefaultRollback) transactionManager.rollback(transactionStatus)
-                }
-              })
+              Example(desc, {transactionally(body)})
             case _ => f
           }
       }
     }
   }
 
+  private def transactionally[T](f: () => T) = {
+    val ttd = testContext.getTestTransactionDefinition
+    if (ttd == TestTransactionDefinition.NOT_TRANSACTIONAL) f
+
+    val transactionManager = testContext.getPlatformTransactionManager
+    val transactionStatus = transactionManager.getTransaction(ttd.getTransactionDefinition)
+    try {
+      val result = f()
+      if (!ttd.isDefaultRollback) transactionManager.commit(transactionStatus)
+      result
+    } finally {
+      if (ttd.isDefaultRollback) transactionManager.rollback(transactionStatus)
+    }
+  }
+
   private def service(method: String) =
-    RR(new JspCapableMockHttpServletRequest(method, this.testContext.getDispatcherServlet.getServletConfig), { request: MockHttpServletRequest => doService(request)})
+    RR(new JspCapableMockHttpServletRequest(method, testContext.getDispatcherServlet.getServletConfig), { request: MockHttpServletRequest => doService(request)})
 
   /**
    * Returns the {{RR}} instance that can be passed to the companion objects that
@@ -100,17 +109,21 @@ trait Specification extends org.specs2.mutable.Specification {
   private def doService(request: MockHttpServletRequest) = {
     try {
       val response = new MockHttpServletResponse()
-      val dispatcherServlet = this.testContext.getDispatcherServlet
+      val dispatcherServlet = testContext.getDispatcherServlet
 
+      /*
       val requestThread = new Thread(new Runnable() {
         def run() {
-          // SecurityContextHolder.getContext().setAuthentication(auth)
           dispatcherServlet.service(request, response)
+          // SecurityContextHolder.getContext().setAuthentication(auth)
         }
 
       }, "Web Thread");
       requestThread.start()
       requestThread.join()
+      */
+
+      dispatcherServlet.service(request, response)
 
       response
     } catch {

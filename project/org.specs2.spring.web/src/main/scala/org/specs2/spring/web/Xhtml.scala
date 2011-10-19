@@ -1,8 +1,8 @@
 package org.specs2.spring.web
 
-import xml.{Node, XML}
 import Specification._
-import org.springframework.mock.web.MockHttpServletResponse
+import xml.{NodeSeq, Node, XML}
+import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 
 /**
  * XHTML response companion object
@@ -28,7 +28,7 @@ object Xhtml {
  */
 class Xhtml(r: RR) extends AbstractRR[XhtmlWebObjectBody](r) {
 
-  def makeBody(response: MockHttpServletResponse) = 
+  def makeBody(response: MockHttpServletResponse) =
     Some(new XhtmlWebObjectBody(response.getContentAsString))
 }
 
@@ -44,8 +44,10 @@ class Xhtml(r: RR) extends AbstractRR[XhtmlWebObjectBody](r) {
  *
  * @param payload the XHTML string
  */
-class XhtmlWebObjectBody(val body: String) extends WebObjectBody {
+class XhtmlWebObjectBody(val body: String) extends WebObjectBody with Requestable  {
   private val dom = XML.loadString(body)
+
+  def request(request: MockHttpServletRequest) = request
 
   /**
    * Sets the value of the input element identified by {{selector}}
@@ -58,20 +60,29 @@ class XhtmlWebObjectBody(val body: String) extends WebObjectBody {
   def <<(selector: String, value: Any) = this
 
   /**
+   * Selects a form using the given {{selector}} and returns a new {{XhtmlWebObjectBody}} containing just the
+   * selected form.
+   *
+   * @param selector the selector that identifies the form
+   * @return XhtmlWebObjectBody instance with just the selected form
+   */
+  def form(selector: String) = {
+    val form = select(selector)
+    if (form == None)
+      this
+    else
+      new XhtmlWebObjectBody(form.get.text)
+  }
+
+  /**
    * Computes the value of the element identified by {{selector}}
    *
    * @param selector the selector that idenfieids the element to get
    * @return the value of the element, fails if the element does not exist
    */
   def >>!(selector: String) = >>(selector).get
-
-  /**
-   * Computes the value of the element identified by {{selector}}
-   *
-   * @param selector the selector that idenfieids the element to get
-   * @return optionally, the value of the element
-   */
-  def >>(selector: String) = {
+  
+  private def select(selector: String) = {
     require(selector != null)
     require("" != selector)
 
@@ -88,6 +99,24 @@ class XhtmlWebObjectBody(val body: String) extends WebObjectBody {
       input
     }
 
+    selector.charAt(0) match {
+      case '#' =>
+        findElementBy("id", selector.substring(1))
+      case '.' =>
+        findElementBy("class", selector.substring(1))
+      case _ =>
+        findElementBy("class", selector)
+    }
+
+  }
+  
+  /**
+   * Computes the value of the element identified by {{selector}}
+   *
+   * @param selector the selector that identifies the element to get
+   * @return optionally, the value of the element
+   */
+  def >>(selector: String) = {
     def findElementValue(element: Option[Node]) = {
       if (element == None) None
       val attributes = element.get.attribute("value")
@@ -95,16 +124,7 @@ class XhtmlWebObjectBody(val body: String) extends WebObjectBody {
       Some(attributes.get.head.text)
     }
 
-    selector.charAt(0) match {
-      case '/' => Some((dom \\ selector).text)
-      case '#' =>
-        findElementValue(findElementBy("id", selector.substring(1)))
-      case '.' =>
-        findElementValue(findElementBy("class", selector.substring(1)))
-      case _ =>
-        findElementValue(findElementBy("class", selector))
-    }
-
+    findElementValue(select(selector))
   }
 
 }
