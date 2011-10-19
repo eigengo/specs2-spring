@@ -1,7 +1,6 @@
 package org.specs2.spring.webexample.domain;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.Size;
 
@@ -11,7 +10,6 @@ import javax.validation.constraints.Size;
 @Entity
 public class User {
 	@Id
-	@GeneratedValue
 	private Long id;
 	@Size(min = 3)
 	private String username;

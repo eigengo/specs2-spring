@@ -4,9 +4,7 @@ import org.specs2.spring.{TestTransactionDefinitionExtractor, EnvironmentExtract
 import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefinition
 import org.specs2.specification.Example
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
-import java.lang.ThreadLocal
-import org.springframework.transaction.support.{DefaultTransactionStatus, AbstractPlatformTransactionManager}
-import org.springframework.transaction.{TransactionDefinition, TransactionStatus, PlatformTransactionManager}
+import org.springframework.transaction.PlatformTransactionManager
 
 /**
  * Specification object defining the {{RR}} case class, which carries the
@@ -20,15 +18,13 @@ object Specification {
  * The Spring-based web application testing trait. It works just like the plain
  * {{org.specs2.spring.Specification}}, but allows you to test the user interface
  * (read the servlet side) of your Spring application as well.
- * Typically, you will include one of the <i>payloads</i> traits, which are capable
- * of analysing the responses, allowing you to further analyse the returned values.
  * <pre>
  * @WebContextConfiguration(
  *   webContextLocations = Array("/WEB-INF/sw-servlet.xml"),
  *   contextLocations = Array("classpath*:/META-INF/spring/module-context.xml"))
  * @Transactional
- * class IndexControllerTest extends Specification with XhtmlPayload with JavaScriptPayload {
- *   // the post, get, put, delete methods now understand XHTML and JavaScript payloads
+ * class IndexControllerTest extends Specification {
+ *   // the post, get, put, delete methods
  * }
  * </pre>
  *
@@ -66,7 +62,7 @@ trait Specification extends org.specs2.mutable.Specification {
 
   private def transactionally[T](f: () => T) = {
     val ttd = testContext.getTestTransactionDefinition
-    if (ttd == TestTransactionDefinition.NOT_TRANSACTIONAL) f
+    if (ttd == TestTransactionDefinition.NOT_TRANSACTIONAL) f()
 
     val transactionManager = testContext.getPlatformTransactionManager
     val transactionStatus = transactionManager.getTransaction(ttd.getTransactionDefinition)
@@ -111,7 +107,6 @@ trait Specification extends org.specs2.mutable.Specification {
       val response = new MockHttpServletResponse()
       val dispatcherServlet = testContext.getDispatcherServlet
 
-      /*
       val requestThread = new Thread(new Runnable() {
         def run() {
           dispatcherServlet.service(request, response)
@@ -121,9 +116,6 @@ trait Specification extends org.specs2.mutable.Specification {
       }, "Web Thread");
       requestThread.start()
       requestThread.join()
-      */
-
-      dispatcherServlet.service(request, response)
 
       response
     } catch {

@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.specs2.spring.webexample.domain.User
 import org.springframework.transaction.annotation.Transactional
 import org.specs2.spring.web._
-import org.specs2.spring.annotation.TransactionManager
-
 /**
  * @author janmachacek
  */
@@ -20,7 +18,7 @@ class UserControllerSpecification extends Specification {
   var managementService: ManagementService = _
 
   "get roundtrip test" in {
-    Xhtml(post)("/users.html", Map("username" -> "aaaa", "fullName" -> "Jan"))
+    Xhtml(post)("/users.html", Map("id" -> "1", "username" -> "aaaa", "fullName" -> "Jan"))
 
     val wo = Xhtml(get)("/users/1.html")
     (wo.model[User].getFullName must_== ("Jan"))     ^
@@ -28,14 +26,16 @@ class UserControllerSpecification extends Specification {
     (wo.body >>! ("#username") must_== ("aaaa"))
   }
 
-  /*"roundtrip test" in {
-    Xhtml(post)("/users.html", Map("username" -> "aaaa", "fullName" -> "Jan"))
+  "roundtrip test" in {
+    Xhtml(post)("/users.html", Map("id" -> "2", "username" -> "aaaa", "fullName" -> "Jan"))
+
+    println(managementService.findAll(classOf[User]))
 
     val wo = Xhtml(get)("/users/2.html")
     wo.body <<("#fullName", "Edited Jan")
     // Xhtml(post)(wo.body)
     
-    managementService.findAll(classOf[User]).size() must_== (1)
-  }*/
+    success
+  }
 
 }
