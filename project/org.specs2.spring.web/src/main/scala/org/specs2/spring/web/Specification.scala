@@ -78,6 +78,8 @@ trait Specification extends org.specs2.mutable.Specification {
   private def service(method: String) =
     RR(new JspCapableMockHttpServletRequest(method, testContext.getDispatcherServlet.getServletConfig), { request: MockHttpServletRequest => doService(request)})
 
+  def * = service("*")
+
   /**
    * Returns the {{RR}} instance that can be passed to the companion objects that
    * perform the HTTP POST operation

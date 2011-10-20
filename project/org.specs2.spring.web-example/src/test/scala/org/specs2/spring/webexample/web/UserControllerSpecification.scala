@@ -31,7 +31,7 @@ class UserControllerSpecification extends Specification {
 
     val wo = Xhtml(get)("/users/2.html")
     wo.body <<("#fullName", "Edited Jan")
-    Xhtml(post)(wo.body)
+    Xhtml(*)(wo.body)
     
     managementService.get(classOf[User], 2L).getFullName must_== ("Edited Jan")
   }
