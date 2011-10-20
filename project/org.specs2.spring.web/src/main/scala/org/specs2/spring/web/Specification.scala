@@ -5,14 +5,8 @@ import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefin
 import org.specs2.specification.Example
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 import org.springframework.transaction.PlatformTransactionManager
+import org.specs2.web.RR
 
-/**
- * Specification object defining the {{RR}} case class, which carries the
- * {{request}} and an operation that turns the {{request}} into a {{response}}
- */
-object Specification {
-  case class RR(request: MockHttpServletRequest, op: (MockHttpServletRequest) => MockHttpServletResponse)
-}
 
 /**
  * The Spring-based web application testing trait. It works just like the plain
@@ -31,7 +25,6 @@ object Specification {
  * @author janmachacek
  */
 trait Specification extends org.specs2.mutable.Specification {
-  import Specification._
   private val testContext = new TestContext()
 
   override def is: org.specs2.specification.Fragments = {

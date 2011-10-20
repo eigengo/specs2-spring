@@ -1,9 +1,10 @@
-package org.specs2.spring.web
+package org.specs2.web
 
-import Specification._
 import javax.servlet.http.HttpServletResponse
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.mock.web.{MockHttpServletResponse, MockHttpServletRequest}
+
+case class RR(request: MockHttpServletRequest, op: (MockHttpServletRequest) => MockHttpServletResponse)
 
 /**
  * Abstract class that simplifies "standard" HTTP request processing

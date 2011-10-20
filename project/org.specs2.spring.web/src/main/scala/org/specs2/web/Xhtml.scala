@@ -1,4 +1,4 @@
-package org.specs2.spring.web
+package org.specs2.web
 
 import Specification._
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
