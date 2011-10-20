@@ -1,8 +1,8 @@
 package org.specs2.spring.web
 
 import Specification._
-import xml.{NodeSeq, Node, XML}
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
+import xml.{Node, XML}
 
 /**
  * XHTML response companion object
@@ -29,25 +29,60 @@ object Xhtml {
 class Xhtml(r: RR) extends AbstractRR[XhtmlWebObjectBody](r) {
 
   def makeBody(response: MockHttpServletResponse) =
-    Some(new XhtmlWebObjectBody(response.getContentAsString))
+    Some(new XhtmlWebObjectBody(response.getContentAsString, scala.collection.mutable.Map()))
 }
 
 /**
  * Response body that assumes that the body is the XHTML of the returned page.
  * The supported selectors in the {{<<}}, {{>>}} and {{>>!}} operators are
  * <ul>
- *   <li>#{id} selects element whose id matches the given {id}</li>
- *   <li>.{id} selects element whose class matches the given {id}</li>
- *   <li>[{id}] selects element whose name matches the given {id}</li>
+ *   <li>#{id} selects element whose <i>id</i> matches the given {id}</li>
+ *   <li>.{id} selects element whose <i>class</i> matches the given {id}</li>
+ *   <li>:{id} selects element whose <i>name</i> matches the given {id}</li>
  *   <li>/{xpath} selects element in the XPath</li>
  * </ul>
  *
  * @param payload the XHTML string
  */
-class XhtmlWebObjectBody(val body: String) extends WebObjectBody with Requestable  {
+class XhtmlWebObjectBody(val body: String, val params: scala.collection.mutable.Map[String, List[String]]) extends WebObjectBody with Requestable  {
   private val dom = XML.loadString(body)
+  private val ElementSelector = "(\\w+)?\\@([^=]+)=?(.*)?".r
 
-  def request(request: MockHttpServletRequest) = request
+  private def getAttributeValue(node: Node, attribute: String) = {
+    val as = node.attribute(attribute)
+    if (as != None) Some(as.get.text) else None
+  }
+
+  private def requestParameterNode(node: Node) = {
+    (getAttributeValue(node, "id"), getAttributeValue(node, "name"), getAttributeValue(node, "value"))
+  }
+
+  def request(request: MockHttpServletRequest) = {
+    val forms = dom \\ "form"
+    if (forms.length == 0) throw new NoFormException
+    if (forms.length > 1) throw new MultipleFormsException
+    
+    def addParameter(request: MockHttpServletRequest, param: String, value: String) {
+      val realValue = if (params.get(param) != None) params.get(param).get.toArray else Array(value)
+      request.addParameter(param, realValue)
+    }
+    
+    dom \\ "input" foreach { n =>
+      requestParameterNode(n) match {
+        case (None, Some(name), Some(value)) =>
+          addParameter(request, name, value)
+        case (Some(id), _, Some(value)) =>
+          addParameter(request, id, value)
+        case _ =>
+      }
+    }
+    
+    request.setRequestURI(getAttributeValue(forms(0), "action").get)
+    val method = getAttributeValue(forms(0), "method")
+    request.setMethod(if (method != None) method.get.toUpperCase else "POST")
+
+    request
+  }
 
   /**
    * Sets the value of the input element identified by {{selector}}
@@ -57,7 +92,12 @@ class XhtmlWebObjectBody(val body: String) extends WebObjectBody with Requestabl
    * @param value the new value for the element
    * @return XhtmlWebObjectBody instance with the element set
    */
-  def <<(selector: String, value: Any) = this
+  def <<(selector: String, value: String) = {
+    val values = params.get(selector)
+    params.put(selector, if (values == None) List(value) else values.get :+ value)
+
+    this
+  }
 
   /**
    * Selects a form using the given {{selector}} and returns a new {{XhtmlWebObjectBody}} containing just the
@@ -70,24 +110,54 @@ class XhtmlWebObjectBody(val body: String) extends WebObjectBody with Requestabl
     val form = select(selector)
     if (form == None)
       this
-    else
-      new XhtmlWebObjectBody(form.get.text)
+    else {
+      new XhtmlWebObjectBody(form.get.mkString, params)
+    }
   }
 
   /**
    * Computes the value of the element identified by {{selector}}
    *
-   * @param selector the selector that idenfieids the element to get
+   * @param selector the selector that identifies the element to get
    * @return the value of the element, fails if the element does not exist
+   * @see {{>>(selector: String)}}
    */
   def >>!(selector: String) = >>(selector).get
-  
+
+  /**
+   * Computes the value of the element identified by {{selector}}. The syntax of the {{selector}} is
+   * <ul>
+   *   <li>#<i>id</i> selects element whose <i>id</i> matches the given {id}</li>
+   *   <li>.<i>id</i> selects element whose <i>class</i> matches the given {id}</li>
+   *   <li>:<i>id</i> selects element whose <i>name</i> matches the given {id}</li>
+   *   <li>[<i>element</i>]@<i>attribute</i>[=<i>value</i>] selects the {{element}} (if not empty, else all elements)
+   *    that includes the specified {{attribute}} whose value is {{value}} (if not empty, else any value)
+   *   </li>
+   *   <li>/<i>xpath</i> selects element in the XPath</li>
+   * </ul>
+   *
+   * @param selector the selector that identifies the element to get.
+   * @return <i>optionally</i>, the value of the element
+   */
+  def >>(selector: String) = {
+    def findElementValue(element: Option[Node]) = {
+      if (element == None) None
+      val attributes = element.get.attribute("value")
+      if (attributes == None) None
+      Some(attributes.get.head.text)
+    }
+
+    findElementValue(select(selector))
+  }
+
   private def select(selector: String) = {
     require(selector != null)
     require("" != selector)
 
-    def findElementBy(attribute: String, value: String) = {
-      val input = dom \\ "_" find {
+    def findElementBy(element: String, attribute: String, value: String) = {
+      val elements = if (element != null) dom \\ element else dom \\ "_"
+
+      val input = elements find {
         n =>
           val attrs = n.attribute(attribute)
           if (attrs == None) false
@@ -101,30 +171,20 @@ class XhtmlWebObjectBody(val body: String) extends WebObjectBody with Requestabl
 
     selector.charAt(0) match {
       case '#' =>
-        findElementBy("id", selector.substring(1))
+        findElementBy(null, "id", selector.substring(1))
       case '.' =>
-        findElementBy("class", selector.substring(1))
+        findElementBy(null, "class", selector.substring(1))
+      case ':' =>
+        findElementBy(null, "name", selector.substring(1))
       case _ =>
-        findElementBy("class", selector)
+        selector match {
+          case ElementSelector(element, attribute, value) =>
+            findElementBy(element, attribute, value)
+          case _ =>
+            findElementBy(null, "class", selector)
+        }
     }
 
-  }
-  
-  /**
-   * Computes the value of the element identified by {{selector}}
-   *
-   * @param selector the selector that identifies the element to get
-   * @return optionally, the value of the element
-   */
-  def >>(selector: String) = {
-    def findElementValue(element: Option[Node]) = {
-      if (element == None) None
-      val attributes = element.get.attribute("value")
-      if (attributes == None) None
-      Some(attributes.get.head.text)
-    }
-
-    findElementValue(select(selector))
   }
 
 }

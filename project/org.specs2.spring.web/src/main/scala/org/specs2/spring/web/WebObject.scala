@@ -99,3 +99,7 @@ trait Requestable {
    */
   def request(request: MockHttpServletRequest): MockHttpServletRequest
 }
+
+class RequestConstructionException extends Exception
+class NoFormException extends RequestConstructionException
+class MultipleFormsException extends RequestConstructionException
