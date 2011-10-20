@@ -93,8 +93,14 @@ class XhtmlWebObjectBody(val body: String, val params: scala.collection.mutable.
    * @return XhtmlWebObjectBody instance with the element set
    */
   def <<(selector: String, value: String) = {
-    val values = params.get(selector)
-    params.put(selector, if (values == None) List(value) else values.get :+ value)
+    val realSelector = selector.charAt(0) match {
+      case '#' => selector.substring(1)
+      case ':' => selector.substring(1)
+      case _ => selector
+    }
+
+    val values = params.get(realSelector)
+    params.put(realSelector, if (values == None) List(value) else values.get :+ value)
 
     this
   }

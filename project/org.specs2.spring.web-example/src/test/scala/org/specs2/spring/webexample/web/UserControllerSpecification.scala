@@ -29,13 +29,11 @@ class UserControllerSpecification extends Specification {
   "roundtrip test" in {
     Xhtml(post)("/users.html", Map("id" -> "2", "username" -> "aaaa", "fullName" -> "Jan"))
 
-    println(managementService.findAll(classOf[User]))
-
     val wo = Xhtml(get)("/users/2.html")
     wo.body <<("#fullName", "Edited Jan")
-    // Xhtml(post)(wo.body)
+    Xhtml(post)(wo.body)
     
-    success
+    managementService.get(classOf[User], 2L).getFullName must_== ("Edited Jan")
   }
 
 }
