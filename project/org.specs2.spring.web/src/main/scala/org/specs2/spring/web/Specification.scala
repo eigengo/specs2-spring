@@ -5,8 +5,9 @@ import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefin
 import org.specs2.specification.Example
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 import org.springframework.transaction.PlatformTransactionManager
-import org.specs2.web.RR
-
+import org.springframework.web.servlet.ModelAndView
+import javax.servlet.http.HttpServletResponse
+import org.specs2.web.{WebObjectBody, WebObject, RR}
 
 /**
  * The Spring-based web application testing trait. It works just like the plain
@@ -69,7 +70,7 @@ trait Specification extends org.specs2.mutable.Specification {
   }
 
   private def service(method: String) =
-    RR(new JspCapableMockHttpServletRequest(method, testContext.getDispatcherServlet.getServletConfig), { request: MockHttpServletRequest => doService(request)})
+    new SpringRR(new JspCapableMockHttpServletRequest(method, testContext.getDispatcherServlet.getServletConfig), { request: MockHttpServletRequest => doService(request)})
 
   def * = service("*")
 
@@ -96,6 +97,17 @@ trait Specification extends org.specs2.mutable.Specification {
    * perform the HTTP DELETE operation
    */
   def delete = service("DELETE")
+
+  class SpringRR(request: MockHttpServletRequest,
+           service: (MockHttpServletRequest) => MockHttpServletResponse) extends RR(request, service) {
+
+    def t[WO <: WebObject[B], B <: WebObjectBody](request: MockHttpServletRequest, response: MockHttpServletResponse, body: Option[B]) = {
+      val unsafeMav = request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).asInstanceOf[ModelAndView]
+      val mav = if (unsafeMav != null) Some(unsafeMav) else None
+
+      new ModelAndViewAwareWebObject[B](request, response, body, mav)
+    }
+  }
 
   private def doService(request: MockHttpServletRequest) = {
     try {

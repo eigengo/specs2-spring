@@ -1,6 +1,5 @@
 package org.specs2.web
 
-import Specification._
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 import xml.{Node, XML}
 
@@ -17,6 +16,8 @@ object Xhtml {
    * @return the {{Raw}} instance that will deal with the request
    */
   def apply(r: RR) = new Xhtml(r)
+  
+  def apply() = new Xhtml(RR(null, {r => null}));
 
 }
 
@@ -26,7 +27,9 @@ object Xhtml {
  *
  * @param r the {{RR}} instance
  */
-class Xhtml(r: RR) extends AbstractRR[XhtmlWebObjectBody](r) {
+class Xhtml(r: RR) extends WebObjectBodySupport(r) {
+
+  type Body = XhtmlWebObjectBody
 
   def makeBody(response: MockHttpServletResponse) =
     Some(new XhtmlWebObjectBody(response.getContentAsString, scala.collection.mutable.Map()))

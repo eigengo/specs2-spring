@@ -1,35 +1,37 @@
 package org.specs2.web
 
 import javax.servlet.http.HttpServletResponse
-import org.springframework.web.servlet.ModelAndView
 import org.springframework.mock.web.{MockHttpServletResponse, MockHttpServletRequest}
 
-case class RR(request: MockHttpServletRequest, op: (MockHttpServletRequest) => MockHttpServletResponse)
+case class RR(request: MockHttpServletRequest,
+         service: (MockHttpServletRequest) => MockHttpServletResponse)
+
 
 /**
  * Abstract class that simplifies "standard" HTTP request processing
  *
  * @author janmachacek
  */
-abstract class AbstractRR[B <: WebObjectBody](r: RR) {
+abstract class WebObjectBodySupport(r: RR) {
 
-  private def service(setup: MockHttpServletRequest => Unit) = {
+  type Body <: WebObjectBody
+
+  private def service(setup: MockHttpServletRequest => Unit): Option[Body] = {
     val request = r.request
 
     setup(request)
 
-    val response = r.op(request)
+    val response = r.service(request)
     if (response.getRedirectedUrl != null) {
       response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY)
     }
-    val unsafeMav = request.getAttribute(TracingDispatcherServlet.MODEL_AND_VIEW_KEY).asInstanceOf[ModelAndView]
-    val mav = if (unsafeMav != null) Some(unsafeMav) else None
 
     val body = if (response.getStatus != HttpServletResponse.SC_OK) None else makeBody(response)
-    new WebObject(request, response, mav, body)
+
+    body
   }
 
-  def makeBody(response: MockHttpServletResponse): Option[B]
+  def makeBody(response: MockHttpServletResponse): Option[Body]
 
   def apply(r: Requestable) = {
     service { request => r.request(request) }

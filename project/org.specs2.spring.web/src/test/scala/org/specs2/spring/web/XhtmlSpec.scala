@@ -2,6 +2,7 @@ package org.specs2.spring.web
 
 import io.Source
 import org.springframework.mock.web.MockHttpServletRequest
+import org.specs2.web.XhtmlWebObjectBody
 
 /**
  * @author janmachacek

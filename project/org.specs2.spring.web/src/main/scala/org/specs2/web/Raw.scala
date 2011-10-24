@@ -1,6 +1,5 @@
 package org.specs2.web
 
-import Specification._
 import org.springframework.mock.web.MockHttpServletResponse
 
 /**
@@ -22,7 +21,9 @@ object Raw {
 /**
  * Raw implementation of the HTTP response processing
  */
-class Raw(r: RR) extends AbstractRR[RawWebObjectBody](r) {
+class Raw(r: RR) extends WebObjectBodySupport(r) {
+  type Body = RawWebObjectBody
+
   def makeBody(response: MockHttpServletResponse) =
     Some(new RawWebObjectBody(response.getContentAsByteArray))
 }

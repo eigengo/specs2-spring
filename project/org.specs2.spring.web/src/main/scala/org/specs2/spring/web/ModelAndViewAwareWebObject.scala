@@ -8,9 +8,9 @@ import org.specs2.web.{WebObjectBody, WebObject}
  * @author janmachacek
  */
 class ModelAndViewAwareWebObject[B <: WebObjectBody](
-    val request: MockHttpServletRequest,
-    val response: MockHttpServletResponse,
-    val bodyOption: Option[B],
+    request: MockHttpServletRequest,
+    response: MockHttpServletResponse,
+    bodyOption: Option[B],
     val modelAndView: Option[ModelAndView]) extends WebObject[B](request, response, bodyOption) {
 
   /**

@@ -1,8 +1,6 @@
 package org.specs2.web
 
 import org.springframework.mock.web.{MockHttpServletResponse, MockHttpServletRequest}
-import org.springframework.web.servlet.ModelAndView
-
 /**
  * Represents processed and pre-chewed HttpServletResponse so that you can write meaningful
  * code in your examples.
