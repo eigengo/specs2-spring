@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.specs2</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.1</version>
+	<version>0.2</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -19,6 +19,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<scalaVersion>2.9.1</scalaVersion>
 		<spring-amqp.version>1.0.0.RELEASE</spring-amqp.version>
+		<specs2.version>1.7</specs2.version>
 
 		<!--<specs2-spring.version>0.1-SNAPSHOT</specs2-spring.version>-->
 	</properties>
