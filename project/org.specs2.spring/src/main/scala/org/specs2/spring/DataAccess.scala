@@ -15,8 +15,8 @@ trait SqlDataAccess {
 }
 
 /**
- * Convenience mixin for using Hibernate in your Spring integration tests; includes the [[insert]] method overloads
- * that work well with [[BeanTables]].
+ * Convenience mixin for using Hibernate in your Spring integration tests; includes the ``insert`` method overloads
+ * that work well with ``org.specs2.spring.BeanTables``.
  */
 trait HibernateDataAccess {
   private[spring] def getHibernateTemplate: HibernateTemplate
@@ -39,7 +39,7 @@ trait HibernateDataAccess {
 
   /**
    * Returns a function that inserts the object and returns Success; the function can be supplied to the BeanTables
-   * {@code |>} method.<br/>
+   * ``|>`` function.
    * Typical usage is
    * <pre>
    *  "Some service operation" in {
@@ -60,7 +60,7 @@ trait HibernateDataAccess {
 
   /**
    * Returns a function that runs the supplied function f on the object; then inserts the object and returns Success;
-   * the function can be supplied to the BeanTables {@code |>} method.<br/>
+   * the function can be supplied to the BeanTables ``|>`` function.<br/>
    * Typical usage is
    * <pre>
    *  "Some service operation" in {
@@ -74,7 +74,7 @@ trait HibernateDataAccess {
    *  }
    *  </pre>
    *
-   * @param f function that operates on the instance {@code T}; this function will run before the Hibernate save.
+   * @param f function that operates on the instance ``T``; this function will run before the Hibernate save.
    * @return function that inserts the object and returns Success when the insert succeeds.
    */
   def insert[T, R](f: T => R): (T => Result) = {

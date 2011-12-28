@@ -18,9 +18,9 @@ trait Specification extends org.specs2.mutable.Specification {
    * Obtains a single bean of type JdbcTemplate; throws exception if the test context does not define
    * exactly one such bean.
    *
-   * @return the JdbcTemplate bean; never {@code null}.
+   * @return the JdbcTemplate bean; never ``null``.
    */
-  private[spring] def getJdbcTemplate: JdbcTemplate = {
+  protected[spring] def getJdbcTemplate: JdbcTemplate = {
     this.testContext.getBean(classOf[JdbcTemplate])
   }
 
@@ -28,9 +28,9 @@ trait Specification extends org.specs2.mutable.Specification {
    * Obtains a single bean of type HibernateTemplate; throws exception if the test context does not define
    * exactly one such bean.
    *
-   * @return the HibernateTemplate bean; never {@code null}.
+   * @return the HibernateTemplate bean; never ``null``.
    */
-  private[spring] def getHibernateTemplate: HibernateTemplate = {
+  protected[spring] def getHibernateTemplate: HibernateTemplate = {
     this.testContext.getBean(classOf[HibernateTemplate])
   }
 
