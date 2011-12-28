@@ -35,15 +35,6 @@ class BeanTableSpec extends Specification with BeanTables {
     riders.size must be_==(2)
   }
 
-  def clusterBy[A, B](l: List[A])(f: A => B) =
-    (l∘(e => (f(e), e)))./:(new HashMap[B, List[A]])((r, c) => r + ((c._1, c._2 :: r.getOrElse(c._1, Nil)))).values
-
-  "foo" in {
-    val cluster = clusterBy(List("one", "two", "three", "eleven", "twelve"))(_.length)
-    println(cluster)
-    success
-  }
-
   /**
    * Shows that the function supplied to the return-left method can be another BeanTable, with yet another
    * return-left function and that the entire construct returns the appropriately constructed beans
