@@ -17,7 +17,6 @@
 			<groupId>org.specs2</groupId>
 			<artifactId>spring</artifactId>
 			<version>0.3</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
