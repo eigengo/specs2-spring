@@ -145,7 +145,7 @@ class TestContext {
 			this.environment.put(name, realValue);
 		}
 
-		public Map<String,Object> getProperties() {
+		Map<String,Object> getProperties() {
 			return this.environment;
 		}
 	}
