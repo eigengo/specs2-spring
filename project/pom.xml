@@ -5,12 +5,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.specs2</groupId>
 	<artifactId>parent</artifactId>
-	<version>0.2</version>
+	<version>0.3</version>
 	<packaging>pom</packaging>
 
 	<properties>
-		<spring.version>3.0.6.RELEASE</spring.version>
-		<spring-integration.version>2.0.5.RELEASE</spring-integration.version>
+		<spring.version>3.1.0.RELEASE</spring.version>
+		<spring-integration.version>2.1.0.RC2</spring-integration.version>
 		<aspectj.version>1.6.11</aspectj.version>
 		<slf4j.version>1.6.1</slf4j.version>
 		<hibernate-core.version>3.6.0.CR1</hibernate-core.version>

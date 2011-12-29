@@ -34,6 +34,9 @@ import java.lang.annotation.RetentionPolicy;
 @Transactional
 @TransactionConfiguration(defaultRollback = true)
 @ContextConfiguration("classpath*:/META-INF/spring/module-context.xml")
+@UseProfile("ACU")
+@SystemEnvironment({"efoo=bar;ebaz=null"})
+@SystemProperties({"pfoo=bar;pbaz=null"})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IntegrationTest {
 }

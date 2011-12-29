@@ -4,20 +4,28 @@
 	<parent>
 		<groupId>org.specs2</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.2</version>
+		<version>0.3</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.specs2</groupId>
 	<artifactId>spring-example</artifactId>
 	<packaging>jar</packaging>
-	<version>0.2</version>
+	<version>0.3</version>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.specs2</groupId>
 			<artifactId>spring</artifactId>
-			<version>0.1</version>
+			<version>0.3</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-lang</artifactId>
+					<groupId>commons-lang</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+
 		<dependency> 
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -27,6 +35,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-beans</artifactId>
+					<groupId>org.springframework</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -68,11 +82,35 @@
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-file</artifactId>
 			<version>${spring-integration.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-aop</artifactId>
+					<groupId>org.springframework</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>spring-context</artifactId>
+					<groupId>org.springframework</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>spring-context</artifactId>
+					<groupId>org.springframework</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-jms</artifactId>
 			<version>${spring-integration.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-jms</artifactId>
+					<groupId>org.springframework</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>spring-tx</artifactId>
+					<groupId>org.springframework</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>javax.transaction</groupId>
@@ -116,13 +154,6 @@
 			<artifactId>spring-instrument</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		<!--
-		<dependency>
-			<groupId>javax.persistence</groupId>
-			<artifactId>persistence-api</artifactId>
-			<version>1.0</version>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>javax.jms</groupId>
 			<artifactId>jms</artifactId>

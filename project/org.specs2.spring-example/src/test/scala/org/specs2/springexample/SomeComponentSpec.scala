@@ -6,11 +6,11 @@ import org.specs2.spring.{BeanTables, HibernateDataAccess, Specification}
 
 /**
  * Specification that creates the Spring ApplicationContext; the configuration for the context relies on some
- * entries in the JNDI tree, which the {@code org.specs2.spring.Specification} inserts according to the "instructions"
- * in the {@link IntegrationTest} annotation. Once the environment is set up, the test proceeds to autowire the
- * appropriately annotated fields ({@link #someComponent} and {@link #hibernateTemplate}).<br/>
- * Because this specification includes the {@link Transactional} annotation (indirectly: the {@code IntegrationTest}
- * annotation includes the {@code Transactional} annotation), every example will execute in its transaction; the
+ * entries in the JNDI tree, which the ``org.specs2.spring.Specification`` inserts according to the "instructions"
+ * in the ``IntegrationTest`` annotation. Once the environment is set up, the test proceeds to autowire the
+ * appropriately annotated fields ``someComponent`` and ``hibernateTemplate``).<br/>
+ * Because this specification includes the ``Transactional`` annotation (indirectly: the ``IntegrationTest``
+ * annotation includes the ``Transactional`` annotation), every example will execute in its transaction; the
  * transaction will be automatically rolled back at the end.
  *
  * @author janmachacek
