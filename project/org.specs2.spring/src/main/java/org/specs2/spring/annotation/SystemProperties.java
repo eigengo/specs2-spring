@@ -25,7 +25,7 @@ public @interface SystemProperties {
 	boolean clear() default false;
 
 	/**
-	 * Value that, when used in {@link Property#value()} will be interpreted
+	 * Value that, when used in {@link Property#value()} or in the {@code value} portion of the {@link #value()} will be interpreted
 	 * as {@code null} rather than a {@code String} with value {@code "null"}.
 	 * @return the {@code null} name.
 	 */
@@ -38,7 +38,7 @@ public @interface SystemProperties {
 	Property[] properties() default {};
 
 	/**
-	 * The properties in <code>name<sub>1</sub>=value<sub>1</sub>;name<sub>2</sub>=value<sub>2</sub>;...;name<sub>n</sub>=value<sub>n</sub></code>
+	 * The properties in <code>{name<sub>1</sub>=value<sub>1</sub>, name<sub>2</sub>=value<sub>2</sub>, ..., name<sub>n</sub>=value<sub>n</sub>}</code>
 	 * syntax.
 	 * @return the properties.
 	 */

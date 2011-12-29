@@ -61,7 +61,10 @@ class TestContext {
 	<T> T getBean(Class<T> beanType) {
 		return this.context.getBean(beanType);
 	}
-	
+
+	/**
+	 * Holds the environment for the test
+	 */
 	static final class TestEnvironment extends StandardEnvironment {
 		private Properties systemProperties = null;
 		private Properties systemEnvironment = null;
@@ -97,6 +100,9 @@ class TestContext {
 		}
 	}
 
+	/**
+	 * Holds the properties that can be added or overwritten
+	 */
 	static final class Properties {
 		private final boolean overwrite;
 		private final Map<String, Object> environment;
