@@ -66,18 +66,24 @@ class TestContext {
 		private Properties systemProperties = null;
 		private Properties systemEnvironment = null;
 		
-		void setSystemProperties(boolean clear, boolean override, String nullValue, String[] value, Property[] properties) {
+		void setSystemProperties(boolean clear, boolean overwrite, String nullValue, String[] value, Property[] properties) {
+			final Map<String, Object> props = new HashMap<String, Object>(); 
+			if (!clear) props.putAll(super.getSystemProperties());
 			
+			this.systemProperties = new Properties(overwrite, props, nullValue);
+			this.systemProperties.addProperties(properties);
+			this.systemProperties.addProperties(value);
 		}
 		
-		void setSystemEnvironment(boolean clear, boolean override, String nullValue, String[] value, Property[] properties) {
-			
+		void setSystemEnvironment(boolean clear, boolean overwrite, String nullValue, String[] value, Property[] properties) {
+			final Map<String, Object> props = new HashMap<String, Object>();
+			if (!clear) props.putAll(super.getSystemEnvironment());
+
+			this.systemEnvironment = new Properties(overwrite, props, nullValue);
+			this.systemEnvironment.addProperties(properties);
+			this.systemEnvironment.addProperties(value);
 		}
-		
-		private void set(Properties target, boolean clear, boolean override, String nullValue, String[] values, Property[] properties) {
-			
-		}
-		
+
 		@Override
 		public Map<String, Object> getSystemProperties() {
 			if (this.systemProperties == null) return super.getSystemProperties();
@@ -103,15 +109,38 @@ class TestContext {
 		}
 		
 		void addProperties(String[] properties) {
-			
+			for (String property : properties) {
+				int i = property.indexOf("=");
+				if (i != -1) {
+					String name = property.substring(0, i);
+					String value = property.substring(i);
+					
+					addProperty(name, value);
+				}
+			}
 		}
 
 		void addProperties(Property[] properties) {
+			for (Property property : properties) {
+				addProperty(property.name(), property.value());
+			}
+		}
 
+		private void addProperty(String name, String value) {
+			if (!this.overwrite) {
+				if (this.environment.containsKey(name)) return;
+			}
+			Object realValue;
+			if (this.nullValue.equals(value)) {
+				realValue = null;
+			} else {
+				realValue = value;
+			}
+			this.environment.put(name, realValue);
 		}
 
 		public Map<String,Object> getProperties() {
-			return new HashMap<String, Object>();
+			return this.environment;
 		}
 	}
 }
