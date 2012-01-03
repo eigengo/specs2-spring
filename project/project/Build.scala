@@ -2,7 +2,11 @@ import sbt._
 
 object Specs2Spring extends Build {
 
-  lazy val root = Project("root", file("."))
-  lazy val sub1: Project = Project("org.specs2.spring", file("org.specs2.spring"));
-  lazy val sub2 = Project("proj2", file("dir2"))
+  lazy val root = Project("specs2-spring", file(".")) aggregate(core, coreExample, web) //, webExample)
+  lazy val core = Project("org.specs2.spring", file("org.specs2.spring")) 
+  lazy val coreExample = Project("org.specs2.spring-example", file("org.specs2.spring-example")) dependsOn(core)
+
+  lazy val web = Project("org.specs2.spring.web", file("org.specs2.spring.web")) dependsOn(core)
+  lazy val webExample = Project("org.specs2.spring.web-example", file("org.specs2.spring.web-example")) dependsOn(web)
+
 }
