@@ -77,16 +77,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptors>
-						<descriptor>
-							src/assemble/sql-scripts.xml
-						</descriptor>
-					</descriptors>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1</version>
@@ -94,23 +84,6 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
-			<!--
-			   <plugin>
-				   <groupId>org.scalatest</groupId>
-				   <artifactId>maven-scalatest-plugin</artifactId>
-				   <executions>
-					   <execution>
-						   <goals>
-							   <goal>test</goal>
-						   </goals>
-						   <configuration>
-							   <testFailureIgnore>true</testFailureIgnore>
-							   <xmlreports>xml</xmlreports>
-						   </configuration>
-					   </execution>
-				   </executions>
-			   </plugin>
-   -->
 			<plugin>
 				<groupId>org.scala-tools</groupId>
 				<artifactId>maven-scala-plugin</artifactId>
@@ -152,16 +125,6 @@
 						<version>1.2</version>
 						<scope>runtime</scope>
 					</dependency>
-					<!--
-					<dependency>
-						<groupId>net.sf.docbook</groupId>
-						<artifactId>docbook-xml</artifactId>
-						<version>5.0-all</version>
-						<classifier>resources</classifier>
-						<type>zip</type>
-						<scope>runtime</scope>
-					</dependency>
-					-->
 				</dependencies>
 
 				<executions>
@@ -174,31 +137,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--
-			<plugin>
-				<groupId>com.agilejava.docbkx</groupId>
-				<artifactId>docbkx-maven-plugin</artifactId>
-				<version>2.0.13</version>
-				<dependencies>
-					<dependency>
-						<groupId>org.docbook</groupId>
-						<artifactId>docbook-xml</artifactId>
-						<version>4.4</version>
-						<scope>runtime</scope>
-					</dependency>
-				</dependencies>
-
-				<executions>
-					<execution>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>generate-html</goal>
-							<goal>generate-pdf</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			-->
 		</plugins>
 	</build>
 
