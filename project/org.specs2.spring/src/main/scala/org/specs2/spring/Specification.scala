@@ -46,7 +46,7 @@ trait Specification extends org.specs2.mutable.Specification {
       this.specFragments
     else {
       // transactions required, run each example body in a [separate] transaction
-      val transactionManager = this.testContext.getBean(classOf[PlatformTransactionManager])
+      val transactionManager = this.testContext.getBean(ttd.getTransactionManagerName, classOf[PlatformTransactionManager])
 
       this.specFragments.map {
         f =>

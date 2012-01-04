@@ -3,8 +3,6 @@ package org.specs2.springexample
 import org.specs2.spring.BeanTables
 import java.util.Date
 import org.specs2.mutable.Specification
-import scalaz._
-import Scalaz._
 import collection.immutable.HashMap
 
 /**
