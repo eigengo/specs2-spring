@@ -20,169 +20,174 @@
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-				xmlns:fo="http://www.w3.org/1999/XSL/Format"
-				xmlns:xslthl="http://xslthl.sf.net"
-				exclude-result-prefixes="xslthl"
-				version='1.0'>
+                xmlns:fo="http://www.w3.org/1999/XSL/Format"
+                xmlns:xslthl="http://xslthl.sf.net"
+                xmlns:s6hl="java:net.sf.xslthl.ConnectorSaxon6"
+                exclude-result-prefixes="xslthl"
+                extension-element-prefixes="s6hl xslthl"
+                version='1.0'>
 
-	<xsl:import href="urn:docbkx:stylesheet" />
-	<xsl:import href="urn:docbkx:stylesheet/highlight.xsl"/>
+    <xsl:import href="http://docbook.sourceforge.net/release/xsl/current/fo/docbook.xsl"/>
+    <!--<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/fo/highlight.xsl"/>-->
 
-	<xsl:param name="highlight.source" select="1"/>
-	<!-- Use nice graphics for admonitions -->
-	<xsl:param name="admon.graphics">'1'</xsl:param>
-	<xsl:param name="admon.graphics.path">@file.prefix@@dbf.xsl@/images/</xsl:param>
-	<xsl:param name="draft.watermark.image" select="'@file.prefix@@dbf.xsl@/images/draft.png'"/>
-	<xsl:param name="paper.type" select="'@paper.type@'"/>
+    <xsl:param name="highlight.xslthl.config">xslthl-config.xml</xsl:param>
+    <xsl:param name="xslthl.config">xslthl-config.xml</xsl:param>
 
-	<xsl:param name="page.margin.top" select="'1cm'"/>
-	<xsl:param name="region.before.extent" select="'1cm'"/>
-	<xsl:param name="body.margin.top" select="'1.5cm'"/>
+    <xsl:param name="highlight.source" select="1"/>
+    <!-- Use nice graphics for admonitions -->
+    <xsl:param name="admon.graphics">'1'</xsl:param>
+    <xsl:param name="admon.graphics.path">@file.prefix@@dbf.xsl@/images/</xsl:param>
+    <xsl:param name="draft.watermark.image" select="'@file.prefix@@dbf.xsl@/images/draft.png'"/>
+    <xsl:param name="paper.type" select="'@paper.type@'"/>
 
-	<xsl:param name="body.margin.bottom" select="'1.5cm'"/>
-	<xsl:param name="region.after.extent" select="'1cm'"/>
-	<xsl:param name="page.margin.bottom" select="'1cm'"/>
-	<xsl:param name="title.margin.left" select="'0cm'"/>
+    <xsl:param name="page.margin.top" select="'1cm'"/>
+    <xsl:param name="region.before.extent" select="'1cm'"/>
+    <xsl:param name="body.margin.top" select="'1.5cm'"/>
 
-<!--###################################################
-		Table of Contents
-	################################################### -->
+    <xsl:param name="body.margin.bottom" select="'1.5cm'"/>
+    <xsl:param name="region.after.extent" select="'1cm'"/>
+    <xsl:param name="page.margin.bottom" select="'1cm'"/>
+    <xsl:param name="title.margin.left" select="'0cm'"/>
 
-	<xsl:param name="generate.toc">
-		book      toc,title
-	</xsl:param>
+    <!--###################################################
+         Table of Contents
+     ################################################### -->
 
-<!--###################################################
-		Custom Header
-	################################################### -->
+    <xsl:param name="generate.toc">
+        book toc,title
+    </xsl:param>
 
-	<xsl:template name="header.content">
-		<xsl:param name="pageclass" select="''"/>
-		<xsl:param name="sequence" select="''"/>
-		<xsl:param name="position" select="''"/>
-		<xsl:param name="gentext-key" select="''"/>
+    <!--###################################################
+         Custom Header
+     ################################################### -->
 
-		<xsl:variable name="Version">
-			<xsl:choose>
-				<xsl:when test="//productname">
-					<xsl:value-of select="//productname"/><xsl:text> </xsl:text>
-				</xsl:when>
-				<xsl:otherwise>
-					<xsl:text>Specs2 Spring</xsl:text>
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
+    <xsl:template name="header.content">
+        <xsl:param name="pageclass" select="''"/>
+        <xsl:param name="sequence" select="''"/>
+        <xsl:param name="position" select="''"/>
+        <xsl:param name="gentext-key" select="''"/>
 
-		<xsl:choose>
-			<xsl:when test="$sequence='blank'">
-				<xsl:choose>
-					<xsl:when test="$position='center'">
-						<xsl:value-of select="$Version"/>
-					</xsl:when>
+        <xsl:variable name="Version">
+            <xsl:choose>
+                <xsl:when test="//productname">
+                    <xsl:value-of select="//productname"/><xsl:text> </xsl:text>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:text>Specs2 Spring</xsl:text>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
 
-					<xsl:otherwise>
-						<!-- nop -->
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:when>
+        <xsl:choose>
+            <xsl:when test="$sequence='blank'">
+                <xsl:choose>
+                    <xsl:when test="$position='center'">
+                        <xsl:value-of select="$Version"/>
+                    </xsl:when>
 
-			<xsl:when test="$pageclass='titlepage'">
-				<!-- nop: other titlepage sequences have no header -->
-			</xsl:when>
+                    <xsl:otherwise>
+                        <!-- nop -->
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
 
-			<xsl:when test="$position='center'">
-				<xsl:value-of select="$Version"/>
-			</xsl:when>
+            <xsl:when test="$pageclass='titlepage'">
+                <!-- nop: other titlepage sequences have no header -->
+            </xsl:when>
 
-			<xsl:otherwise>
-				<!-- nop -->
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
+            <xsl:when test="$position='center'">
+                <xsl:value-of select="$Version"/>
+            </xsl:when>
 
-<!--###################################################
-		Custom Footer
-	################################################### -->
+            <xsl:otherwise>
+                <!-- nop -->
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
-	<xsl:template name="footer.content">
-		<xsl:param name="pageclass" select="''"/>
-		<xsl:param name="sequence" select="''"/>
-		<xsl:param name="position" select="''"/>
-		<xsl:param name="gentext-key" select="''"/>
+    <!--###################################################
+         Custom Footer
+     ################################################### -->
 
-		<xsl:variable name="Version">
-			<xsl:choose>
-				<xsl:when test="//releaseinfo">
-					<xsl:value-of select="//releaseinfo"/>
-				</xsl:when>
-				<xsl:otherwise>
-					<!-- nop -->
-				</xsl:otherwise>
-			</xsl:choose>
-		</xsl:variable>
+    <xsl:template name="footer.content">
+        <xsl:param name="pageclass" select="''"/>
+        <xsl:param name="sequence" select="''"/>
+        <xsl:param name="position" select="''"/>
+        <xsl:param name="gentext-key" select="''"/>
 
-		<xsl:variable name="Title">
-			<xsl:value-of select="//title"/>
-		</xsl:variable>
+        <xsl:variable name="Version">
+            <xsl:choose>
+                <xsl:when test="//releaseinfo">
+                    <xsl:value-of select="//releaseinfo"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <!-- nop -->
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
 
-		<xsl:choose>
-			<xsl:when test="$sequence='blank'">
-				<xsl:choose>
-					<xsl:when test="$double.sided != 0 and $position = 'left'">
-						<xsl:value-of select="$Version"/>
-					</xsl:when>
+        <xsl:variable name="Title">
+            <xsl:value-of select="//title"/>
+        </xsl:variable>
 
-					<xsl:when test="$double.sided = 0 and $position = 'center'">
-						<!-- nop -->
-					</xsl:when>
+        <xsl:choose>
+            <xsl:when test="$sequence='blank'">
+                <xsl:choose>
+                    <xsl:when test="$double.sided != 0 and $position = 'left'">
+                        <xsl:value-of select="$Version"/>
+                    </xsl:when>
 
-					<xsl:otherwise>
-						<fo:page-number/>
-					</xsl:otherwise>
-				</xsl:choose>
-			</xsl:when>
+                    <xsl:when test="$double.sided = 0 and $position = 'center'">
+                        <!-- nop -->
+                    </xsl:when>
 
-			<xsl:when test="$pageclass='titlepage'">
-				<!-- nop: other titlepage sequences have no footer -->
-			</xsl:when>
+                    <xsl:otherwise>
+                        <fo:page-number/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
 
-			<xsl:when test="$double.sided != 0 and $sequence = 'even' and $position='left'">
-				<fo:page-number/>
-			</xsl:when>
+            <xsl:when test="$pageclass='titlepage'">
+                <!-- nop: other titlepage sequences have no footer -->
+            </xsl:when>
 
-			<xsl:when test="$double.sided != 0 and $sequence = 'odd' and $position='right'">
-				<fo:page-number/>
-			</xsl:when>
+            <xsl:when test="$double.sided != 0 and $sequence = 'even' and $position='left'">
+                <fo:page-number/>
+            </xsl:when>
 
-			<xsl:when test="$double.sided = 0 and $position='right'">
-				<fo:page-number/>
-			</xsl:when>
+            <xsl:when test="$double.sided != 0 and $sequence = 'odd' and $position='right'">
+                <fo:page-number/>
+            </xsl:when>
 
-			<xsl:when test="$double.sided != 0 and $sequence = 'odd' and $position='left'">
-				<xsl:value-of select="$Version"/>
-			</xsl:when>
+            <xsl:when test="$double.sided = 0 and $position='right'">
+                <fo:page-number/>
+            </xsl:when>
 
-			<xsl:when test="$double.sided != 0 and $sequence = 'even' and $position='right'">
-				<xsl:value-of select="$Version"/>
-			</xsl:when>
+            <xsl:when test="$double.sided != 0 and $sequence = 'odd' and $position='left'">
+                <xsl:value-of select="$Version"/>
+            </xsl:when>
 
-			<xsl:when test="$double.sided = 0 and $position='left'">
-				<xsl:value-of select="$Version"/>
-			</xsl:when>
+            <xsl:when test="$double.sided != 0 and $sequence = 'even' and $position='right'">
+                <xsl:value-of select="$Version"/>
+            </xsl:when>
 
-			<xsl:when test="$position='center'">
-				<xsl:value-of select="$Title"/>
-			</xsl:when>
+            <xsl:when test="$double.sided = 0 and $position='left'">
+                <xsl:value-of select="$Version"/>
+            </xsl:when>
 
-			<xsl:otherwise>
-				<!-- nop -->
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
+            <xsl:when test="$position='center'">
+                <xsl:value-of select="$Title"/>
+            </xsl:when>
 
-	<xsl:template match="processing-instruction('hard-pagebreak')">
-		<fo:block break-before='page'/>
-	</xsl:template>
+            <xsl:otherwise>
+                <!-- nop -->
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="processing-instruction('hard-pagebreak')">
+        <fo:block break-before='page'/>
+    </xsl:template>
 
 
 </xsl:stylesheet>

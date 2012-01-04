@@ -1,3 +1,3 @@
 sourceFilter := "**/*.xml"
 
-docBookXslFoStyleSheet := "src/docbkx/styles/pdf/custom.xsl"
+docBookXslFoStyleSheet in DocBook:= "src/docbkx/styles/pdf/custom.xsl"
