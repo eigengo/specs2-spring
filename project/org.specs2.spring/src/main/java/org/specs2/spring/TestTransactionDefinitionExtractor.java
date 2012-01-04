@@ -30,9 +30,13 @@ public class TestTransactionDefinitionExtractor {
         DefaultTransactionDefinition transactionDefinition = new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED);
         transactionDefinition.setName("Test transaction");
         boolean defaultRollback = true;
-        if (transactionConfiguration != null) defaultRollback = transactionConfiguration.defaultRollback();
+        String transactionManagerName = "transactionManager";
+        if (transactionConfiguration != null) {
+            defaultRollback = transactionConfiguration.defaultRollback();
+            transactionManagerName = transactionConfiguration.transactionManager();
+        }
 
-        return new TestTransactionDefinition(transactionDefinition, defaultRollback);
+        return new TestTransactionDefinition(transactionDefinition, transactionManagerName, defaultRollback);
     }
 
     /**
@@ -43,10 +47,12 @@ public class TestTransactionDefinitionExtractor {
     public static class TestTransactionDefinition {
         private final TransactionDefinition transactionDefinition;
         private final boolean defaultRollback;
-        public final static TestTransactionDefinition NOT_TRANSACTIONAL = new TestTransactionDefinition(null, false);
+        private final String transactionManagerName;
+        public final static TestTransactionDefinition NOT_TRANSACTIONAL = new TestTransactionDefinition(null, null, false);
 
-        TestTransactionDefinition(TransactionDefinition transactionDefinition, boolean defaultRollback) {
+        TestTransactionDefinition(TransactionDefinition transactionDefinition, String transactionManagerName, boolean defaultRollback) {
             this.transactionDefinition = transactionDefinition;
+            this.transactionManagerName = transactionManagerName;
             this.defaultRollback = defaultRollback;
         }
 
@@ -56,6 +62,10 @@ public class TestTransactionDefinitionExtractor {
 
         public boolean isDefaultRollback() {
             return defaultRollback;
+        }
+
+        public String getTransactionManagerName() {
+            return transactionManagerName;
         }
     }
 

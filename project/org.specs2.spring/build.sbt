@@ -58,11 +58,11 @@ testOptions := Seq(Tests.Filter(s =>
   Seq("Spec", "Suite", "Unit", "all").exists(s.endsWith(_)) &&
     !s.endsWith("FeaturesSpec") ||
     s.contains("UserGuide") || 
-  	s.contains("index") ||
+    s.contains("index") ||
     s.matches("org.specs2.guide.*")))
 
 /** Console */
-initialCommands in console := "import org.specs2._"
+initialCommands in console := "import org.specs2.spring._"
 
 seq(releaseSettings: _*)
 
