@@ -93,8 +93,3 @@ publishTo <<= (version) { version: String =>
   if (version.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus+"snapshots/") 
   else                                   Some("releases" at nexus+"releases/")
 }
-
-seq(lsSettings :_*)
-
-(LsKeys.ghBranch in LsKeys.lsync) := Some("0.3")
-
