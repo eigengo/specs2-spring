@@ -23,6 +23,7 @@ resolvers ++= Seq("snapshots-repo" at "http://scala-tools.org/repo-snapshots")
 
 libraryDependencies <<= scalaVersion { scala_version => Seq(
   "org.specs2" %% "specs2" % "1.7.1",
+  "org.mockito" % "mockito-all" % "1.8.4",
   "junit" % "junit" % "4.7" % "optional",
   "org.springframework" % "spring-core" % "3.1.0.RELEASE",
   "org.springframework" % "spring-beans" % "3.1.0.RELEASE",

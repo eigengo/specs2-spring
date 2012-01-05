@@ -48,6 +48,15 @@ import java.util.*;
  * @author janmachacek
  */
 public class JndiEnvironmentSetter {
+    private final Map<String, Object> entries = new HashMap<String, Object>();
+
+    public synchronized void add(Map<String, Object> entries) {
+        this.entries.putAll(entries);
+    }
+    
+    public synchronized void add(String name, Object value) {
+        this.entries.put(name, value);
+    }
 
     public synchronized void prepareEnvironment(Environment environment) {
         Assert.notNull(environment, "The 'environment' argument cannot be null.");
@@ -61,7 +70,11 @@ public class JndiEnvironmentSetter {
             buildBeans(builder, environment.getBeans());
             buildJms(builder, environment.getJmsDefinitions());
             buildCustom(builder, environment.getBuilder());
-            
+
+            for (Map.Entry<String, Object> entry : entries.entrySet()) {
+                builder.bind(entry.getKey(), entry.getValue());
+            }
+
         } catch (NamingException e) {
             throw new RuntimeException(e);
         }
