@@ -1,4 +1,5 @@
 libraryDependencies <<= scalaVersion { scala_version => Seq(
+  "org.mockito" % "mockito-all" % "1.8.4",
   "org.springframework" % "spring-core" % "3.1.0.RELEASE",
   "org.springframework" % "spring-beans" % "3.1.0.RELEASE",
   "org.springframework" % "spring-jdbc" % "3.1.0.RELEASE",
