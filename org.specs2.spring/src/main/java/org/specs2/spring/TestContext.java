@@ -29,8 +29,6 @@ class TestContext {
      * @param specification the specification object to set up.
      */
     void createAndAutowire(Object specification) {
-        System.out.println(Thread.currentThread().getName());
-
         final ContextConfiguration contextConfiguration = AnnotationUtils.findAnnotation(specification.getClass(), ContextConfiguration.class);
         if (contextConfiguration == null) return;
 

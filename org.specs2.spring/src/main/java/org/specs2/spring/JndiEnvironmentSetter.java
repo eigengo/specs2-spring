@@ -261,7 +261,8 @@ public class JndiEnvironmentSetter {
          * @param obj  the object to bind (e.g. a DataSource implementation)
          */
         public void bind(String name, Object obj) {
-            if (this.boundObjects.contains(name)) return;
+            // if (this.boundObjects.contains(name)) return;
+            System.out.println("** PUT " + name + " -> " + obj);
             this.boundObjects.put(name, obj);
         }
 

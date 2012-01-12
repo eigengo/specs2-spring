@@ -4,7 +4,8 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.springframework.transaction.PlatformTransactionManager
 import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefinition
-import org.specs2.specification.Example
+import org.specs2.mutable.Before
+import org.specs2.specification.{Step, SpecStart, Example}
 
 /**
  * Gives access to the Sprnig context for the specification
@@ -55,39 +56,42 @@ trait Specification extends org.specs2.mutable.Specification
   protected[spring] def getHibernateTemplate: HibernateTemplate = {
     testContext.getBean(classOf[HibernateTemplate])
   }
-  
-  override def is: org.specs2.specification.Fragments = {
-    // setup the specification's environment
+
+  private def setup() {
     environmentSetter.prepareEnvironment(new EnvironmentExtractor().extract(this))
     testContext.createAndAutowire(this)
+  }
 
+  override def is: org.specs2.specification.Fragments = {
     // setup the specification's transactional behaviour
     val ttd = new TestTransactionDefinitionExtractor().extract(this)
-    if (ttd == TestTransactionDefinition.NOT_TRANSACTIONAL)
-      // no transactions required
-      specFragments
-    else {
-      // transactions required, run each example body in a [separate] transaction
-      val transactionManager = testContext.getBean(ttd.getTransactionManagerName, classOf[PlatformTransactionManager])
-
-      specFragments.map {
-        f =>
-          f match {
-            case Example(desc, body) =>
-              Example(desc, {
-                val transactionStatus = transactionManager.getTransaction(ttd.getTransactionDefinition)
-                try {
-                  val result = body()
-                  if (!ttd.isDefaultRollback) transactionManager.commit(transactionStatus)
-                  result
-                } finally {
-                  if (ttd.isDefaultRollback) transactionManager.rollback(transactionStatus)
-                }
-              })
-            case _ => f
-          }
+    val fragments =
+      if (ttd == TestTransactionDefinition.NOT_TRANSACTIONAL)
+        // no transactions required
+        specFragments
+      else {
+        // transactions required, run each example body in a [separate] transaction
+        specFragments.map {
+          f =>
+            f match {
+              case Example(desc, body) =>
+                Example(desc, {
+                  val transactionManager = testContext.getBean(ttd.getTransactionManagerName, classOf[PlatformTransactionManager])
+                  val transactionStatus = transactionManager.getTransaction(ttd.getTransactionDefinition)
+                  try {
+                    val result = body()
+                    if (!ttd.isDefaultRollback) transactionManager.commit(transactionStatus)
+                    result
+                  } finally {
+                    if (ttd.isDefaultRollback) transactionManager.rollback(transactionStatus)
+                  }
+                })
+              case _ => f
+            }
+        }
       }
-    }
+
+      args(sequential = true) ^ Step(setup) ^ fragments
   }
 
 }

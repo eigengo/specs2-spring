@@ -11,3 +11,5 @@ libraryDependencies <<= scalaVersion { scala_version => Seq(
   "org.hsqldb" % "hsqldb" % "2.2.4"
   )
 }
+
+parallelExecution in Test := false
