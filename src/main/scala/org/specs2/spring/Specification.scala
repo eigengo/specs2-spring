@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.springframework.transaction.PlatformTransactionManager
 import org.specs2.spring.TestTransactionDefinitionExtractor.TestTransactionDefinition
-import org.specs2.mutable.Before
 import org.specs2.specification.{Step, SpecStart, Example}
 
 /**
