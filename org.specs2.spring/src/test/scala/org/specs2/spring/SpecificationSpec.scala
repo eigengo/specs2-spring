@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
  * @author janmachacek
  */
 @ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
-class SpecificationSpec extends Specification with Jndi with Mockito {
+class SpecificationSpec extends Specification with SettableEnvironment with Mockito {
   @Autowired var springComponent: SpringComponent = _
 
   "springComponent works out meaning of life" in {
