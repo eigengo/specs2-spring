@@ -13,6 +13,8 @@ scalaVersion := "2.9.1"
 
 crossScalaVersions := Seq("2.9.0")
 
+docBookXslFoStyleSheet in DocBook := "src/main/docbook/styles/pdf/custom.xsl"
+
 /** Shell */
 shellPrompt := { state => System.getProperty("user.name") + "> " }
 
@@ -43,7 +45,11 @@ libraryDependencies <<= scalaVersion { scala_version => Seq(
   "org.apache.activemq" % "activemq-core" % "5.4.1",
   "javax.servlet" % "servlet-api" % "2.5",
   "org.apache.tomcat" % "jasper" % "6.0.29",
-  "org.apache.tomcat" % "jasper-jdt" % "6.0.29"
+  "org.apache.tomcat" % "jasper-jdt" % "6.0.29",
+  "saxon" % "saxon" % "6.5.3", /* SBT PDF Dependency */
+  "xml-resolver" % "xml-resolver" % "1.2",
+  "net.sf.docbook" % "docbook-xsl" % "1.76.1",
+  "net.sf.docbook" % "docbook-xsl-saxon" % "1.0.0"
   )
 }
 
