@@ -8,4 +8,4 @@ resolvers += "sbt-idea-repo" at "http://mpeltonen.github.com/maven/"
 
 addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "0.11.0")
 
-//addSbtPlugin("de.undercouch" % "sbt-docbook-plugin" % "0.2-SNAPSHOT")
+addSbtPlugin("de.undercouch" % "sbt-docbook-plugin" % "0.2-SNAPSHOT")
