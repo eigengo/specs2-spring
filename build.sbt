@@ -49,7 +49,9 @@ libraryDependencies <<= scalaVersion { scala_version => Seq(
   "saxon" % "saxon" % "6.5.3", /* SBT PDF Dependency */
   "xml-resolver" % "xml-resolver" % "1.2",
   "net.sf.docbook" % "docbook-xsl" % "1.76.1",
-  "net.sf.docbook" % "docbook-xsl-saxon" % "1.0.0"
+  "net.sf.docbook" % "docbook-xsl-saxon" % "1.0.0",
+  "org.apache.xmlgraphics" % "fop" % "1.0",
+  "xerces" % "xercesImpl" % "2.10.0"
   )
 }
 
