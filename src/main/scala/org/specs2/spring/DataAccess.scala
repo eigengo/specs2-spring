@@ -2,14 +2,13 @@ package org.specs2.spring
 
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.orm.hibernate3.{HibernateCallback, HibernateTemplate}
-import org.hibernate.Session
+import org.hibernate.{HibernateException, SessionFactory, Session}
 
 /**
  * @author janmachacek
  */
 
 trait SqlDataAccess {
-  private[spring] def getJdbcTemplate: JdbcTemplate
 
 
 }
@@ -19,21 +18,43 @@ trait SqlDataAccess {
  * that work well with ``org.specs2.spring.BeanTables``.
  */
 trait HibernateDataAccess {
-  private[spring] def getHibernateTemplate: HibernateTemplate
 
+  private def inSession[A](sessionFactory: SessionFactory)(f: (Session) => A) = {
+    def openSession = {
+      try {
+        (sessionFactory.getCurrentSession, true)
+      } catch {
+        case e: HibernateException =>
+          (sessionFactory.openSession(), false)
+      }
+    }
+    
+    val (session, joinedExisting) = openSession
+    
+    val ret = f(session)
+    
+    if (!joinedExisting) {
+      session.flush()
+      session.close()
+    }
+    
+    ret
+  }
+  
   /**
    * Removes all entities of the given type
    *
    * @param entity implicitly supplied class manifest of the entity type to be deleted
    */
-  def deleteAll[T](implicit entity: ClassManifest[T]) {
-    getHibernateTemplate.execute(new HibernateCallback[Void] {
-      def doInHibernate(session: Session) = {
-        session.createQuery("delete from " + entity.erasure.getName).executeUpdate()
-        null
-      }
-    })
+  def deleteAll[T](implicit entity: ClassManifest[T], sessionFactory: SessionFactory) {
+    inSession(sessionFactory) { s =>
+      s.createQuery("delete from " + entity.erasure.getName).executeUpdate()
+    }
   }
+/*  def deleteAll[T](implicit entity: ClassManifest[T], hibernateTemplate: HibernateTemplate) {
+    deleteAll(entity, hibernateTemplate.getSessionFactory)
+  }
+*/
 
   import org.specs2.execute._
 
@@ -54,9 +75,12 @@ trait HibernateDataAccess {
    *
    * @return function that inserts the object and returns Success when the insert succeeds.
    */
-  def insert[T]: (T => Result) = {
-    {t => getHibernateTemplate.saveOrUpdate(t); Success("ok")}
+  def insert[T](implicit sessionFactory: SessionFactory): (T => Result) = {
+    t => inSession(sessionFactory) { s => s.saveOrUpdate(t); Success("ok") }
   }
+  /*
+  def insert[T](implicit hibernateTemplate: HibernateTemplate): (T => Result) = insert(hibernateTemplate.getSessionFactory)
+  */
 
   /**
    * Returns a function that runs the supplied function f on the object; then inserts the object and returns Success;
@@ -77,12 +101,15 @@ trait HibernateDataAccess {
    * @param f function that operates on the instance ``T``; this function will run before the Hibernate save.
    * @return function that inserts the object and returns Success when the insert succeeds.
    */
-  def insert[T, R](f: T => R): (T => Result) = {
+  def insert[T, R](f: T => R)(implicit sessionFactory: SessionFactory): (T => Result) = {
     {t =>
       f(t)
-      getHibernateTemplate.saveOrUpdate(t)
+      inSession(sessionFactory) { _.saveOrUpdate(t) }
       Success("ok")
     }
   }
+  /*
+  def insert[T, R](f: T => R)(implicit hibernateTemplate: HibernateTemplate): (T => Result) = insert(hibernateTemplate.getSessionFactory)
+  */
 
 }

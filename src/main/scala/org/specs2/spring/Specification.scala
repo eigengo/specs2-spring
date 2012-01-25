@@ -36,26 +36,6 @@ trait Specification extends org.specs2.mutable.Specification
   private[spring] val testContext = new TestContext
   private[spring] val environmentSetter = new JndiEnvironmentSetter
 
-  /**
-   * Obtains a single bean of type JdbcTemplate; throws exception if the test context does not define
-   * exactly one such bean.
-   *
-   * @return the JdbcTemplate bean; never ``null``.
-   */
-  protected[spring] def getJdbcTemplate: JdbcTemplate = {
-    testContext.getBean(classOf[JdbcTemplate])
-  }
-
-  /**
-   * Obtains a single bean of type HibernateTemplate; throws exception if the test context does not define
-   * exactly one such bean.
-   *
-   * @return the HibernateTemplate bean; never ``null``.
-   */
-  protected[spring] def getHibernateTemplate: HibernateTemplate = {
-    testContext.getBean(classOf[HibernateTemplate])
-  }
-
   private def setup() {
     environmentSetter.prepareEnvironment(new EnvironmentExtractor().extract(this))
     testContext.createAndAutowire(this)
