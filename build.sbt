@@ -3,9 +3,9 @@ import Release._
 import ReleaseKeys._
 
 /** Project */
-name := "specs2-spring"
+name := "spring"
 
-version := "0.3"
+version := "0.3-SNAPSHOT"
 
 organization := "org.specs2"
 
@@ -91,25 +91,45 @@ releaseProcess <<= thisProjectRef apply { ref =>
   Seq[ReleasePart](
     initialGitChecks,                     
     checkSnapshotDependencies,    
-    //releaseTask(check in Posterous in ref),  
-    inquireVersions,                        
+    inquireVersions,
     setReleaseVersion,                      
     runTest,                                
     commitReleaseVersion,                   
     tagRelease,                             
-    //releaseTask(publish in Global in ref),
-    //releaseTask(publish in Posterous in ref),    
-    setNextVersion,                         
+    setNextVersion,
     commitNextVersion                       
   )
 }
 
-
-/** Publishing */
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
-
-publishTo <<= (version) { version: String =>
-  val nexus = "http://nexus-direct.scala-tools.org/content/repositories/"
-  if (version.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus+"snapshots/") 
-  else                                   Some("releases" at nexus+"releases/")
+publishTo <<= version { v: String =>
+  val nexus = "https://oss.sonatype.org/"
+  if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
+  else                             Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
+
+publishMavenStyle := true
+
+publishArtifact in Test := false
+
+pomIncludeRepository := { x => false }
+
+pomExtra := (
+  <licenses>
+    <license>
+      <name>BSD-style</name>
+      <url>http://www.opensource.org/licenses/bsd-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>git@github.com:janm399/specs2-spring.git</url>
+    <connection>scm:git:git@github.com:janm399/specs2-spring.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>janmachacek</id>
+      <name>Jan Machacek</name>
+      <url>http://cakesolutions.org</url>
+      </developer>
+    </developers>
+)
