@@ -5,7 +5,7 @@ import ReleaseKeys._
 /** Project */
 name := "spring"
 
-version := "0.3-SNAPSHOT"
+version := "0.3"
 
 organization := "org.specs2"
 
@@ -114,6 +114,7 @@ publishArtifact in Test := false
 pomIncludeRepository := { x => false }
 
 pomExtra := (
+  <url>http://www.cakesolutions.org/specs2-spring.html</url>
   <licenses>
     <license>
       <name>BSD-style</name>
