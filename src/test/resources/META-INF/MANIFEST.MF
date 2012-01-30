@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Premain-Class: org.springframework.instrument.InstrumentationSavingAgent
+

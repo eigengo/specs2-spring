@@ -36,8 +36,5 @@ class SpecificationSpec extends Specification
 
       springComponent.findAll[User].size() must_== (3)
     }
-    
-
   }
-
 }
