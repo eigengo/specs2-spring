@@ -33,10 +33,63 @@ class TestContext {
         if (contextConfiguration == null) return;
 
         this.context = new GenericXmlApplicationContext();
-        this.context.setEnvironment(setupTestEnvironment(specification));
-        this.context.load(contextConfiguration.value());
-        this.context.refresh();
+        ContextLoaderFactory.getContextLoader(this.context).load(specification, contextConfiguration.value());
         this.context.getAutowireCapableBeanFactory().autowireBean(specification);
+    }
+
+    <T> T getBean(Class<T> beanType) {
+        return this.context.getBean(beanType);
+    }
+
+    <T> T getBean(String beanName, Class<T> beanType) {
+        return this.context.getBean(beanName, beanType);
+    }
+
+}
+
+class ContextLoaderFactory {
+    static ContextLoader getContextLoader(GenericXmlApplicationContext context) {
+        try {
+            Class.forName("org.springframework.core.env.ConfigurableEnvironment");
+            return new Spring31ContextLoader(context);
+        } catch (ClassNotFoundException e) {
+            // Before 3.1
+            return new Spring25ContextLoader(context);
+        }
+    }
+}
+
+interface ContextLoader {
+
+    void load(Object specification, String[] configLocations);
+}
+
+class Spring25ContextLoader implements ContextLoader {
+    private GenericXmlApplicationContext context;
+
+    Spring25ContextLoader(GenericXmlApplicationContext context) {
+        this.context = context;
+    }
+
+    @Override
+    public void load(Object specification, String[] configLocations) {
+        this.context.load(configLocations);
+        this.context.refresh();
+    }
+}
+
+class Spring31ContextLoader implements ContextLoader {
+    private GenericXmlApplicationContext context;
+
+    Spring31ContextLoader(GenericXmlApplicationContext context) {
+        this.context = context;
+    }
+
+    @Override
+    public void load(Object specification, String[] configLocations) {
+        this.context.setEnvironment(setupTestEnvironment(specification));
+        this.context.load(configLocations);
+        this.context.refresh();
     }
 
     private ConfigurableEnvironment setupTestEnvironment(Object specification) {
@@ -57,15 +110,6 @@ class TestContext {
 
         return environment;
     }
-
-    <T> T getBean(Class<T> beanType) {
-        return this.context.getBean(beanType);
-    }
-
-    <T> T getBean(String beanName, Class<T> beanType) {
-        return this.context.getBean(beanName, beanType);
-    }
-
     /**
      * Holds the environment for the test
      */
@@ -153,4 +197,5 @@ class TestContext {
             return this.environment;
         }
     }
+
 }
