@@ -3,6 +3,7 @@ package org.specs2.spring
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.orm.hibernate3.{HibernateCallback, HibernateTemplate}
 import org.hibernate.{HibernateException, SessionFactory, Session}
+import org.specs2.execute.{Success, Result}
 
 /**
  * @author janmachacek
@@ -111,5 +112,17 @@ trait HibernateDataAccess {
   /*
   def insert[T, R](f: T => R)(implicit hibernateTemplate: HibernateTemplate): (T => Result) = insert(hibernateTemplate.getSessionFactory)
   */
+
+}
+
+trait HibernateTemplateDataAccess {
+  
+  def insert[T, R](f: T => R)(implicit hibernateTemplate: HibernateTemplate): (T => Result) = {
+    t => hibernateTemplate.saveOrUpdate(f(t)); Success("ok");
+  } 
+
+  def insert[T](implicit hibernateTemplate: HibernateTemplate): (T => Result) = {
+    t => hibernateTemplate.saveOrUpdate(t); Success("ok");
+  } 
 
 }
