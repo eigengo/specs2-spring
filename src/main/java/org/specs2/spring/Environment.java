@@ -95,7 +95,7 @@ class Environment {
 	 */
 	void addBean(Bean bean) {
 		if (bean == null) return;
-		this.beans.add(new BeanDefinition(bean.name(), bean.type()));
+		this.beans.add(new BeanDefinition(bean.name(), bean.clazz()));
 	}
 
 	/**

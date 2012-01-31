@@ -25,6 +25,6 @@ public @interface Bean {
 	 *
 	 * @return the object name
 	 */
-	Class<?> type();
+	Class<?> clazz();
 
 }
