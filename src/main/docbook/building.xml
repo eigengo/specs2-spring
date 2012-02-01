@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="building">
+    <title>Building Specs2 Spring</title>
+
+    <section>
+        <title>Building Specs2 Spring from sources</title>
+        <para>If you are interested in peeking under the hood of Specs2 Spring; if you want to try to implement
+            a new feature, you'll need to build Specs2 Spring from the sources; you might also want to set up
+            your IDE to make it easier to write the Scala and Java code.
+        </para>
+        <para>To build Specs2 Spring from sources, you’ll need:
+            <itemizedlist>
+                <listitem>
+                    <para>GPG to and keyset to sign the JARs. Download GPG from <ulink url="http://www.gnupg.org/">http://www.gnupg.org/</ulink>,</para>
+                </listitem>
+                <listitem>
+                    <para>Paul Phillips’s SBT Extras at <ulink url="https://github.com/paulp/sbt-extras">https://github.com/paulp/sbt-extras</ulink>,</para>
+                </listitem>
+                <listitem>
+                    <para>Clones of <ulink url="https://github.com/janm399/sbt-docbook-plugin">https://github.com/janm399/sbt-docbook-plugin</ulink> and
+                        <ulink url="https://github.com/janm399/specs2-spring">https://github.com/janm399/specs2-spring</ulink></para>
+                </listitem>
+            </itemizedlist>
+            Starting with the most user-friendly approach, install &amp; configure GPG keychain. The details will be
+            different, depending on your platform, but on UNIX systems, you should be able to run:
+            <programlisting language="bash"><![CDATA[
+$ gpg --list-secret-keys
+/Users/janmachacek/.gnupg/secring.gpg
+-------------------------------------
+sec   2048R/90A468A9 2012-01-30 [expires: 2016-01-30]
+uid                  Jan Machacek <jan.machacek@gmail.com>
+ssb   2048R/A9ED23D0 2012-01-30]]>
+            </programlisting>
+            If you cannot see any keys, you will need to generate a keypair by running <code>gpg --gen-key</code>. Onwards!
+            Once you download the SBT Extras shell script, put it somewhere you remember and add it to your <code>PATH</code>.
+            The common location for Specs2 Spring team at Cake Solutions is in <code>/usr/share/scala/sbt</code>.
+            We also modify the <code>PATH</code> environment variable in <code>/etc/profile</code> so we can simply run <code>sbt</code>.
+            <programlisting language="bash"><![CDATA[
+export PATH=$PATH:/usr/share/scala/sbt]]>
+            </programlisting>
+
+
+            Next, clone the two repositories to some directory, say <code>~/Sandbox</code>. Then you need to publish both projects to
+            your local Ivy repository (this is where they are going to be picked up from later on).
+            <programlisting language="bash"><![CDATA[
+~/Sandbox$ git clone https://github.com/janm399/specs2-spring
+~/Sandbox$ git clone https://github.com/janm399/sbt-docbook-plugin
+
+~/Sandbox$ cd sbt-docbook-plugin
+~/Sandbox/sbt-docbook-plugin$ sbt publish-local
+
+~/Sandbox/sbt-docbook-plugin$ cd ../specs2-spring
+~/Sandbox/specs2-spring$ sbt publish-local]]>
+            </programlisting>
+            And you’re ready to go. The <code>"de.undercouch" % "sbt-docbook-plugin" % "0.2-SNAPSHOT"</code> and
+            <code>"org.specs2" % "spring" % "0.4"</code> are now available in your local Ivy repository; and you can use them in
+            your Maven or SBT projects.
+        </para>
+
+    </section>
+
+    <section>
+        <title>Contributing to Specs2 Spring</title>
+        <para>If you want to contribute, take a look at the issues, then clone, pull request, et al.
+            If you would like to contribute, and if you use IntelliJ IDEA, you can generate the IntelliJ IDEA project
+            files by running sbt gen-idea in both projects.
+        </para>
+    </section>
+
+</chapter>

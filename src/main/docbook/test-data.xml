@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="test-data">
+	<title>Test data setup Specs2 Spring</title>
+
+	<section>
+		<title>Inserting test data</title>
+		<para>For a lot of the tests that you will be writing, you will need
+
+            Before we explore the intricacies of the code involved in testing large systems, we need to explore
+			what we mean by <emphasis>large system</emphasis>. In what we call large systems, there are many components
+			that need to be tested and those components depend on many other Java EE components. Moreover, the structure
+			of the code should be as <emphasis>elegant</emphasis> and <emphasis>flexible</emphasis> as possible, without
+			imposing technical restrictions.
+		</para>
+		<para>Let's take a quick detour to explore the structure of large Spring applications. Enterprise [Spring] applications
+		are usually made up of modules; in the smallest applications, these modules represent the tiers. The application
+		is then simple packaging of these modules. Let's start with a small application that consists of four such modules.
+		We have the <code>domain</code>, <code>repository</code>, <code>services</code> and the <code>webapp</code>.
+		</para>
+
+	</section>
+
+</chapter>
