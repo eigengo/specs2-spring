@@ -74,9 +74,12 @@ trait BeanTables {
 
     def |>[B](f: (B) => Result)(implicit m: ClassManifest[B]) = executeRow(m, f, true)
 
-    def |<[B](m: Class[B]): List[B] = {
+    def |<[B](implicit m: ClassManifest[B]): List[B] = {
       rows map {d: BeanRow => d.makeBean[B](titles, m)}
     }
+
+    def |<[B](m: Class[B]): List[B] =
+      rows map {d: BeanRow => d.makeBean[B](titles, m)}
 
     def |<[B](f: (B) => Unit)(implicit m: ClassManifest[B]): List[B] = {
       rows map {d: BeanRow =>

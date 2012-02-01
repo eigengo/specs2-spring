@@ -1,24 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="test-data">
-	<title>Test data setup Specs2 Spring</title>
+    <title>Test data setup Specs2 Spring</title>
 
-	<section>
-		<title>Inserting test data</title>
-		<para>For a lot of the tests that you will be writing, you will need
+    <section>
+        <title>Inserting test data</title>
+        <para>For a lot of the tests that you will be writing, you will need insert data to support your tests. You have
+            several options; you can either:
+            <itemizedlist>
+                <listitem>
+                    <para>Use pre-populated test database,</para>
+                </listitem>
+                <listitem>
+                    <para>Write scripts that will insert the required test data,</para>
+                </listitem>
+                <listitem>
+                    <para>Use your application's <emphasis>repository</emphasis> code to insert the test data.</para>
+                </listitem>
+            </itemizedlist>
 
-            Before we explore the intricacies of the code involved in testing large systems, we need to explore
-			what we mean by <emphasis>large system</emphasis>. In what we call large systems, there are many components
-			that need to be tested and those components depend on many other Java EE components. Moreover, the structure
-			of the code should be as <emphasis>elegant</emphasis> and <emphasis>flexible</emphasis> as possible, without
-			imposing technical restrictions.
-		</para>
-		<para>Let's take a quick detour to explore the structure of large Spring applications. Enterprise [Spring] applications
-		are usually made up of modules; in the smallest applications, these modules represent the tiers. The application
-		is then simple packaging of these modules. Let's start with a small application that consists of four such modules.
-		We have the <code>domain</code>, <code>repository</code>, <code>services</code> and the <code>webapp</code>.
-		</para>
+            Now, each approach has its advantages and drawbacks. Using pre-populated database means that each developer
+            needs to maintain his or her own copy of the database. In case of writing scripts, we are faced with scripts
+            that are disconnected from the rest of our application's code. Finally, using the persistence tier in our
+            application in the tests is cumbersome.
+        </para>
+        <para>Specs2 Spring gives us half-way house that combines the scripts and using the repository tier to insert
+            the objects. We would like to combine the script-like approach with manually creating and inserting the
+            records. Specs2 Spring comes with <code>BeanTables</code>, a trait that allows you to construct lists of
+            objects with their properties written in a convenient tabular form.
+            <programlisting language="scala"><![CDATA[
+"username" | "firstName" |
+"janm"    !! "Jan"       |
+"marco"   !! "Marc"
+            ]]>
+            </programlisting>
+            Assuming there is a persistent class <code>User</code>, defined as:
+            <programlisting language="scala"><![CDATA[
+@Entity
+case class User() {
+  @Id
+  @GeneratedValue
+  @BeanProperty
+  var id: Long = _
+  @Version
+  @BeanProperty
+  var version: Int = _
+  @BeanProperty
+  var username: String = _
+  @BeanProperty
+  var firstName: String = _
+  @BeanProperty
+  var lastName: String = _
 
-	</section>
+}]]>
+            </programlisting>
+            We would now expect that this table somehow creates two <code>User</code> instances whose <code>username</code>
+            and <code>firstName</code> properties are set to the values in the rows of the table. We now need to be able to
+            obtain the created objects or--as we'll see later--insert them into some underlying persistence mechanism.
+            The "table" object that <code>BeanTables</code> creates contains functions <code>|&gt;</code> and
+            <code>|&lt;</code>. Their names hint at the direction in which the objects will flow.
+        </para>
+        <para>Let's start with obtaining the objects into a <code>List</code>. The <code>|&lt;</code> function sends
+            the rows of the constructed objects towards the left and top; that is, towards the variable definition.
+            <programlisting language="scala"><![CDATA[
+class SpecificationSpec extends Specification with BeanTables {
+
+  "user objects using BeanTables:" in {
+    val inferredUsers: List[User] =
+      "username" | "firstName" |
+      "janm"    !! "Jan"       |
+      "marco"   !! "Marc"      |<
+
+    val typedUsers =
+      "username" | "firstName" |
+      "janm"    !! "Jan"       |
+      "marco"   !! "Marc"      |<classOf[User]
+
+    // assert something about typedUsers and inferredUsers
+  }
+}
+            ]]>
+            </programlisting>
+            The two variables, <code>inferredUsers</code> and <code>typedUsers</code> show the application of the <code>|&gt;</code>
+            function. In the first case, the function's type is inferred from the type of the <code>inferredUsers</code> variable.
+            In the second case, we supply the type of the elements in the list (and we don't need to explicitly specify
+            the type of the <code>List</code>).
+        </para>
+
+    </section>
 
 </chapter>
