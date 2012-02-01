@@ -4,7 +4,7 @@
     <bookinfo>
         <title>Reference Documentation</title>
         <productname>Specs2 Spring</productname>
-        <releaseinfo>1.0</releaseinfo>
+        <releaseinfo>0.4</releaseinfo>
         <!--
           <mediaobject>
               <imageobject role="fo">
@@ -31,7 +31,7 @@
         </authorgroup>
 
         <copyright>
-            <year>2011</year>
+            <year>2011-2012</year>
             <holder>Jan Machacek, Anirvan Chakraborty, Mark Harrison</holder>
         </copyright>
 
@@ -65,7 +65,7 @@
     </part>
 
     <part id="spring-appendices">
-        <title>Appendices?</title>
+        <title>Technical background</title>
 
         <xi:include href="building.xml"
                     xmlns:xi="http://www.w3.org/2001/XInclude"/>

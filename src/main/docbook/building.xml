@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="building">
-    <title>Building Specs2 Spring</title>
+    <title>Improving Specs2 Spring</title>
 
     <section>
         <title>Building Specs2 Spring from sources</title>
@@ -62,10 +62,20 @@ export PATH=$PATH:/usr/share/scala/sbt]]>
 
     <section>
         <title>Contributing to Specs2 Spring</title>
-        <para>If you want to contribute, take a look at the issues, then clone, pull request, et al.
-            If you would like to contribute, and if you use IntelliJ IDEA, you can generate the IntelliJ IDEA project
-            files by running sbt gen-idea in both projects.
+        <para>If you are interested in helping out, the first thing to do is to take a look at the currently open
+            issues at <ulink url="https://github.com/janm399/specs2-spring/issues">https://github.com/janm399/specs2-spring/issues</ulink>
+            and decide which one you'd like to tackle. To start making changes to the code, you'll need to fork the
+            repository from <code>janm399/specs2-spring</code> to your own Github account. The clone in your account
+            will give you read-write access. Clone your repository from Github to your machine and hack away! All Specs2 Spring
+            authors will be delighted to help you, please contact us at <ulink url="mailto:janm@cakesolutions.net">janm@cakesolutions.net</ulink>,
+            <ulink url="mailto:anirvanc@cakesolutions.net">anirvanc@cakesolutions.net</ulink> or <ulink url="mailto:markh@cakesolutions.net">markh@cakesolutions.net</ulink>.
+            Follow us on twitter, too--we are <ulink url="https://twitter.com/#!/honzam399">@honzam399</ulink>,
+            <ulink url="https://twitter.com/#!/anirvan_c">@anirvan_c</ulink> and <ulink url="https://twitter.com/#!/markglh">@markglh</ulink>.
         </para>
+        <para>When your work is done, send a pull request. We will review your code, sort out any last niggles and then
+            merge the code into our Specs2 Spring repository. As you gain experience, we will be delighted to add you as
+            the contributor to the main <code>janm399/specs2-spring</code> repository so you don't have to worry about the
+            merge dances.</para>
     </section>
 
 </chapter>
