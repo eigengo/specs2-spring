@@ -23,4 +23,9 @@ case class User() {
   @BeanProperty
   var lastName: String = _
 
+  override def equals(that: Any) : Boolean = {
+    that.isInstanceOf[User] && (this.hashCode() == that.asInstanceOf [User].hashCode());
+  }
+
+  override def hashCode = username.hashCode
 }
