@@ -24,8 +24,14 @@
             that are disconnected from the rest of our application's code. Finally, using the persistence tier in our
             application in the tests is cumbersome.
         </para>
-        <para>Specs2 Spring gives us half-way house that combines the scripts and using the repository tier to insert
-            the objects. We would like to combine the script-like approach with manually creating and inserting the
+		<para>You can use the <code>HibernateDataAccess</code>, <code>JpaDataAccess</code>, <code>SqlDataAccess</code>, 
+			<code>DocumentDataAccess</code> or <code>GraphDataAccess</code> traits together with the 
+			<code>BeanTables</code> trait to create the test data in a convenient tabular manner that is half-way 
+			between writing	scripts that are completely disconnected and creating the objects manually and using
+			your repository objects to persist them.
+		</para>
+        <para>In other words, Specs2 Spring gives us half-way house that combines the scripts and using the repository 
+			tier to insert the objects. You can combine the script-like approach with manually creating and inserting the
             records. Specs2 Spring comes with <code>BeanTables</code>, a trait that allows you to construct lists of
             objects with their properties written in a convenient tabular form.
             <programlisting language="scala"><![CDATA[
@@ -112,7 +118,7 @@ class SpecificationSpec extends Specification with BeanTables with HibernateData
         </para>
         <section>
             <title>HibernateDataAccess</title>
-            <para>The HibernateDataAccess trait includes functions <code>insert</code> and <code>deleteAll</code>,
+            <para>The <code>HibernateDataAccess</code> trait includes functions <code>insert</code> and <code>deleteAll</code>;
                 functions that can be used with the <code>BeanTable</code>'s <code>|&gt;</code> functions.
             </para>
             <para>We have the <code>insert[T](implicit sessionFactory: SessionFactory): (T => Result)</code> and
@@ -148,4 +154,4 @@ class SpecificationSpec extends Specification
         </section>
     </section>
 
-</chapter>
+</chapter>	
