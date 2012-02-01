@@ -27,11 +27,6 @@ class SpecificationSpec extends Specification
       "janm"    !! "Jan"       |
       "marco"   !! "Marc"      |> insert[User]
 
-      val users =
-        "username" | "firstName" |
-        "janm"    !! "Jan"       |
-        "marco"   !! "Marc"      |<classOf[User]
-      
       springComponent.findAll[User].size() must_== (2)
     }
     
