@@ -24,15 +24,15 @@
             that are disconnected from the rest of our application's code. Finally, using the persistence tier in our
             application in the tests is cumbersome.
         </para>
-		<para>You can use the <code>HibernateDataAccess</code>, <code>JpaDataAccess</code>, <code>SqlDataAccess</code>, 
-			<code>DocumentDataAccess</code> or <code>GraphDataAccess</code> traits together with the 
-			<code>BeanTables</code> trait to create the test data in a convenient tabular manner that is half-way 
-			between writing	scripts that are completely disconnected and creating the objects manually and using
-			your repository objects to persist them.
-		</para>
-        <para>In other words, Specs2 Spring gives us half-way house that combines the scripts and using the repository 
-			tier to insert the objects. You can combine the script-like approach with manually creating and inserting the
-            records. Specs2 Spring comes with <code>BeanTables</code>, a trait that allows you to construct lists of
+        <para>You can use the <code>HibernateDataAccess</code>, <code>HibernateTemplateDataAccess</code>, (and the future
+            <code>JpaDataAccess</code>,<code>SqlDataAccess</code>, <code>DocumentDataAccess</code> or <code>GraphDataAccess</code>)
+            traits together with the <code>BeanTables</code> trait to create the test data in a convenient tabular manner
+            that is half-way between writing scripts that are completely disconnected and creating the objects manually and using
+            your repository objects to persist them.
+        </para>
+        <para>In other words, Specs2 Spring gives us half-way house that combines the scripts and using the repository
+            tier to insert the objects. You can combine the script-like approach with manually creating and inserting
+            the records. Specs2 Spring comes with <code>BeanTables</code>, a trait that allows you to construct lists of
             objects with their properties written in a convenient tabular form.
             <programlisting language="scala"><![CDATA[
 "username" | "firstName" |
@@ -66,7 +66,7 @@ case class User() {
             The "table" object that <code>BeanTables</code> creates contains functions <code>|&gt;</code> and
             <code>|&lt;</code>. Their names hint at the direction in which the objects will flow.
         </para>
-        <para>Let's start with obtaining the objects into a <code>List</code>. The <code>|&lt;</code> function sends
+        <para>Let's start with obtaining the objects into a <code>List</code>. The <code>|&gt;</code> function sends
             the rows of the constructed objects towards the left and top; that is, towards the variable definition.
             <programlisting language="scala"><![CDATA[
 class SpecificationSpec extends Specification with BeanTables {
@@ -99,7 +99,8 @@ class SpecificationSpec extends Specification with BeanTables {
             traits with functions that return just the function that <code>|&gt;</code> expects. For example, you can
             use the <code>insert</code> function from the <code>HibernateDataAccess</code> trait.
             <programlisting language="scala"><![CDATA[
-class SpecificationSpec extends Specification with BeanTables with HibernateDataAccess {
+class SpecificationSpec extends Specification
+  with BeanTables with HibernateDataAccess {
 
   "user objects using BeanTables:" in {
     val sessionFactory = make-hibernate-SessionFactory()
@@ -128,10 +129,12 @@ class SpecificationSpec extends Specification with BeanTables with HibernateData
                 that is applied to every instance <code>T</code> before it is inserted. Both functions accept the implicit
                 parameter of type <code>SessionFactory</code>.
             </para>
-            <para>The usage of the <code>insert[T](implicit sessionFactory: SessionFactory): (T => Result)</code> requires
-                the <code>SessionFactory</code>. In a typical Spring Framework application, the <code>SessionFactory</code>
-                is usually a Spring bean. Therefore, it can be injected into the specification.
-                <programlisting language="scala"><![CDATA[
+            <section>
+                <title>insert[T](implicit sessionFactory: SessionFactory): (T => Result)</title>
+                <para>The first <code>insert</code> requires only the <code>SessionFactory</code> that will be used
+                    to perform the <code>saveOrUpdate</code> operation. In a typical Spring Framework application,
+                    the <code>SessionFactory</code> is usually a Spring bean. Therefore, it can be injected into the specification.
+                    <programlisting language="scala"><![CDATA[
 @ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
 class SpecificationSpec extends Specification
   with BeanTables with HibernateDataAccess {
@@ -147,10 +150,37 @@ class SpecificationSpec extends Specification
     springComponent.findAll[User].size() must_== (2)
   }
 }
-                ]]>
-                </programlisting>
+                    ]]>
+                    </programlisting>
+                </para>
+            </section>
+            <section>
+                <title>insert[T, R](f: T => R)(implicit sessionFactory: SessionFactory): (T&nbsp;=>&nbsp;Result)</title>
+                <para>The usage of the second <code>insert</code> function requires a function that will operate on every
+                    instance of type <code>T</code> from the table (with its properties set) and the <code>SessionFactory</code>.
+                    Again, in a typical Spring Framework application, the <code>SessionFactory</code>
+                    is usually a Spring bean. Therefore, it can be injected into the specification.
+                    <programlisting language="scala"><![CDATA[
+@ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
+class SpecificationSpec extends Specification
+  with BeanTables with HibernateDataAccess {
 
-            </para>
+  @Autowired implicit var sessionFactory: SessionFactory = _
+  @Autowired var springComponent: SpringComponent = _
+
+  "springComponent must:" in {
+    "username" | "firstName" |
+    "janm"    !! "Jan"       |
+    "marco"   !! "Marc"      |> insert[User]
+
+    springComponent.findAll[User].size() must_== (2)
+  }
+}
+                    ]]>
+                    </programlisting>
+                </para>
+            </section>
+
         </section>
     </section>
 
