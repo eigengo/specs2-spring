@@ -13,8 +13,6 @@ scalaVersion := "2.9.1"
 
 crossScalaVersions := Seq("2.9.0")
 
-docBookXslFoStyleSheet in DocBook := "src/main/docbook/styles/pdf/custom.xsl"
-
 /** Shell */
 shellPrompt := { state => System.getProperty("user.name") + "> " }
 
@@ -23,7 +21,7 @@ shellPrompt in ThisBuild := { state => Project.extract(state).currentRef.project
 /** Dependencies */
 resolvers ++= Seq("snapshots-repo" at "http://scala-tools.org/repo-snapshots")
 
-libraryDependencies <<= scalaVersion { scala_version => Seq(
+libraryDependencies ++= Seq(
   "org.specs2" %% "specs2" % "1.7.1",
   "org.mockito" % "mockito-all" % "1.8.4",
   "junit" % "junit" % "4.7" % "optional",
@@ -50,15 +48,8 @@ libraryDependencies <<= scalaVersion { scala_version => Seq(
   "org.apache.activemq" % "activemq-core" % "5.4.1",
   "javax.servlet" % "servlet-api" % "2.5",
   "org.apache.tomcat" % "jasper" % "6.0.29",
-  "org.apache.tomcat" % "jasper-jdt" % "6.0.29",
-  "saxon" % "saxon" % "6.5.3", /* SBT PDF Dependency */
-  "xml-resolver" % "xml-resolver" % "1.2",
-  "net.sf.docbook" % "docbook-xsl" % "1.76.1",
-  "net.sf.docbook" % "docbook-xsl-saxon" % "1.0.0",
-  "org.apache.xmlgraphics" % "fop" % "1.0",
-  "xerces" % "xercesImpl" % "2.10.0"
+  "org.apache.tomcat" % "jasper-jdt" % "6.0.29"
   )
-}
 
 /** Compilation */
 javacOptions ++= Seq()
