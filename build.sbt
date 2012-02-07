@@ -66,6 +66,8 @@ logBuffered := false
 
 cancelable := true
 
+docBookXslFoStyleSheet in DocBook := "src/main/docbook/styles/pdf/custom.xsl"
+
 testOptions := Seq(Tests.Filter(s =>
   Seq("Spec", "Suite", "Unit", "all").exists(s.endsWith(_)) &&
     !s.endsWith("FeaturesSpec") ||
