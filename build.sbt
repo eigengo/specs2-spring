@@ -5,11 +5,11 @@ import ReleaseKeys._
 /** Project */
 name := "spring"
 
-version := "0.4"
+version := "0.5"
 
 organization := "org.specs2"
 
-scalaVersion := "2.9.1"
+scalaVersion := "2.9.2"
 
 crossScalaVersions := Seq("2.9.0")
 
@@ -22,7 +22,7 @@ shellPrompt in ThisBuild := { state => Project.extract(state).currentRef.project
 resolvers ++= Seq("snapshots-repo" at "http://scala-tools.org/repo-snapshots")
 
 libraryDependencies ++= Seq(
-  "org.specs2" %% "specs2" % "1.7.1",
+  "org.specs2" %% "specs2" % "1.9",
   "org.mockito" % "mockito-all" % "1.8.4",
   "junit" % "junit" % "4.7" % "optional",
   "org.springframework" % "spring-core" % "3.1.0.RELEASE",
