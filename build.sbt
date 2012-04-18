@@ -11,7 +11,7 @@ organization := "org.specs2"
 
 scalaVersion := "2.9.2"
 
-crossScalaVersions := Seq("2.9.0")
+crossScalaVersions := Seq("2.9.2")
 
 /** Shell */
 shellPrompt := { state => System.getProperty("user.name") + "> " }
@@ -25,17 +25,17 @@ libraryDependencies ++= Seq(
   "org.specs2" %% "specs2" % "1.9",
   "org.mockito" % "mockito-all" % "1.8.4",
   "junit" % "junit" % "4.7" % "optional",
-  "org.springframework" % "spring-core" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-beans" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-jdbc" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-tx" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-orm" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-test" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-web" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-webmvc" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-test" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-aspects" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-instrument" % "3.1.0.RELEASE" % "test->runtime",
+  "org.springframework" % "spring-core" % "3.1.1.RELEASE",
+  "org.springframework" % "spring-beans" % "3.1.1.RELEASE",
+  "org.springframework" % "spring-jdbc" % "3.1.1.RELEASE",
+  "org.springframework" % "spring-tx" % "3.1.1.RELEASE",
+  "org.springframework" % "spring-orm" % "3.1.1.RELEASE",
+  "org.springframework" % "spring-test" % "3.1.1.RELEASE",
+  "org.springframework" % "spring-web" % "3.1.1.RELEASE",
+  "org.springframework" % "spring-webmvc" % "3.1.1.RELEASE",
+  "org.springframework" % "spring-test" % "3.1.1.RELEASE",
+  "org.springframework" % "spring-aspects" % "3.1.1.RELEASE",
+  "org.springframework" % "spring-instrument" % "3.1.1.RELEASE" % "test->runtime",
   "org.hsqldb" % "hsqldb" % "2.2.4",
   "org.htmlparser" % "htmlparser" % "1.6",
   "org.hibernate" % "hibernate-core" % "4.0.1.Final",
