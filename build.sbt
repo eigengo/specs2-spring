@@ -9,9 +9,7 @@ version := "0.5"
 
 organization := "org.specs2"
 
-scalaVersion := "2.9.2"
-
-crossScalaVersions := Seq("2.9.2")
+scalaVersion := "2.10.0-SNAPSHOT"
 
 /** Shell */
 shellPrompt := { state => System.getProperty("user.name") + "> " }
