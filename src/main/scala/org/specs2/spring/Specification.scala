@@ -41,6 +41,9 @@ trait Specification extends org.specs2.mutable.Specification
     testContext.createAndAutowire(this)
   }
 
+  // TODO: complete me
+  def autowire[A <: AnyRef](a: => A): A = a
+
   override def is: org.specs2.specification.Fragments = {
     // setup the specification's transactional behaviour
     val ttd = new TestTransactionDefinitionExtractor().extract(this)
