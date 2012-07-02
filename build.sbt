@@ -5,13 +5,13 @@ import ReleaseKeys._
 /** Project */
 name := "spring"
 
-version := "0.4"
+version := "0.7"
 
 organization := "org.specs2"
 
-scalaVersion := "2.9.1"
+scalaVersion := "2.9.2"
 
-crossScalaVersions := Seq("2.9.0")
+crossScalaVersions := Seq("2.9.1")
 
 /** Shell */
 shellPrompt := { state => System.getProperty("user.name") + "> " }
@@ -22,33 +22,33 @@ shellPrompt in ThisBuild := { state => Project.extract(state).currentRef.project
 resolvers ++= Seq("snapshots-repo" at "http://scala-tools.org/repo-snapshots")
 
 libraryDependencies ++= Seq(
-  "org.specs2" %% "specs2" % "1.7.1",
+  "org.specs2" %% "specs2" % "1.9",
   "org.mockito" % "mockito-all" % "1.8.4",
   "junit" % "junit" % "4.7" % "optional",
   "org.springframework" % "spring-core" % "3.1.0.RELEASE",
   "org.springframework" % "spring-beans" % "3.1.0.RELEASE",
   "org.springframework" % "spring-jdbc" % "3.1.0.RELEASE",
   "org.springframework" % "spring-tx" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-orm" % "3.1.0.RELEASE",
+  "org.springframework" % "spring-orm" % "3.1.0.RELEASE" % "provided",
   "org.springframework" % "spring-test" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-web" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-webmvc" % "3.1.0.RELEASE",
+  "org.springframework" % "spring-web" % "3.1.0.RELEASE" % "provided",
+  "org.springframework" % "spring-webmvc" % "3.1.0.RELEASE" % "provided",
   "org.springframework" % "spring-test" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-aspects" % "3.1.0.RELEASE",
+  "org.springframework" % "spring-aspects" % "3.1.0.RELEASE" % "provided",
   "org.springframework" % "spring-instrument" % "3.1.0.RELEASE" % "test->runtime",
-  "org.hsqldb" % "hsqldb" % "2.2.4",
-  "org.htmlparser" % "htmlparser" % "1.6",
-  "org.hibernate" % "hibernate-core" % "4.0.1.Final",
-  "javax.persistence" % "persistence-api" % "1.0",
+  "org.hsqldb" % "hsqldb" % "2.2.4" % "provided",
+  "org.htmlparser" % "htmlparser" % "1.6" % "provided",
+  "org.hibernate" % "hibernate-core" % "4.0.1.Final" % "provided",
+  "javax.persistence" % "persistence-api" % "1.0" % "provided",
   "org.aspectj" % "aspectjweaver" % "1.6.12" % "test->runtime",
-  "javax.mail" % "mail" % "1.4.1",
-  "javax.transaction" % "jta" % "1.1",
-  "com.atomikos" % "transactions-jta" % "3.7.0",
-  "com.atomikos" % "transactions-jdbc" % "3.7.0",
-  "org.apache.activemq" % "activemq-core" % "5.4.1",
-  "javax.servlet" % "servlet-api" % "2.5",
-  "org.apache.tomcat" % "jasper" % "6.0.29",
-  "org.apache.tomcat" % "jasper-jdt" % "6.0.29"
+  "javax.mail" % "mail" % "1.4.1" % "provided",
+  "javax.transaction" % "jta" % "1.1" % "provided",
+  "com.atomikos" % "transactions-jta" % "3.7.0" % "provided",
+  "com.atomikos" % "transactions-jdbc" % "3.7.0" % "provided",
+  "org.apache.activemq" % "activemq-core" % "5.4.1" % "provided",
+  "javax.servlet" % "servlet-api" % "2.5" % "provided",
+  "org.apache.tomcat" % "jasper" % "6.0.29" % "provided",
+  "org.apache.tomcat" % "jasper-jdt" % "6.0.29" % "provided"
   )
 
 /** Compilation */
@@ -65,8 +65,6 @@ pollInterval := 1000
 logBuffered := false
 
 cancelable := true
-
-docBookXslFoStyleSheet in DocBook := "src/main/docbook/styles/pdf/custom.xsl"
 
 testOptions := Seq(Tests.Filter(s =>
   Seq("Spec", "Suite", "Unit", "all").exists(s.endsWith(_)) &&
