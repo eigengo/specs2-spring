@@ -12,7 +12,7 @@ for both testing and production. This is where this project helps: the annotatio
 the JNDI environment we wish to build for the test. 
 
 Verba docent, exempla trahunt, so I'll start you off with a simple sample. Let there be:
-```
+```scala
 @Component
 class SomeComponent @Autowired()(private val hibernateTemplate: HibernateTemplate) {
 
@@ -28,7 +28,7 @@ class SomeComponent @Autowired()(private val hibernateTemplate: HibernateTemplat
 }
 ```
 To get this running, we give the ``META-INF/spring/module-context.xml`` configuration file:
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="..."
 	   xsi:schemaLocation="...">
@@ -57,7 +57,7 @@ To get this running, we give the ``META-INF/spring/module-context.xml`` configur
 This context file is the same for both tests and for production. The "variable" items (``DataSource`` and ``TransactionManager``) beans are looked up from JNDI.
 
 To the test, then. We have simply
-```
+```scala
 @TransactionManager(name = "java:comp/TransactionManager")
 @DataSource(name = "java:comp/env/jdbc/test", driverClass = classOf[JDBCDriver], url = "jdbc:hsqldb:mem:test")
 @Transactional
@@ -79,7 +79,7 @@ class SomeComponentSpec extends org.specs2.spring.Specification {
 }
 ```
 If I wanted to have another integration test (perhaps testing another class), I would write:
-```
+```scala
 @TransactionManager(name = "java:comp/TransactionManager")
 @DataSource(name = "java:comp/env/jdbc/test", driverClass = classOf[JDBCDriver], url = "jdbc:hsqldb:mem:test")
 @Transactional
@@ -100,7 +100,7 @@ class SomeOtherComponentSpec extends org.specs2.spring.Specification {
 }
 ```
 At this point, you may notice the duplication in the annotations. The Specs2 spring extension allows you to "merge" these annotations into one annotation that you can use throughout your tests. You can therefore have:
-```
+```scala
 @TransactionManager(name = "java:comp/TransactionManager")
 @DataSource(name = "java:comp/env/jdbc/test", driverClass = classOf[JDBCDriver], url = "jdbc:hsqldb:mem:test")
 @Transactional
@@ -110,7 +110,7 @@ public @interface IntegrationTest {
 }
 ```
 and modify the specs to just
-```
+```scala
 @IntegrationTest
 class SomeComponentSpec extends Specification { ... }
 
@@ -118,7 +118,7 @@ class SomeComponentSpec extends Specification { ... }
 class SomeComponentSpec extends Specification { ... }
 ```
 To set up multiple ``DataSource``s, ``MailSession``s, ... as well as JMS queues and topics, you can use the Jndi annotation like this:
-```
+```java
 @Jndi(
 		dataSources = {
 				@DataSource(name = "java:comp/env/jdbc/test",
