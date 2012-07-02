@@ -38,7 +38,7 @@ trait BeanTables {
     protected def collect[R <% Result](results: List[(String, R)]): DecoratedResult[BeanTable] = {
       val result = allSuccess(results)
       val header = result match {
-        case Success(_) => showTitles
+        case Success(_, _) => showTitles
         case other => "  " + showTitles
       }
       DecoratedResult(BeanTable(titles, results), result.updateMessage {
@@ -56,7 +56,7 @@ trait BeanTables {
     private def resultLine(desc: String, result: Result): String = {
       result.status + " " + desc + {
         result match {
-          case Success(_) => ""
+          case Success(_, _) => ""
           case _ => " " + result.message
         }
       }
