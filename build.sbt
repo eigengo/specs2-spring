@@ -5,7 +5,7 @@ import ReleaseKeys._
 /** Project */
 name := "spring"
 
-version := "0.7"
+version := "0.7.1"
 
 organization := "org.specs2"
 
@@ -52,9 +52,9 @@ libraryDependencies ++= Seq(
   )
 
 /** Compilation */
-javacOptions ++= Seq()
+javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
-javaOptions += "-Xmx2G"
+javaOptions += "-Xmx2G -XX:MaxPermSize=512m"
 
 scalacOptions ++= Seq("-deprecation", "-unchecked")
 
