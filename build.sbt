@@ -54,7 +54,7 @@ libraryDependencies ++= Seq(
 /** Compilation */
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
-javaOptions += "-Xmx2G -XX:MaxPermSize=512m"
+javaOptions += "-Xmx2G -XX:MaxPermSize=1024m"
 
 scalacOptions ++= Seq("-deprecation", "-unchecked")
 
