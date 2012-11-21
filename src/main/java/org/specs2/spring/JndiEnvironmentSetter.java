@@ -262,7 +262,6 @@ public class JndiEnvironmentSetter {
          */
         public void bind(String name, Object obj) {
             // if (this.boundObjects.contains(name)) return;
-            System.out.println("** PUT " + name + " -> " + obj);
             this.boundObjects.put(name, obj);
         }
 
