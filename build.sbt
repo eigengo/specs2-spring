@@ -1,17 +1,13 @@
 import sbtrelease._
-import Release._
-import ReleaseKeys._
 
 /** Project */
 name := "spring"
 
-version := "0.7.1"
+version := "1.0.0"
 
 organization := "org.specs2"
 
-scalaVersion := "2.9.2"
-
-crossScalaVersions := Seq("2.9.1")
+scalaVersion := "2.10.1"
 
 /** Shell */
 shellPrompt := { state => System.getProperty("user.name") + "> " }
@@ -22,33 +18,29 @@ shellPrompt in ThisBuild := { state => Project.extract(state).currentRef.project
 resolvers ++= Seq("snapshots-repo" at "http://scala-tools.org/repo-snapshots")
 
 libraryDependencies ++= Seq(
-  "org.specs2" %% "specs2" % "1.9",
-  "org.mockito" % "mockito-all" % "1.8.4",
-  "junit" % "junit" % "4.7" % "optional",
-  "org.springframework" % "spring-core" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-beans" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-jdbc" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-tx" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-orm" % "3.1.0.RELEASE" % "provided",
-  "org.springframework" % "spring-test" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-web" % "3.1.0.RELEASE" % "provided",
-  "org.springframework" % "spring-webmvc" % "3.1.0.RELEASE" % "provided",
-  "org.springframework" % "spring-test" % "3.1.0.RELEASE",
-  "org.springframework" % "spring-aspects" % "3.1.0.RELEASE" % "provided",
-  "org.springframework" % "spring-instrument" % "3.1.0.RELEASE" % "test->runtime",
-  "org.hsqldb" % "hsqldb" % "2.2.4" % "provided",
-  "org.htmlparser" % "htmlparser" % "1.6" % "provided",
-  "org.hibernate" % "hibernate-core" % "4.0.1.Final" % "provided",
-  "javax.persistence" % "persistence-api" % "1.0" % "provided",
-  "org.aspectj" % "aspectjweaver" % "1.6.12" % "test->runtime",
-  "javax.mail" % "mail" % "1.4.1" % "provided",
-  "javax.transaction" % "jta" % "1.1" % "provided",
-  "com.atomikos" % "transactions-jta" % "3.7.0" % "provided",
-  "com.atomikos" % "transactions-jdbc" % "3.7.0" % "provided",
-  "org.apache.activemq" % "activemq-core" % "5.4.1" % "provided",
-  "javax.servlet" % "servlet-api" % "2.5" % "provided",
-  "org.apache.tomcat" % "jasper" % "6.0.29" % "provided",
-  "org.apache.tomcat" % "jasper-jdt" % "6.0.29" % "provided"
+  "org.specs2"         %% "specs2"            % "1.14",
+  "org.mockito"         % "mockito-all"       % "1.9.5",
+  "org.springframework" % "spring-core"       % "3.2.2.RELEASE",
+  "org.springframework" % "spring-beans"      % "3.2.2.RELEASE",
+  "org.springframework" % "spring-jdbc"       % "3.2.2.RELEASE",
+  "org.springframework" % "spring-tx"         % "3.2.2.RELEASE",
+  "org.springframework" % "spring-test"       % "3.2.2.RELEASE",
+  "org.springframework" % "spring-test"       % "3.2.2.RELEASE",
+  "org.springframework" % "spring-orm"        % "3.2.2.RELEASE" % "provided",
+  "org.springframework" % "spring-web"        % "3.2.2.RELEASE" % "provided",
+  "org.springframework" % "spring-webmvc"     % "3.2.2.RELEASE" % "provided",
+  "org.springframework" % "spring-aspects"    % "3.2.2.RELEASE" % "provided",
+  "org.springframework" % "spring-instrument" % "3.2.2.RELEASE" % "test->runtime",
+  "junit"               % "junit"             % "4.7"           % "optional",
+  "org.hsqldb"          % "hsqldb"            % "2.2.4"         % "provided",
+  "org.hibernate"       % "hibernate-core"    % "4.0.1.Final"   % "provided",
+  "javax.persistence"   % "persistence-api"   % "1.0"           % "provided",
+  "org.aspectj"         % "aspectjweaver"     % "1.6.12"        % "test->runtime",
+  "javax.mail"          % "mail"              % "1.4.1"         % "provided",
+  "javax.transaction"   % "jta"               % "1.1"           % "provided",
+  "com.atomikos"        % "transactions-jta"  % "3.7.0"         % "provided",
+  "com.atomikos"        % "transactions-jdbc" % "3.7.0"         % "provided",
+  "org.apache.activemq" % "activemq-core"     % "5.4.1"         % "provided"
   )
 
 /** Compilation */
@@ -76,23 +68,6 @@ testOptions := Seq(Tests.Filter(s =>
 /** Console */
 initialCommands in console := "import org.specs2.spring._"
 
-seq(releaseSettings: _*)
-
-releaseProcess <<= thisProjectRef apply { ref =>
-  import ReleaseStateTransformations._
-  Seq[ReleasePart](
-    initialGitChecks,                     
-    checkSnapshotDependencies,    
-    inquireVersions,
-    setReleaseVersion,                      
-    runTest,                                
-    commitReleaseVersion,                   
-    tagRelease,                             
-    setNextVersion,
-    commitNextVersion                       
-  )
-}
-
 publishTo <<= version { v: String =>
   val nexus = "https://oss.sonatype.org/"
   if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
@@ -106,7 +81,7 @@ publishArtifact in Test := false
 pomIncludeRepository := { x => false }
 
 pomExtra := (
-  <url>http://www.cakesolutions.org/specs2-spring.html</url>
+  <url>http://www.eigengo.com/</url>
   <licenses>
     <license>
       <name>BSD-style</name>
@@ -115,14 +90,19 @@ pomExtra := (
     </license>
   </licenses>
   <scm>
-    <url>git@github.com:janm399/specs2-spring.git</url>
-    <connection>scm:git:git@github.com:janm399/specs2-spring.git</connection>
+    <url>git@github.com:eigengo/specs2-spring.git</url>
+    <connection>scm:git:git@github.com:eigengo/specs2-spring.git</connection>
   </scm>
   <developers>
     <developer>
       <id>janmachacek</id>
       <name>Jan Machacek</name>
-      <url>http://cakesolutions.org</url>
+      <url>http://www.eigengo.com</url>
       </developer>
-    </developers>
+    <developer>
+      <id>anirvanchakraborty</id>
+      <name>Anirvan Chakraborty</name>
+      <url>http://www.eigengo.com</url>
+    </developer>
+  </developers>
 )

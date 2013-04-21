@@ -1,9 +1,6 @@
-resolvers += "gseitz@github.com" at "http://gseitz.github.com/maven/"
+addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.2.0")
 
-addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.4")
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "0.6")
 
-resolvers += "sbt-idea-repo" at "http://mpeltonen.github.com/maven/"
+addSbtPlugin("com.typesafe.sbt" % "sbt-pgp" % "0.7")
 
-addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "0.11.0")
-
-addSbtPlugin("com.jsuereth" % "xsbt-gpg-plugin" % "0.5")
