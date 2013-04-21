@@ -58,6 +58,8 @@ logBuffered := false
 
 cancelable := true
 
+credentials += Credentials(Path.userHome / ".sonatype")
+
 testOptions := Seq(Tests.Filter(s =>
   Seq("Spec", "Suite", "Unit", "all").exists(s.endsWith(_)) &&
     !s.endsWith("FeaturesSpec") ||
