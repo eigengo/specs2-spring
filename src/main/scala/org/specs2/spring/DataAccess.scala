@@ -3,6 +3,7 @@ package org.specs2.spring
 import org.springframework.orm.hibernate3.{HibernateCallback, HibernateTemplate}
 import org.hibernate.{HibernateException, SessionFactory, Session}
 import org.specs2.execute.{Success, Result}
+import scala.reflect.ClassTag
 
 /**
  * @author janmachacek
@@ -46,9 +47,9 @@ trait HibernateDataAccess {
    * @param entity implicitly supplied class manifest of the entity type to be deleted
    * @param sessionFactory the session factory that will have the entities removed
    */
-  def deleteAll[T](implicit entity: ClassManifest[T], sessionFactory: SessionFactory) {
+  def deleteAll[T](implicit entity: ClassTag[T], sessionFactory: SessionFactory) {
     inSession(sessionFactory) { s =>
-      s.createQuery("delete from " + entity.erasure.getName).executeUpdate()
+      s.createQuery("delete from " + entity.runtimeClass.getName).executeUpdate()
     }
   }
 
@@ -134,7 +135,7 @@ trait HibernateTemplateDataAccess {
     t =>
       f(t)
       hibernateTemplate.saveOrUpdate(t) 
-      Success("ok");
+      Success("ok")
   } 
 
   /**
@@ -157,7 +158,7 @@ trait HibernateTemplateDataAccess {
    * @return function that inserts the object and returns Success when the insert succeeds.
    */
   def insert[T](implicit hibernateTemplate: HibernateTemplate): (T => Result) = {
-    t => hibernateTemplate.saveOrUpdate(t); Success("ok");
+    t => hibernateTemplate.saveOrUpdate(t); Success("ok")
   } 
 
   /**
@@ -166,10 +167,10 @@ trait HibernateTemplateDataAccess {
    * @param entity implicitly supplied class manifest of the entity type to be deleted
    * @param hibernateTemplate HibernateTemplate instance that will have the entities removed
    */
-  def deleteAll[T](implicit entity: ClassManifest[T], hibernateTemplate: HibernateTemplate) {
+  def deleteAll[T](implicit entity: ClassTag[T], hibernateTemplate: HibernateTemplate) {
     hibernateTemplate.execute(new HibernateCallback[Int] {
       def doInHibernate(session: Session) = 
-        session.createQuery("delete from " + entity.erasure.getName).executeUpdate()
+        session.createQuery("delete from " + entity.runtimeClass.getName).executeUpdate()
     })
   }
 
