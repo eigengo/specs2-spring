@@ -4,6 +4,7 @@ import org.specs2.execute._
 import org.specs2.text.Trim._
 import org.springframework.beans.{BeanWrapperImpl, BeanWrapper}
 import java.util.{HashSet, ArrayList}
+import scala.reflect.ClassTag
 
 /**
  * @author janmachacek
@@ -49,7 +50,12 @@ trait BeanTables {
 
     /**@return the logical and combination of all the results */
     private def allSuccess[R <% Result](results: List[(String, R)]): Result = {
-      results.foldLeft(Success(""): Result)((res, cur) => res and cur._2)
+      def and(l: Result, r: (String, R)): Result = {
+        if (l.isSuccess && r._2.isSuccess) l
+        else if (!l.isSuccess) l
+        else r._2
+      }
+      results.foldLeft(Success(""): Result)(and)
     }
 
     /**@return the status of the row + the values + the failure message if any */
@@ -70,18 +76,18 @@ trait BeanTables {
     outer =>
     def |(row: BeanRow) = AnyRefTable(titles, outer.rows :+ row, execute)
 
-    def |[B](f: (B) => Result)(implicit m: ClassManifest[B]) = executeRow(m, f, execute)
+    def |[B](f: (B) => Result)(implicit m: ClassTag[B]) = executeRow(m, f, execute)
 
-    def |>[B](f: (B) => Result)(implicit m: ClassManifest[B]) = executeRow(m, f, true)
+    def |>[B](f: (B) => Result)(implicit m: ClassTag[B]) = executeRow(m, f, true)
 
-    def |<[B](implicit m: ClassManifest[B]): List[B] = {
+    def |<[B](implicit m: ClassTag[B]): List[B] = {
       rows map {d: BeanRow => d.makeBean[B](titles, m)}
     }
 
     def |<[B](m: Class[B]): List[B] =
       rows map {d: BeanRow => d.makeBean[B](titles, m)}
 
-    def |<[B](f: (B) => Unit)(implicit m: ClassManifest[B]): List[B] = {
+    def |<[B](f: (B) => Unit)(implicit m: ClassTag[B]): List[B] = {
       rows map {d: BeanRow =>
         val b = d.makeBean[B](titles, m)
         f(b)
@@ -89,7 +95,7 @@ trait BeanTables {
       }
     }
 
-    def executeRow[B, R <% Result](m: ClassManifest[B], f: (B) => R, exec: Boolean): DecoratedResult[BeanTable] = {
+    def executeRow[B, R <% Result](m: ClassTag[B], f: (B) => R, exec: Boolean): DecoratedResult[BeanTable] = {
       if (exec)
         collect(rows map {
           (d: BeanRow) => (d.show, implicitly[R => Result].apply(f(d.makeBean(titles, m))))
@@ -118,7 +124,7 @@ trait BeanTables {
       bean
     }
 
-    private [spring] def makeBean[T](propertyNames: List[String], m: ClassManifest[T]): T = makeBean(propertyNames, m.erasure)
+    private [spring] def makeBean[T](propertyNames: List[String], m: ClassTag[T]): T = makeBean(propertyNames, m.runtimeClass)
 
   }
 
