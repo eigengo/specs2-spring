@@ -44,13 +44,13 @@ trait Specification extends org.specs2.mutable.Specification
   override def is: org.specs2.specification.Fragments = {
     // setup the specification's transactional behaviour
     val ttd = new TestTransactionDefinitionExtractor().extract(this)
-    val fragments =
+    val transformedFragments =
       if (ttd == TestTransactionDefinition.NOT_TRANSACTIONAL)
         // no transactions required
-        specFragments
+        fragments
       else {
         // transactions required, run each example body in a [separate] transaction
-        specFragments.map {
+        fragments.map {
           f =>
             f match {
               case Example(desc, body) =>
@@ -70,7 +70,7 @@ trait Specification extends org.specs2.mutable.Specification
         }
       }
 
-      args(sequential = true) ^ Step(setup) ^ fragments
+      args(sequential = true) ^ Step(setup) ^ transformedFragments
   }
 
 }
