@@ -1,4 +1,4 @@
-#Specs2 Spring
+#Specs2 Spring [![Build Status](https://travis-ci.org/eigengo/specs2-spring.png?branch=master)](https://travis-ci.org/eigengo/specs2-spring)
 Specs2 Extension to simplify integration testing with Spring.
 
 > More details at blogs at http://www.cakesolutions.net/teamblogs and http://www.cakesolutions.org
