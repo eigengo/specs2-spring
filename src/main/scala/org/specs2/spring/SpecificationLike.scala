@@ -29,7 +29,7 @@ trait SpecificationEnvironment {
  *
  * @author janmachacek
  */
-trait Specification extends org.specs2.mutable.SpecificationLike
+trait SpecificationLike extends org.specs2.mutable.SpecificationLike
   with SpecificationContext
   with SpecificationEnvironment {
 
