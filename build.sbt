@@ -3,7 +3,7 @@ import sbtrelease._
 /** Project */
 name := "spring"
 
-version := "1.0.1-SNAPSHOT"
+version := "2.0.0-SNAPSHOT"
 
 organization := "org.specs2"
 
