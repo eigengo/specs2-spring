@@ -7,7 +7,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate
 /**
  * @author anirvanchakraborty
  */
-class HibernateTemplateDataAccessSpec extends Specification with HibernateTemplateDataAccess with BeanTables with Mockito {
+class HibernateTemplateDataAccessSpec extends SpecificationLike with HibernateTemplateDataAccess with BeanTables with Mockito {
   implicit val template = mock[HibernateTemplate]
 
   "hibernate3 based " in {
