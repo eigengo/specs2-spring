@@ -3,11 +3,11 @@ import sbtrelease._
 /** Project */
 name := "spring"
 
-version := "1.0.1-SNAPSHOT"
+version := "2.1.0-SNAPSHOT"
 
 organization := "org.specs2"
 
-scalaVersion := "2.10.1"
+scalaVersion := "2.10.3"
 
 /** Shell */
 shellPrompt := { state => System.getProperty("user.name") + "> " }
@@ -18,19 +18,21 @@ shellPrompt in ThisBuild := { state => Project.extract(state).currentRef.project
 resolvers ++= Seq("snapshots-repo" at "http://scala-tools.org/repo-snapshots")
 
 libraryDependencies ++= Seq(
-  "org.specs2"         %% "specs2"            % "1.14",
-  "org.mockito"         % "mockito-all"       % "1.9.5",
-  "org.springframework" % "spring-core"       % "3.2.2.RELEASE",
-  "org.springframework" % "spring-beans"      % "3.2.2.RELEASE",
-  "org.springframework" % "spring-jdbc"       % "3.2.2.RELEASE",
-  "org.springframework" % "spring-tx"         % "3.2.2.RELEASE",
-  "org.springframework" % "spring-test"       % "3.2.2.RELEASE",
-  "org.springframework" % "spring-test"       % "3.2.2.RELEASE",
-  "org.springframework" % "spring-orm"        % "3.2.2.RELEASE" % "provided",
-  "org.springframework" % "spring-web"        % "3.2.2.RELEASE" % "provided",
-  "org.springframework" % "spring-webmvc"     % "3.2.2.RELEASE" % "provided",
-  "org.springframework" % "spring-aspects"    % "3.2.2.RELEASE" % "provided",
-  "org.springframework" % "spring-instrument" % "3.2.2.RELEASE" % "test->runtime",
+  "org.specs2"         %% "specs2-core"       % "2.3.7",
+  "org.specs2"         %% "specs2-mock"       % "2.3.7" % "optional",
+  "org.specs2"         %% "specs2-junit"      % "2.3.7" % "optional",
+  "org.mockito"         % "mockito-core"      % "1.9.5" % "optional",
+  "org.springframework" % "spring-core"       % "3.2.3.RELEASE",
+  "org.springframework" % "spring-beans"      % "3.2.3.RELEASE",
+  "org.springframework" % "spring-jdbc"       % "3.2.3.RELEASE",
+  "org.springframework" % "spring-tx"         % "3.2.3.RELEASE",
+  "org.springframework" % "spring-test"       % "3.2.3.RELEASE",
+  "org.springframework" % "spring-test"       % "3.2.3.RELEASE",
+  "org.springframework" % "spring-orm"        % "3.2.3.RELEASE" % "provided",
+  "org.springframework" % "spring-web"        % "3.2.3.RELEASE" % "provided",
+  "org.springframework" % "spring-webmvc"     % "3.2.3.RELEASE" % "provided",
+  "org.springframework" % "spring-aspects"    % "3.2.3.RELEASE" % "provided",
+  "org.springframework" % "spring-instrument" % "3.2.3.RELEASE" % "test->runtime",
   "junit"               % "junit"             % "4.7"           % "optional",
   "org.hsqldb"          % "hsqldb"            % "2.2.4"         % "provided",
   "org.hibernate"       % "hibernate-core"    % "4.0.1.Final"   % "provided",
