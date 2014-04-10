@@ -29,7 +29,7 @@ trait SpecificationEnvironment {
  *
  * @author janmachacek
  */
-trait Specification extends org.specs2.mutable.Specification
+trait SpecificationLike extends org.specs2.mutable.SpecificationLike
   with SpecificationContext
   with SpecificationEnvironment {
 
@@ -53,12 +53,12 @@ trait Specification extends org.specs2.mutable.Specification
         fragments.map {
           f =>
             f match {
-              case Example(desc, body) =>
-                Example(desc, {
+              case e: Example =>
+                Example(e.desc, {
                   val transactionManager = testContext.getBean(ttd.getTransactionManagerName, classOf[PlatformTransactionManager])
                   val transactionStatus = transactionManager.getTransaction(ttd.getTransactionDefinition)
                   try {
-                    val result = body()
+                    val result = e.execute
                     if (!ttd.isDefaultRollback) transactionManager.commit(transactionStatus)
                     result
                   } finally {
