@@ -18,6 +18,7 @@ shellPrompt in ThisBuild := { state => Project.extract(state).currentRef.project
 resolvers ++= Seq("snapshots-repo" at "http://scala-tools.org/repo-snapshots")
 
 libraryDependencies ++= Seq(
+<<<<<<< HEAD
   "org.specs2"         %% "specs2-core"       % "2.3.7",
   "org.specs2"         %% "specs2-mock"       % "2.3.7" % "optional",
   "org.specs2"         %% "specs2-junit"      % "2.3.7" % "optional",
