@@ -10,11 +10,7 @@ import org.hibernate.SessionFactory
  * @author janmachacek
  */
 @ContextConfiguration(Array("classpath*:/META-INF/spring/module-context.xml"))
-<<<<<<< HEAD
 class SpecificationSpec extends SpecificationLike 
-=======
-class SpecificationSpec extends SpecificationLike
->>>>>>> aaf0bf4731b73439748daca647212e23ae541068
   with BeanTables with HibernateDataAccess with SettableEnvironment with Mockito {
   
   @Autowired implicit var sessionFactory: SessionFactory = _

@@ -37,6 +37,10 @@ class TestContext {
         this.context.getAutowireCapableBeanFactory().autowireBean(specification);
     }
 
+    boolean loaded() {
+        return this.context != null;
+    }
+
     <T> T getBean(Class<T> beanType) {
         return this.context.getBean(beanType);
     }

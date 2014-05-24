@@ -51,11 +51,13 @@ trait SpecificationLike extends org.specs2.mutable.SpecificationLike
       else {
         // transactions required, run each example body in a [separate] transaction
         fragments.map {
-          f =>
-            f match {
-              case e: Example =>
-                Example(e.desc, {
-                  val transactionManager = testContext.getBean(ttd.getTransactionManagerName, classOf[PlatformTransactionManager])
+          case e: Example =>
+            Example(e.desc, {
+              if (!testContext.loaded()) failure("No ApplicationContext prepared for the test. Did you forget the @ContextConfiguration annotation?")
+              else {
+                val transactionManager = testContext.getBean(ttd.getTransactionManagerName, classOf[PlatformTransactionManager])
+                if (transactionManager == null) failure("Test marked @Transactional, but no PlatformTransactionManager bean found.")
+                else {
                   val transactionStatus = transactionManager.getTransaction(ttd.getTransactionDefinition)
                   try {
                     val result = e.execute
@@ -64,9 +66,10 @@ trait SpecificationLike extends org.specs2.mutable.SpecificationLike
                   } finally {
                     if (ttd.isDefaultRollback) transactionManager.rollback(transactionStatus)
                   }
-                })
-              case _ => f
-            }
+                }
+              }
+            })
+          case f => f
         }
       }
 
