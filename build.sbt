@@ -7,6 +7,8 @@ version := "2.3.10"
 
 organization := "org.specs2"
 
+useGpg := true
+
 scalaVersion := "2.10.4"
 
 /** Shell */
