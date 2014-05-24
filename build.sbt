@@ -3,7 +3,7 @@ import sbtrelease._
 /** Project */
 name := "spring"
 
-version := "2.2.0-SNAPSHOT"
+version := "2.3.10"
 
 organization := "org.specs2"
 
@@ -18,9 +18,9 @@ shellPrompt in ThisBuild := { state => Project.extract(state).currentRef.project
 resolvers ++= Seq("snapshots-repo" at "http://scala-tools.org/repo-snapshots")
 
 libraryDependencies ++= Seq(
-  "org.specs2"         %% "specs2-core"       % "2.3.4",
-  "org.specs2"         %% "specs2-mock"       % "2.3.4" % "optional",
-  "org.specs2"         %% "specs2-junit"      % "2.3.4" % "optional",
+  "org.specs2"         %% "specs2-core"       % "2.3.10",
+  "org.specs2"         %% "specs2-mock"       % "2.3.10" % "optional",
+  "org.specs2"         %% "specs2-junit"      % "2.3.10" % "optional",
   "org.mockito"         % "mockito-core"      % "1.9.5" % "optional",
   "org.springframework" % "spring-core"       % "3.2.9.RELEASE" % "provided",
   "org.springframework" % "spring-beans"      % "3.2.9.RELEASE" % "provided",
