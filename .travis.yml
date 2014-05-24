@@ -2,7 +2,7 @@
 language: scala
 
 scala:
-  - 2.10.1
+  - 2.10.4
 
 # Testing with OpenJDK7 as well just to be adventurous!
 jdk:
